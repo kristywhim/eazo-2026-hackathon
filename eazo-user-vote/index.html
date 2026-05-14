@@ -17,13 +17,10 @@
       --text2: #555350;
       --text3: #888780;
       --voted: #1D9E75;
-      --voted-bg: #E8F7F1;
       --urgent: #D85A30;
     }
 
-    html, body {
-      height: 100%;
-    }
+    html, body { height: 100%; }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
@@ -35,12 +32,10 @@
       overscroll-behavior-y: none;
     }
 
-    /* ── Wrapper ── */
     .app-wrap {
       max-width: 480px;
       margin: 0 auto;
       min-height: 100vh;
-      position: relative;
       background: var(--bg);
     }
 
@@ -61,18 +56,13 @@
       margin-bottom: 10px;
     }
 
-    .event-meta {
-      display: flex;
-      flex-direction: column;
-      gap: 1px;
-    }
-
     .event-eyebrow {
       font-size: 10px;
       font-weight: 700;
       letter-spacing: 0.14em;
       text-transform: uppercase;
       color: var(--text3);
+      margin-bottom: 1px;
     }
 
     .event-name {
@@ -82,15 +72,14 @@
       letter-spacing: -0.01em;
     }
 
-    /* Remaining votes pill */
-    .votes-pill {
+    .votes-pill-wrap {
       display: flex;
       flex-direction: column;
       align-items: flex-end;
-      gap: 4px;
+      gap: 5px;
     }
 
-    .votes-pill-inner {
+    .votes-pill {
       display: flex;
       align-items: center;
       gap: 6px;
@@ -103,13 +92,8 @@
       transition: background 0.25s;
     }
 
-    .votes-pill-inner.low {
-      background: var(--urgent);
-    }
-
-    .votes-pill-inner.empty {
-      background: var(--border2);
-    }
+    .votes-pill.low   { background: var(--urgent); }
+    .votes-pill.empty { background: var(--border2); }
 
     .pulse-dot {
       width: 6px;
@@ -120,15 +104,12 @@
       flex-shrink: 0;
     }
 
-    .votes-pill-inner.low .pulse-dot { background: #FFD6C4; }
-    .votes-pill-inner.empty .pulse-dot { display: none; }
+    .votes-pill.low   .pulse-dot { background: #FFD6C4; }
+    .votes-pill.empty .pulse-dot { display: none; }
 
-    .votes-pip-row {
-      display: flex;
-      gap: 3px;
-    }
+    .pip-row { display: flex; gap: 3px; }
 
-    .votes-pip {
+    .pip {
       width: 8px;
       height: 3px;
       border-radius: 2px;
@@ -136,11 +117,8 @@
       transition: background 0.2s;
     }
 
-    .votes-pip.used {
-      background: var(--voted);
-    }
+    .pip.used { background: var(--voted); }
 
-    /* Countdown row */
     .countdown-row {
       display: flex;
       align-items: center;
@@ -167,11 +145,11 @@
     }
 
     .countdown-right {
-      display: flex;
-      align-items: center;
-      gap: 6px;
       font-size: 12px;
       color: var(--text3);
+      display: flex;
+      align-items: center;
+      gap: 5px;
     }
 
     .countdown-time {
@@ -182,12 +160,7 @@
     }
 
     .countdown-time.urgent { color: var(--urgent); }
-
-    .countdown-closed {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--border2);
-    }
+    .countdown-closed { font-size: 13px; font-weight: 700; color: var(--border2); }
 
     /* ── Filter Bar ── */
     .filter-bar {
@@ -195,17 +168,20 @@
       align-items: center;
       gap: 7px;
       padding: 10px 16px;
-      overflow-x: auto;
-      scrollbar-width: none;
       border-bottom: 1px solid var(--border);
       background: var(--bg);
     }
 
-    .filter-bar::-webkit-scrollbar { display: none; }
+    .filter-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text3);
+    }
 
     .filter-pill {
-      flex-shrink: 0;
-      padding: 5px 13px;
+      padding: 5px 14px;
       border-radius: 20px;
       font-size: 12px;
       font-weight: 600;
@@ -213,30 +189,17 @@
       background: var(--surface);
       color: var(--text2);
       cursor: pointer;
-      white-space: nowrap;
       user-select: none;
       transition: all 0.15s;
       font-family: inherit;
     }
 
     .filter-pill:active { transform: scale(0.94); }
-
-    .filter-pill.active {
-      background: var(--text);
-      color: #fff;
-      border-color: var(--text);
-    }
-
-    .filter-sep {
-      width: 1px;
-      height: 20px;
-      background: var(--border);
-      flex-shrink: 0;
-    }
+    .filter-pill.active { background: var(--text); color: #fff; border-color: var(--text); }
 
     /* ── Content ── */
     .content {
-      padding: 12px 16px 100px;
+      padding: 10px 14px 100px;
       display: flex;
       flex-direction: column;
       gap: 10px;
@@ -246,173 +209,199 @@
       font-size: 11.5px;
       color: var(--text3);
       text-align: center;
-      padding: 4px 0 2px;
+      padding: 2px 0;
     }
 
-    .stats-line strong {
-      color: var(--text2);
-      font-weight: 600;
+    .stats-line strong { color: var(--text2); font-weight: 600; }
+
+    /* ── 2-column grid ── */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
     }
 
     /* ── Project Card ── */
     .card {
       background: var(--surface);
       border: 1.5px solid var(--border);
-      border-radius: 14px;
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 11px;
-      position: relative;
+      border-radius: 13px;
       overflow: hidden;
-      transition: border-color 0.25s, background 0.25s;
+      position: relative;
+      transition: border-color 0.25s;
     }
 
-    .card.voted {
-      border-color: var(--voted);
-      background: linear-gradient(135deg, #fff 70%, #F0FBF6 100%);
+    .card.voted { border-color: var(--voted); }
+
+    /* Portrait 9:16 thumbnail */
+    .card-thumb {
+      width: 100%;
+      aspect-ratio: 9 / 16;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
+    .card-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .thumb-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .thumb-placeholder-icon {
+      font-size: 40px;
+      opacity: 0.52;
+      filter: drop-shadow(0 2px 8px rgba(0,0,0,0.1));
+    }
+
+    /* Voted ribbon */
     .voted-ribbon {
       display: none;
       position: absolute;
-      top: 12px;
-      right: -1px;
+      top: 10px;
+      right: 0;
       background: var(--voted);
       color: #fff;
-      font-size: 10px;
+      font-size: 9px;
       font-weight: 700;
-      padding: 3px 10px 3px 8px;
-      border-radius: 4px 0 0 4px;
+      padding: 3px 8px 3px 7px;
+      border-radius: 3px 0 0 3px;
       letter-spacing: 0.06em;
+      z-index: 2;
+      white-space: nowrap;
     }
 
     .card.voted .voted-ribbon { display: block; }
 
+    /* Compact card body */
+    .card-body {
+      padding: 9px 10px 11px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
     .card-top {
       display: flex;
-      gap: 12px;
+      gap: 7px;
       align-items: flex-start;
     }
 
     .app-icon {
-      width: 50px;
-      height: 50px;
-      border-radius: 12px;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 24px;
+      font-size: 16px;
       flex-shrink: 0;
       border: 1px solid rgba(0,0,0,0.06);
     }
 
-    .card-info {
-      flex: 1;
-      min-width: 0;
-    }
+    .card-meta { flex: 1; min-width: 0; }
 
     .card-name {
-      font-size: 15px;
+      font-size: 13px;
       font-weight: 800;
       color: var(--text);
-      margin-bottom: 2px;
+      letter-spacing: -0.01em;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      letter-spacing: -0.01em;
+      margin-bottom: 1px;
+      line-height: 1.3;
     }
+
+    .card.voted .card-name { color: var(--voted); }
 
     .card-team {
-      font-size: 12px;
+      font-size: 10.5px;
       color: var(--text3);
-      margin-bottom: 7px;
-    }
-
-    .badges {
-      display: flex;
-      gap: 5px;
-      flex-wrap: wrap;
-    }
-
-    .badge {
-      font-size: 10px;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 5px;
-      letter-spacing: 0.02em;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    /* Track */
+    .track-badge {
+      display: inline-block;
+      font-size: 9.5px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      letter-spacing: 0.02em;
+    }
+
     .badge-superparent { background: #FAE6C2; color: #854F0B; }
     .badge-companion   { background: #EEEDFE; color: #3C3489; }
     .badge-lifeos      { background: #CCF0E3; color: #0D6B50; }
     .badge-body        { background: #D4E8FA; color: #185FA5; }
     .badge-wildcard    { background: #E5E3DC; color: #5F5E5A; }
 
-    /* Hub */
-    .badge-sf     { background: #D4E8FA; color: #185FA5; }
-    .badge-ny     { background: #EEEDFE; color: #3C3489; }
-    .badge-sh     { background: #FAE0D8; color: #993C1D; }
-    .badge-online { background: #CCF0E3; color: #0D6B50; }
-    .badge-asia   { background: #FAE6C2; color: #854F0B; }
-
     .card-desc {
-      font-size: 13px;
+      font-size: 11px;
       color: var(--text2);
-      line-height: 1.6;
+      line-height: 1.55;
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
 
-    /* ── Vote Row ── */
+    /* Vote row */
     .vote-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding-top: 11px;
+      gap: 6px;
+      padding-top: 8px;
       border-top: 1px solid var(--border);
-      gap: 12px;
     }
 
     .vote-count {
       display: flex;
       align-items: baseline;
-      gap: 5px;
+      gap: 3px;
       min-width: 0;
     }
 
     .vote-number {
-      font-size: 26px;
+      font-size: 20px;
       font-weight: 900;
       color: var(--text);
       line-height: 1;
       letter-spacing: -0.02em;
-      transition: color 0.2s;
+      flex-shrink: 0;
     }
 
     .card.voted .vote-number { color: var(--voted); }
 
     .vote-word {
-      font-size: 12px;
+      font-size: 10px;
       font-weight: 500;
       color: var(--text3);
     }
 
-    /* Vote button */
     .vote-btn {
       display: flex;
       align-items: center;
-      gap: 6px;
-      padding: 10px 20px;
-      border-radius: 24px;
+      gap: 4px;
+      padding: 7px 11px;
+      border-radius: 20px;
       border: 1.5px solid var(--border2);
       background: var(--surface);
       color: var(--text);
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.18s;
@@ -422,16 +411,9 @@
       flex-shrink: 0;
     }
 
-    .vote-btn:active { transform: scale(0.91); }
-
-    .vote-btn.can-vote {
-      border-color: var(--text);
-    }
-
-    .vote-btn.can-vote:active {
-      background: var(--text);
-      color: #fff;
-    }
+    .vote-btn:active { transform: scale(0.90); }
+    .vote-btn.can-vote { border-color: var(--text); }
+    .vote-btn.can-vote:active { background: var(--text); color: #fff; }
 
     .vote-btn.voted-state {
       background: var(--voted);
@@ -439,12 +421,18 @@
       color: #fff;
     }
 
+    .vote-btn.voted-addmore {
+      background: transparent;
+      border-color: var(--voted);
+      color: var(--voted);
+    }
+
     .vote-btn.disabled {
       opacity: 0.38;
       cursor: not-allowed;
     }
 
-    /* ── Bottom Sheet ── */
+    /* ── Overlay + Bottom Sheet ── */
     .overlay {
       display: none;
       position: fixed;
@@ -466,21 +454,19 @@
       max-width: 480px;
       background: var(--surface);
       border-radius: 22px 22px 0 0;
-      padding: 8px 20px 44px;
+      padding: 8px 20px 48px;
       z-index: 201;
       transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1);
     }
 
-    .sheet.open {
-      transform: translateX(-50%) translateY(0);
-    }
+    .sheet.open { transform: translateX(-50%) translateY(0); }
 
     .sheet-handle {
       width: 38px;
       height: 4px;
       background: var(--border);
       border-radius: 2px;
-      margin: 12px auto 22px;
+      margin: 12px auto 20px;
     }
 
     .sheet-eyebrow {
@@ -489,20 +475,20 @@
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--text3);
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
 
     .sheet-app-row {
       display: flex;
       align-items: center;
       gap: 12px;
-      margin-bottom: 16px;
+      margin-bottom: 4px;
     }
 
     .sheet-icon {
       width: 44px;
       height: 44px;
-      border-radius: 10px;
+      border-radius: 11px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -512,7 +498,7 @@
     }
 
     .sheet-app-name {
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 800;
       color: var(--text);
       letter-spacing: -0.01em;
@@ -524,36 +510,102 @@
       margin-top: 2px;
     }
 
-    .sheet-notice {
-      background: var(--surface2);
-      border-radius: 10px;
-      padding: 12px 14px;
-      font-size: 13px;
-      color: var(--text2);
-      line-height: 1.65;
+    /* Previous vote note */
+    .sheet-prev-note {
+      display: none;
+      font-size: 12px;
+      color: var(--voted);
+      font-weight: 600;
+      background: #E8F7F1;
+      border-radius: 8px;
+      padding: 7px 12px;
       margin-bottom: 14px;
     }
 
-    .sheet-notice strong {
-      color: var(--text);
-      font-weight: 700;
-    }
+    .sheet-prev-note.visible { display: block; }
 
-    .sheet-remaining-line {
-      font-size: 13px;
+    /* ── Vote Quantity Stepper ── */
+    .stepper-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
       color: var(--text3);
-      margin-bottom: 20px;
+      text-align: center;
+      margin: 14px 0 10px;
     }
 
-    .sheet-remaining-line strong {
-      color: var(--text);
-      font-weight: 700;
-    }
-
-    .sheet-actions {
+    .stepper-row {
       display: flex;
-      gap: 10px;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 10px;
     }
+
+    .stepper-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      border: 1.5px solid var(--border2);
+      background: var(--surface);
+      font-size: 24px;
+      font-weight: 400;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+      font-family: inherit;
+      user-select: none;
+      line-height: 1;
+    }
+
+    .stepper-btn:active:not(:disabled) {
+      transform: scale(0.90);
+      background: var(--surface2);
+    }
+
+    .stepper-btn:disabled {
+      opacity: 0.25;
+      cursor: not-allowed;
+    }
+
+    .stepper-num {
+      font-size: 42px;
+      font-weight: 900;
+      color: var(--text);
+      letter-spacing: -0.03em;
+      min-width: 72px;
+      text-align: center;
+      line-height: 1;
+    }
+
+    .stepper-sublabel {
+      font-size: 12px;
+      color: var(--text3);
+      text-align: center;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    .stepper-sublabel strong { color: var(--text2); font-weight: 700; }
+
+    /* Notice */
+    .sheet-notice {
+      background: var(--surface2);
+      border-radius: 10px;
+      padding: 11px 13px;
+      font-size: 12.5px;
+      color: var(--text2);
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .sheet-notice strong { color: var(--text); font-weight: 700; }
+
+    .sheet-actions { display: flex; gap: 10px; }
 
     .btn-cancel {
       flex: 1;
@@ -604,11 +656,7 @@
       border-bottom: 1px solid var(--border);
     }
 
-    .my-votes-label {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text);
-    }
+    .my-votes-label { font-size: 13px; font-weight: 700; color: var(--text); }
 
     .my-votes-counter {
       font-size: 12px;
@@ -626,11 +674,7 @@
       gap: 10px;
     }
 
-    .my-vote-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+    .my-vote-row { display: flex; align-items: center; gap: 10px; }
 
     .my-vote-icon {
       width: 32px;
@@ -644,10 +688,7 @@
       border: 1px solid rgba(0,0,0,0.05);
     }
 
-    .my-vote-info {
-      flex: 1;
-      min-width: 0;
-    }
+    .my-vote-info { flex: 1; min-width: 0; }
 
     .my-vote-name {
       font-size: 13px;
@@ -658,14 +699,16 @@
       text-overflow: ellipsis;
     }
 
-    .my-vote-team {
-      font-size: 11.5px;
-      color: var(--text3);
-    }
+    .my-vote-team { font-size: 11.5px; color: var(--text3); }
 
-    .my-vote-check {
-      font-size: 16px;
+    .my-vote-badge {
+      font-size: 11px;
+      font-weight: 700;
       color: var(--voted);
+      background: #E8F7F1;
+      padding: 3px 8px;
+      border-radius: 8px;
+      white-space: nowrap;
       flex-shrink: 0;
     }
 
@@ -673,7 +716,7 @@
       padding: 20px 16px;
       font-size: 13px;
       color: var(--text3);
-      line-height: 1.6;
+      line-height: 1.65;
       text-align: center;
     }
 
@@ -686,40 +729,14 @@
       text-align: center;
     }
 
-    .closed-banner strong {
-      display: block;
-      font-size: 14px;
-      font-weight: 800;
-      color: var(--text);
-      margin-bottom: 4px;
-    }
-
-    .closed-banner span {
-      font-size: 12.5px;
-      color: var(--text3);
-      line-height: 1.6;
-    }
+    .closed-banner strong { display: block; font-size: 14px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+    .closed-banner span   { font-size: 12.5px; color: var(--text3); line-height: 1.6; }
 
     /* ── Empty state ── */
-    .empty-state {
-      text-align: center;
-      padding: 56px 20px;
-    }
-
-    .empty-icon { font-size: 44px; margin-bottom: 16px; }
-
-    .empty-title {
-      font-size: 16px;
-      font-weight: 800;
-      color: var(--text2);
-      margin-bottom: 6px;
-    }
-
-    .empty-desc {
-      font-size: 13px;
-      color: var(--text3);
-      line-height: 1.65;
-    }
+    .empty-state { text-align: center; padding: 56px 20px; }
+    .empty-icon  { font-size: 44px; margin-bottom: 16px; }
+    .empty-title { font-size: 16px; font-weight: 800; color: var(--text2); margin-bottom: 6px; }
+    .empty-desc  { font-size: 13px; color: var(--text3); line-height: 1.65; }
 
     /* ── Animations ── */
     @keyframes dot-pulse {
@@ -729,41 +746,37 @@
 
     @keyframes number-pop {
       0%   { transform: scale(1); }
-      40%  { transform: scale(1.42); color: var(--voted); }
+      40%  { transform: scale(1.4); color: var(--voted); }
       100% { transform: scale(1); }
     }
 
-    .number-pop {
-      animation: number-pop 0.38s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
+    .number-pop { animation: number-pop 0.38s cubic-bezier(0.34, 1.56, 0.64, 1); }
 
     @keyframes card-flash {
       0%   { box-shadow: 0 0 0 0 rgba(29, 158, 117, 0); }
-      30%  { box-shadow: 0 0 0 4px rgba(29, 158, 117, 0.25); }
+      35%  { box-shadow: 0 0 0 5px rgba(29, 158, 117, 0.22); }
       100% { box-shadow: 0 0 0 0 rgba(29, 158, 117, 0); }
     }
 
-    .card-voted-flash {
-      animation: card-flash 0.55s ease-out;
-    }
+    .card-voted-flash { animation: card-flash 0.6s ease-out; }
   </style>
 </head>
 <body>
 <div class="app-wrap">
 
   <!-- ── STICKY HEADER ── -->
-  <div class="header" id="header">
+  <div class="header">
     <div class="header-row">
-      <div class="event-meta">
+      <div>
         <div class="event-eyebrow">Eazo Hackathon 2026 · SF</div>
         <div class="event-name">Community Vote</div>
       </div>
-      <div class="votes-pill">
-        <div class="votes-pill-inner" id="votesPill">
-          <div class="pulse-dot" id="pulseDot"></div>
+      <div class="votes-pill-wrap">
+        <div class="votes-pill" id="votesPill">
+          <div class="pulse-dot"></div>
           <span id="votesText">10 votes left</span>
         </div>
-        <div class="votes-pip-row" id="pipRow"></div>
+        <div class="pip-row" id="pipRow"></div>
       </div>
     </div>
     <div class="countdown-row">
@@ -780,32 +793,15 @@
 
   <!-- ── FILTER BAR ── -->
   <div class="filter-bar">
-    <button class="filter-pill active" data-group="sort" data-val="time" onclick="setFilter('sort','time',this)">Newest</button>
-    <button class="filter-pill" data-group="sort" data-val="votes" onclick="setFilter('sort','votes',this)">Most Votes</button>
-
-    <div class="filter-sep"></div>
-
-    <button class="filter-pill active" data-group="hub" data-val="all" onclick="setFilter('hub','all',this)">All Hubs</button>
-    <button class="filter-pill" data-group="hub" data-val="sf" onclick="setFilter('hub','sf',this)">🇺🇸 SF</button>
-    <button class="filter-pill" data-group="hub" data-val="ny" onclick="setFilter('hub','ny',this)">🗽 NY</button>
-    <button class="filter-pill" data-group="hub" data-val="online" onclick="setFilter('hub','online',this)">🌐 Online</button>
-    <button class="filter-pill" data-group="hub" data-val="sh" onclick="setFilter('hub','sh',this)">🇨🇳 Shanghai</button>
-    <button class="filter-pill" data-group="hub" data-val="asia" onclick="setFilter('hub','asia',this)">🌏 Asia Online</button>
-
-    <div class="filter-sep"></div>
-
-    <button class="filter-pill active" data-group="track" data-val="all" onclick="setFilter('track','all',this)">All Tracks</button>
-    <button class="filter-pill" data-group="track" data-val="superparent" onclick="setFilter('track','superparent',this)">Superparent</button>
-    <button class="filter-pill" data-group="track" data-val="companion" onclick="setFilter('track','companion',this)">AI Companion</button>
-    <button class="filter-pill" data-group="track" data-val="lifeos" onclick="setFilter('track','lifeos',this)">Life OS</button>
-    <button class="filter-pill" data-group="track" data-val="body" onclick="setFilter('track','body',this)">Body Intel</button>
-    <button class="filter-pill" data-group="track" data-val="wildcard" onclick="setFilter('track','wildcard',this)">Wildcard</button>
+    <span class="filter-label">Sort</span>
+    <button class="filter-pill active" data-group="sort" data-val="time"  onclick="setSort('time',this)">Newest First</button>
+    <button class="filter-pill"        data-group="sort" data-val="votes" onclick="setSort('votes',this)">Most Votes</button>
   </div>
 
   <!-- ── MAIN CONTENT ── -->
   <div class="content" id="content"></div>
 
-</div><!-- /app-wrap -->
+</div>
 
 <!-- ── OVERLAY ── -->
 <div class="overlay" id="overlay" onclick="closeSheet()"></div>
@@ -813,62 +809,76 @@
 <!-- ── VOTE CONFIRMATION SHEET ── -->
 <div class="sheet" id="sheet">
   <div class="sheet-handle"></div>
-  <div class="sheet-eyebrow">Confirm Your Vote</div>
+  <div class="sheet-eyebrow">Cast Your Votes</div>
 
   <div class="sheet-app-row">
     <div class="sheet-icon" id="sheetIcon"></div>
     <div>
       <div class="sheet-app-name" id="sheetName"></div>
-      <div class="sheet-team" id="sheetTeam"></div>
+      <div class="sheet-team"     id="sheetTeam"></div>
     </div>
   </div>
 
-  <div class="sheet-notice">
-    <strong>This vote is final.</strong> Once cast, it cannot be changed or undone. Your vote contributes to this team's public ranking.
+  <div class="sheet-prev-note" id="sheetPrevNote"></div>
+
+  <div class="stepper-label">How many votes?</div>
+
+  <div class="stepper-row">
+    <button class="stepper-btn" id="stepperMinus" onclick="adjustVotes(-1)">−</button>
+    <div class="stepper-num" id="stepperNum">1</div>
+    <button class="stepper-btn" id="stepperPlus"  onclick="adjustVotes(1)">+</button>
   </div>
 
-  <div class="sheet-remaining-line" id="sheetRemaining"></div>
+  <div class="stepper-sublabel" id="stepperSublabel"></div>
+
+  <div class="sheet-notice">
+    <strong>Votes are final.</strong> Once cast they cannot be changed or undone. Each vote counts toward this team's ranking.
+  </div>
 
   <div class="sheet-actions">
-    <button class="btn-cancel" onclick="closeSheet()">Cancel</button>
-    <button class="btn-confirm" onclick="confirmVote()">Cast My Vote</button>
+    <button class="btn-cancel"  onclick="closeSheet()">Cancel</button>
+    <button class="btn-confirm" id="btnConfirm" onclick="confirmVote()">Cast 1 Vote</button>
   </div>
 </div>
 
 <script>
-  // ── CONFIG ──────────────────────────────────────────────────────────────
+  // ── CONFIG ────────────────────────────────────────────────────────────────
   const MAX_VOTES = 10;
-  // Voting closes May 24 2026 at 7:00 PM PDT = 02:00 UTC May 25
+  // Voting closes May 24 2026 at 7:00 PM PDT (UTC-7) = 02:00 UTC May 25
   const VOTE_DEADLINE = new Date('2026-05-25T02:00:00Z');
 
-  // ── STATE ────────────────────────────────────────────────────────────────
-  let userVotes    = [];    // project IDs this user has voted for
-  let pendingId    = null;  // project ID awaiting confirmation
-  let currentFilter = { sort: 'time', hub: 'all', track: 'all' };
+  // ── STATE ─────────────────────────────────────────────────────────────────
+  // voteMap: { projectId → total votes given by this user }
+  let voteMap   = {};
+  let pendingId = null;
+  let pendingVoteCount = 1;
+  let sortMode  = 'time';
 
-  // ── MOCK DATA ────────────────────────────────────────────────────────────
+  function totalVotesUsed()      { return Object.values(voteMap).reduce((s, n) => s + n, 0); }
+  function votesForProject(id)   { return voteMap[id] || 0; }
+  function remainingVotes()      { return MAX_VOTES - totalVotesUsed(); }
+  function hasVotedFor(id)       { return votesForProject(id) > 0; }
+
+  // ── MOCK DATA ─────────────────────────────────────────────────────────────
   // TODO: Replace with API — GET /api/hackathon/sf/projects
-  // Response shape: { projects: Project[], votedIds: string[], remainingVotes: number }
-  // Project shape: { id, name, team, desc, track, hub, votes, icon, iconBg, submittedAt }
+  // Response shape: { projects: Project[], voteMap: { [id]: number }, remainingVotes: number }
+  // Project shape: { id, name, team, desc, track, votes, iconEmoji, iconBg, thumbUrl, submittedAt }
+  // thumbUrl: URL to 9:16 app screenshot. null = show gradient placeholder.
+  // All projects returned by this endpoint are SF hub only.
   const PROJECTS = [
-    { id:'p01', name:'FamilySync AI',   team:'Team Harmony',    desc:'Smart family scheduler that syncs everyone\'s calendar, automates reminders, and fairly distributes household tasks.',            track:'superparent', hub:'sf',     votes:142, icon:'👨‍👩‍👧', iconBg:'#FAE6C2', submittedAt: new Date('2026-05-23T18:30:00') },
-    { id:'p02', name:'MindBuddy',       team:'Calm Stack',      desc:'Daily emotional check-ins with mood tracking and AI-powered coping suggestions, designed for ADHD and anxiety management.',        track:'companion',   hub:'sf',     votes:98,  icon:'🧠', iconBg:'#EEEDFE', submittedAt: new Date('2026-05-23T19:10:00') },
-    { id:'p03', name:'GoalForge',       team:'Builders Inc',    desc:'AI second brain that breaks your big goals into weekly micro-tasks and holds you accountable with a gentle morning check-in.',      track:'lifeos',      hub:'sf',     votes:211, icon:'⚡', iconBg:'#CCF0E3', submittedAt: new Date('2026-05-23T17:50:00') },
-    { id:'p04', name:'PulseCoach',      team:'HealthLab',       desc:'Personalized recovery and training plans built from your HRV, sleep quality, and activity patterns across any wearable device.',   track:'body',        hub:'sf',     votes:77,  icon:'💓', iconBg:'#D4E8FA', submittedAt: new Date('2026-05-23T20:05:00') },
-    { id:'p05', name:'NightWatch',      team:'Solo Founders',   desc:'AI-powered security camera analyzer that only alerts you when something truly matters. No more false alarm fatigue.',              track:'wildcard',    hub:'sf',     votes:55,  icon:'🌙', iconBg:'#E5E3DC', submittedAt: new Date('2026-05-23T20:40:00') },
-    { id:'p06', name:'ChoreCoins',      team:'FamTech',         desc:'Gamified chore tracker for kids with reward points, a family leaderboard, and parent-approved prize redemptions.',                  track:'superparent', hub:'sf',     votes:112, icon:'🪙', iconBg:'#FAE6C2', submittedAt: new Date('2026-05-23T17:15:00') },
-    { id:'p07', name:'MealMap',         team:'Fork & Code',     desc:'Weekly meal planner that factors in each family member\'s preferences, dietary restrictions, and grocery budget automatically.',    track:'superparent', hub:'ny',     votes:130, icon:'🍽️', iconBg:'#FAE6C2', submittedAt: new Date('2026-05-23T18:00:00') },
-    { id:'p08', name:'FocusFlow',       team:'Deep Work Co',    desc:'Pomodoro-style focus timer with binaural beats, smart distraction blocking, and session analytics to maximize deep work.',         track:'lifeos',      hub:'ny',     votes:189, icon:'🎯', iconBg:'#CCF0E3', submittedAt: new Date('2026-05-23T16:30:00') },
-    { id:'p09', name:'SleepRx',         team:'Rest Well',       desc:'Sleep score tracker that analyzes your habits and delivers a 7-day personalized improvement protocol each week.',                   track:'body',        hub:'ny',     votes:63,  icon:'😴', iconBg:'#D4E8FA', submittedAt: new Date('2026-05-23T19:55:00') },
-    { id:'p10', name:'OmniJournal',     team:'Reflect Studio',  desc:'Voice-first journaling that transcribes your thoughts, tags emotional patterns, and surfaces recurring life themes over time.',      track:'companion',   hub:'online', votes:158, icon:'📖', iconBg:'#EEEDFE', submittedAt: new Date('2026-05-23T15:20:00') },
-    { id:'p11', name:'HabitGPT',        team:'Routine Labs',    desc:'Conversational habit coach that adapts your routine based on how your last week actually went — not just how you planned it.',       track:'lifeos',      hub:'online', votes:92,  icon:'🔄', iconBg:'#CCF0E3', submittedAt: new Date('2026-05-23T18:45:00') },
-    { id:'p12', name:'KidCal',          team:'Parenthood++',    desc:'Shared family calendar designed for children — color-coded, emoji-rich, and silently synced with parents.',                         track:'superparent', hub:'sh',     votes:204, icon:'🗓️', iconBg:'#FAE6C2', submittedAt: new Date('2026-05-23T14:00:00') },
-    { id:'p13', name:'QiTrack',         team:'WellnessAI',      desc:'Traditional Chinese medicine meets modern biometrics. Track your body energy patterns and receive dietary recommendations.',          track:'body',        hub:'sh',     votes:87,  icon:'☯️', iconBg:'#D4E8FA', submittedAt: new Date('2026-05-23T19:30:00') },
-    { id:'p14', name:'DreamBox',        team:'Night Owls',      desc:'AI dream journal that interprets recurring themes and emotional patterns, then connects them to your waking life goals.',            track:'wildcard',    hub:'online', votes:43,  icon:'💭', iconBg:'#E5E3DC', submittedAt: new Date('2026-05-23T21:00:00') },
-    { id:'p15', name:'SilentHour',      team:'Mono Labs',       desc:'Scheduled digital silence mode that blocks distractions, replies with smart auto-messages, and logs exactly what you accomplished.', track:'lifeos',      hub:'asia',   votes:76,  icon:'🔇', iconBg:'#CCF0E3', submittedAt: new Date('2026-05-23T20:20:00') },
+    { id:'p01', name:'FamilySync AI',  team:'Team Harmony',   desc:'Smart family scheduler that syncs everyone\'s calendar, automates reminders, and fairly distributes household tasks.',             track:'superparent', votes:142, iconEmoji:'👨‍👩‍👧', iconBg:'#FAE6C2', thumbUrl:null, submittedAt:new Date('2026-05-23T18:30:00') },
+    { id:'p02', name:'MindBuddy',      team:'Calm Stack',     desc:'Daily emotional check-ins with mood tracking and AI-powered coping suggestions, designed for ADHD and anxiety management.',         track:'companion',   votes:98,  iconEmoji:'🧠',    iconBg:'#EEEDFE', thumbUrl:null, submittedAt:new Date('2026-05-23T19:10:00') },
+    { id:'p03', name:'GoalForge',      team:'Builders Inc',   desc:'AI second brain that breaks your goals into weekly micro-tasks and holds you accountable with a gentle morning check-in.',           track:'lifeos',      votes:211, iconEmoji:'⚡',    iconBg:'#CCF0E3', thumbUrl:null, submittedAt:new Date('2026-05-23T17:50:00') },
+    { id:'p04', name:'PulseCoach',     team:'HealthLab',      desc:'Personalized recovery and training plans built from your HRV, sleep quality, and activity patterns across any wearable device.',    track:'body',        votes:77,  iconEmoji:'💓',    iconBg:'#D4E8FA', thumbUrl:null, submittedAt:new Date('2026-05-23T20:05:00') },
+    { id:'p05', name:'NightWatch',     team:'Solo Founders',  desc:'AI-powered security camera analyzer that only alerts you when something truly matters. No more false alarm fatigue.',               track:'wildcard',    votes:55,  iconEmoji:'🌙',    iconBg:'#E5E3DC', thumbUrl:null, submittedAt:new Date('2026-05-23T20:40:00') },
+    { id:'p06', name:'ChoreCoins',     team:'FamTech',        desc:'Gamified chore tracker for kids with reward points, a family leaderboard, and parent-approved prize redemptions.',                   track:'superparent', votes:112, iconEmoji:'🪙',    iconBg:'#FAE6C2', thumbUrl:null, submittedAt:new Date('2026-05-23T17:15:00') },
+    { id:'p07', name:'FocusFlow',      team:'Deep Work Co',   desc:'Pomodoro-style focus timer with binaural beats, smart distraction blocking, and session analytics to help you maximize deep work.',  track:'lifeos',      votes:189, iconEmoji:'🎯',    iconBg:'#CCF0E3', thumbUrl:null, submittedAt:new Date('2026-05-23T16:30:00') },
+    { id:'p08', name:'OmniJournal',    team:'Reflect Studio', desc:'Voice-first journaling that transcribes your thoughts, tags emotional patterns, and surfaces recurring life themes over time.',       track:'companion',   votes:158, iconEmoji:'📖',    iconBg:'#EEEDFE', thumbUrl:null, submittedAt:new Date('2026-05-23T15:20:00') },
+    { id:'p09', name:'HabitGPT',       team:'Routine Labs',   desc:'Conversational habit coach that adapts your routine based on how your last week actually went — not just how you planned it.',        track:'lifeos',      votes:92,  iconEmoji:'🔄',    iconBg:'#CCF0E3', thumbUrl:null, submittedAt:new Date('2026-05-23T18:45:00') },
+    { id:'p10', name:'SleepRx',        team:'Rest Well',      desc:'Sleep score tracker that analyzes your habits and delivers a personalised 7-day improvement protocol each week.',                     track:'body',        votes:63,  iconEmoji:'😴',    iconBg:'#D4E8FA', thumbUrl:null, submittedAt:new Date('2026-05-23T19:55:00') },
+    { id:'p11', name:'DreamBox',       team:'Night Owls',     desc:'AI dream journal that interprets recurring themes and emotional patterns, then connects them to your waking-life goals.',             track:'wildcard',    votes:43,  iconEmoji:'💭',    iconBg:'#E5E3DC', thumbUrl:null, submittedAt:new Date('2026-05-23T21:00:00') },
   ];
 
-  // ── LOOKUP MAPS ──────────────────────────────────────────────────────────
   const TRACK_LABEL = {
     superparent: 'Superparent',
     companion:   'AI Companion',
@@ -877,51 +887,44 @@
     wildcard:    'Wildcard',
   };
 
-  const HUB_LABEL = {
-    sf:     '🇺🇸 SF',
-    ny:     '🗽 NY',
-    online: '🌐 Online',
-    sh:     '🇨🇳 Shanghai',
-    asia:   '🌏 Asia Online',
+  const TRACK_GRADIENT = {
+    superparent: 'linear-gradient(140deg, #FAE6C2 0%, #F5CF8A 100%)',
+    companion:   'linear-gradient(140deg, #EEEDFE 0%, #D4D0FC 100%)',
+    lifeos:      'linear-gradient(140deg, #CCF0E3 0%, #96DBBF 100%)',
+    body:        'linear-gradient(140deg, #D4E8FA 0%, #9DCAF0 100%)',
+    wildcard:    'linear-gradient(140deg, #E5E3DC 0%, #CCC9BF 100%)',
   };
 
-  // ── VOTING OPEN CHECK ────────────────────────────────────────────────────
-  function isVotingOpen() {
-    return Date.now() < VOTE_DEADLINE.getTime();
-  }
+  // ── HELPERS ───────────────────────────────────────────────────────────────
+  function isVotingOpen() { return Date.now() < VOTE_DEADLINE.getTime(); }
 
-  // ── COUNTDOWN ────────────────────────────────────────────────────────────
+  // ── COUNTDOWN ─────────────────────────────────────────────────────────────
   function tickCountdown() {
-    const diff  = VOTE_DEADLINE - Date.now();
-    const el    = document.getElementById('countdownEl');
-    const live  = document.getElementById('liveLabel');
+    const diff = VOTE_DEADLINE - Date.now();
+    const el   = document.getElementById('countdownEl');
+    const live = document.getElementById('liveLabel');
+    if (!el) return;
 
     if (diff <= 0) {
       el.outerHTML = '<span class="countdown-closed">Voting closed</span>';
-      live.style.opacity = '0.35';
+      live.style.opacity = '0.4';
       renderAll();
       return;
     }
 
     const h = Math.floor(diff / 3_600_000);
     const m = Math.floor((diff % 3_600_000) / 60_000);
-    const s = Math.floor((diff % 60_000) / 1_000);
+    const s = Math.floor((diff % 60_000)    / 1_000);
 
-    if (h < 1) {
-      el.textContent = `${m}m ${s}s`;
-      el.classList.add('urgent');
-    } else {
-      el.textContent = `${h}h ${m}m`;
-      el.classList.remove('urgent');
-    }
+    el.textContent = h < 1 ? `${m}m ${s}s` : `${h}h ${m}m`;
+    el.classList.toggle('urgent', h < 1);
   }
 
-  // ── REMAINING VOTES UI ───────────────────────────────────────────────────
+  // ── REMAINING VOTES UI ────────────────────────────────────────────────────
   function updateRemainingUI() {
-    const remaining = MAX_VOTES - userVotes.length;
+    const remaining = remainingVotes();
     const pill = document.getElementById('votesPill');
     const txt  = document.getElementById('votesText');
-    const dot  = document.getElementById('pulseDot');
 
     txt.textContent = remaining === 0
       ? 'No votes left'
@@ -930,56 +933,76 @@
     pill.classList.toggle('low',   remaining <= 2 && remaining > 0);
     pill.classList.toggle('empty', remaining === 0);
 
-    // pip indicators
     const pipRow = document.getElementById('pipRow');
-    let pips = '';
-    for (let i = 0; i < MAX_VOTES; i++) {
-      pips += `<div class="votes-pip${i < userVotes.length ? ' used' : ''}"></div>`;
-    }
-    pipRow.innerHTML = pips;
+    pipRow.innerHTML = Array.from({ length: MAX_VOTES }, (_, i) =>
+      `<div class="pip${i < totalVotesUsed() ? ' used' : ''}"></div>`
+    ).join('');
   }
 
-  // ── FILTER ───────────────────────────────────────────────────────────────
-  function setFilter(group, val, el) {
-    currentFilter[group] = val;
-    document.querySelectorAll(`[data-group="${group}"]`).forEach(p => p.classList.remove('active'));
+  // ── SORT ──────────────────────────────────────────────────────────────────
+  function setSort(val, el) {
+    sortMode = val;
+    document.querySelectorAll('[data-group="sort"]').forEach(p => p.classList.remove('active'));
     el.classList.add('active');
     renderAll();
   }
 
-  function filteredProjects() {
-    let list = [...PROJECTS];
-    if (currentFilter.hub   !== 'all') list = list.filter(p => p.hub   === currentFilter.hub);
-    if (currentFilter.track !== 'all') list = list.filter(p => p.track === currentFilter.track);
-    if (currentFilter.sort  === 'votes') {
-      list.sort((a, b) => b.votes - a.votes);
-    } else {
-      list.sort((a, b) => b.submittedAt - a.submittedAt);
-    }
-    return list;
+  function sortedProjects() {
+    const list = [...PROJECTS];
+    return sortMode === 'votes'
+      ? list.sort((a, b) => b.votes - a.votes)
+      : list.sort((a, b) => b.submittedAt - a.submittedAt);
   }
 
-  // ── SHEET ────────────────────────────────────────────────────────────────
+  // ── STEPPER ───────────────────────────────────────────────────────────────
+  function adjustVotes(delta) {
+    const max = remainingVotes();
+    pendingVoteCount = Math.max(1, Math.min(max, pendingVoteCount + delta));
+    updateStepperUI();
+  }
+
+  function updateStepperUI() {
+    const max = remainingVotes();
+    document.getElementById('stepperNum').textContent = pendingVoteCount;
+    document.getElementById('stepperMinus').disabled  = pendingVoteCount <= 1;
+    document.getElementById('stepperPlus').disabled   = pendingVoteCount >= max;
+
+    const after = max - pendingVoteCount;
+    document.getElementById('stepperSublabel').innerHTML =
+      after === 0
+        ? `Using your last <strong>${pendingVoteCount}</strong> vote${pendingVoteCount !== 1 ? 's' : ''}`
+        : `<strong>${after}</strong> vote${after !== 1 ? 's' : ''} remaining after this`;
+
+    const label = pendingVoteCount === 1 ? 'Cast 1 Vote' : `Cast ${pendingVoteCount} Votes`;
+    document.getElementById('btnConfirm').textContent = label;
+  }
+
+  // ── SHEET ─────────────────────────────────────────────────────────────────
   function openSheet(id) {
     if (!isVotingOpen())          return;
-    if (userVotes.includes(id))   return;
-    if (userVotes.length >= MAX_VOTES) return;
+    if (remainingVotes() <= 0)    return;
 
     const p = PROJECTS.find(x => x.id === id);
     if (!p) return;
 
-    pendingId = id;
-    const after = MAX_VOTES - userVotes.length - 1;
+    pendingId        = id;
+    pendingVoteCount = 1;
 
-    document.getElementById('sheetIcon').textContent  = p.icon;
+    document.getElementById('sheetIcon').textContent      = p.iconEmoji;
     document.getElementById('sheetIcon').style.background = p.iconBg;
-    document.getElementById('sheetName').textContent  = p.name;
-    document.getElementById('sheetTeam').textContent  = `by ${p.team}`;
-    document.getElementById('sheetRemaining').innerHTML =
-      after === 0
-        ? `After this you'll have <strong>no votes left</strong>.`
-        : `After this you'll have <strong>${after} vote${after !== 1 ? 's' : ''}</strong> remaining.`;
+    document.getElementById('sheetName').textContent      = p.name;
+    document.getElementById('sheetTeam').textContent      = `by ${p.team}`;
 
+    const prevNote = document.getElementById('sheetPrevNote');
+    const given    = votesForProject(id);
+    if (given > 0) {
+      prevNote.textContent = `You've already given ${given} vote${given !== 1 ? 's' : ''} to this project`;
+      prevNote.classList.add('visible');
+    } else {
+      prevNote.classList.remove('visible');
+    }
+
+    updateStepperUI();
     document.getElementById('overlay').classList.add('visible');
     document.getElementById('sheet').classList.add('open');
   }
@@ -991,113 +1014,130 @@
   }
 
   function confirmVote() {
-    if (!pendingId) return;
-
-    const id = pendingId;
-    const p  = PROJECTS.find(x => x.id === id);
+    if (!pendingId || pendingVoteCount < 1) return;
+    const id    = pendingId;
+    const count = pendingVoteCount;
+    const p     = PROJECTS.find(x => x.id === id);
     if (!p) return;
 
-    // TODO: POST /api/hackathon/sf/vote  body: { projectId: id }
-    // On API success → update local state; on API error → show toast
+    // TODO: POST /api/hackathon/sf/vote  body: { projectId: id, count }
+    // On API error → show toast, do not update local state
 
-    userVotes.push(id);
-    p.votes += 1;
+    voteMap[id]  = (voteMap[id] || 0) + count;
+    p.votes     += count;
 
     closeSheet();
     updateRemainingUI();
     renderAll();
 
-    // Animate the vote number after render
     requestAnimationFrame(() => {
       const numEl  = document.getElementById(`vnum-${id}`);
       const cardEl = document.getElementById(`card-${id}`);
-      if (numEl)  { numEl.classList.add('number-pop'); setTimeout(() => numEl.classList.remove('number-pop'), 420); }
-      if (cardEl) { cardEl.classList.add('card-voted-flash'); setTimeout(() => cardEl.classList.remove('card-voted-flash'), 600); }
+      if (numEl)  { numEl.classList.add('number-pop');       setTimeout(() => numEl.classList.remove('number-pop'), 420); }
+      if (cardEl) { cardEl.classList.add('card-voted-flash'); setTimeout(() => cardEl.classList.remove('card-voted-flash'), 650); }
     });
   }
 
-  // ── RENDER CARD ──────────────────────────────────────────────────────────
+  // ── RENDER CARD ───────────────────────────────────────────────────────────
   function renderCard(p) {
-    const voted      = userVotes.includes(p.id);
-    const open       = isVotingOpen();
-    const noLeft     = userVotes.length >= MAX_VOTES;
+    const given  = votesForProject(p.id);
+    const voted  = given > 0;
+    const open   = isVotingOpen();
+    const noLeft = remainingVotes() <= 0;
 
-    let btnClass   = 'vote-btn';
-    let btnLabel   = '♡  Vote';
-    let btnAction  = '';
+    let btnClass  = 'vote-btn';
+    let btnLabel  = '♡  Vote';
+    let btnAction = '';
 
-    if (voted) {
-      btnClass  += ' voted-state';
-      btnLabel   = '✓  Voted';
-    } else if (!open) {
-      btnClass  += ' disabled';
-      btnLabel   = 'Closed';
-    } else if (noLeft) {
-      btnClass  += ' disabled';
-      btnLabel   = 'No votes left';
+    if (!open) {
+      btnClass += ' disabled';
+      btnLabel  = 'Closed';
+    } else if (voted && noLeft) {
+      btnClass += ' voted-state disabled';
+      btnLabel  = `✓  ${given}`;
+    } else if (voted && !noLeft) {
+      btnClass += ' voted-addmore';
+      btnLabel  = `✓  ${given}  +`;
+      btnAction = `onclick="openSheet('${p.id}')"`;
+    } else if (!voted && noLeft) {
+      btnClass += ' disabled';
+      btnLabel  = 'No votes left';
     } else {
-      btnClass  += ' can-vote';
+      btnClass += ' can-vote';
       btnAction  = `onclick="openSheet('${p.id}')"`;
     }
 
+    const ribbonText = voted ? `✓ ${given} vote${given !== 1 ? 's' : ''}` : '';
+
+    const thumbHtml = p.thumbUrl
+      ? `<img src="${p.thumbUrl}" alt="${p.name} preview" loading="lazy">`
+      : `<div class="thumb-placeholder" style="background:${TRACK_GRADIENT[p.track]}">
+           <div class="thumb-placeholder-icon">${p.iconEmoji}</div>
+         </div>`;
+
     return `
       <div class="card${voted ? ' voted' : ''}" id="card-${p.id}">
-        <div class="voted-ribbon">Voted</div>
-        <div class="card-top">
-          <div class="app-icon" style="background:${p.iconBg}">${p.icon}</div>
-          <div class="card-info">
-            <div class="card-name">${p.name}</div>
-            <div class="card-team">by ${p.team}</div>
-            <div class="badges">
-              <span class="badge badge-${p.track}">${TRACK_LABEL[p.track]}</span>
-              <span class="badge badge-${p.hub}">${HUB_LABEL[p.hub]}</span>
+        <div class="voted-ribbon">${ribbonText}</div>
+        <div class="card-thumb">${thumbHtml}</div>
+        <div class="card-body">
+          <div class="card-top">
+            <div class="app-icon" style="background:${p.iconBg}">${p.iconEmoji}</div>
+            <div class="card-meta">
+              <div class="card-name">${p.name}</div>
+              <div class="card-team">by ${p.team}</div>
+              <span class="track-badge badge-${p.track}">${TRACK_LABEL[p.track]}</span>
             </div>
           </div>
-        </div>
-        <div class="card-desc">${p.desc}</div>
-        <div class="vote-row">
-          <div class="vote-count">
-            <div class="vote-number" id="vnum-${p.id}">${p.votes.toLocaleString()}</div>
-            <div class="vote-word">votes</div>
+          <div class="card-desc">${p.desc}</div>
+          <div class="vote-row">
+            <div class="vote-count">
+              <div class="vote-number" id="vnum-${p.id}">${p.votes.toLocaleString()}</div>
+              <div class="vote-word">votes</div>
+            </div>
+            <button class="${btnClass}" ${btnAction}>${btnLabel}</button>
           </div>
-          <button class="${btnClass}" ${btnAction}>${btnLabel}</button>
         </div>
       </div>`;
   }
 
-  // ── RENDER MY VOTES ──────────────────────────────────────────────────────
+  // ── RENDER MY VOTES ───────────────────────────────────────────────────────
   function renderMyVotes() {
-    const voted = PROJECTS.filter(p => userVotes.includes(p.id));
+    const voted = PROJECTS.filter(p => hasVotedFor(p.id));
+    const used  = totalVotesUsed();
+
     const inner = voted.length === 0
       ? `<div class="my-votes-empty">You haven't voted yet.<br>Tap Vote on any project to get started.</div>`
-      : `<div class="my-votes-list">${voted.map(p => `
-          <div class="my-vote-row">
-            <div class="my-vote-icon" style="background:${p.iconBg}">${p.icon}</div>
-            <div class="my-vote-info">
-              <div class="my-vote-name">${p.name}</div>
-              <div class="my-vote-team">${p.team}</div>
-            </div>
-            <div class="my-vote-check">✓</div>
-          </div>`).join('')}
+      : `<div class="my-votes-list">${voted.map(p => {
+          const n = votesForProject(p.id);
+          return `
+            <div class="my-vote-row">
+              <div class="my-vote-icon" style="background:${p.iconBg}">${p.iconEmoji}</div>
+              <div class="my-vote-info">
+                <div class="my-vote-name">${p.name}</div>
+                <div class="my-vote-team">${p.team}</div>
+              </div>
+              <div class="my-vote-badge">${n} vote${n !== 1 ? 's' : ''}</div>
+            </div>`;
+        }).join('')}
         </div>`;
 
     return `
       <div class="my-votes-wrap">
         <div class="my-votes-head">
           <div class="my-votes-label">My Votes</div>
-          <div class="my-votes-counter">${userVotes.length} / ${MAX_VOTES}</div>
+          <div class="my-votes-counter">${used} / ${MAX_VOTES} used</div>
         </div>
         ${inner}
       </div>`;
   }
 
-  // ── FULL RENDER ──────────────────────────────────────────────────────────
+  // ── FULL RENDER ───────────────────────────────────────────────────────────
   function renderAll() {
     const content = document.getElementById('content');
     const open    = isVotingOpen();
-    const list    = filteredProjects();
+    const list    = sortedProjects();
     const total   = PROJECTS.reduce((s, p) => s + p.votes, 0);
-    let html      = '';
+    let   html    = '';
 
     if (!open) {
       html += `
@@ -1115,21 +1155,20 @@
           <div class="empty-desc">Projects will appear here as teams submit their work.<br>Check back soon!</div>
         </div>`;
     } else {
-      html += `<div class="stats-line">${list.length} project${list.length !== 1 ? 's' : ''} · <strong>${total.toLocaleString()}</strong> total votes cast</div>`;
-      html += list.map(renderCard).join('');
+      html += `<div class="stats-line">${list.length} projects · <strong>${total.toLocaleString()}</strong> total votes cast</div>`;
+      html += `<div class="cards-grid">${list.map(renderCard).join('')}</div>`;
     }
 
     html += renderMyVotes();
     content.innerHTML = html;
   }
 
-  // ── SIMULATED LIVE VOTE UPDATES ──────────────────────────────────────────
+  // ── SIMULATED LIVE VOTE COUNTS ─────────────────────────────────────────────
   // TODO: Replace with WebSocket or polling — GET /api/hackathon/sf/vote-counts
-  // Expected: { updates: [{ projectId, votes }] }
-  // Call updateVoteCount(projectId, newCount) for each update received
+  // On response: call updateVoteCount(projectId, newCount) for each changed project.
   function updateVoteCount(projectId, newCount) {
     const p = PROJECTS.find(x => x.id === projectId);
-    if (!p || userVotes.includes(projectId)) return;
+    if (!p) return;
     p.votes = newCount;
 
     const numEl = document.getElementById(`vnum-${projectId}`);
@@ -1141,30 +1180,26 @@
 
     const total = PROJECTS.reduce((s, x) => s + x.votes, 0);
     document.querySelectorAll('.stats-line').forEach(el => {
-      const list = filteredProjects();
-      el.innerHTML = `${list.length} project${list.length !== 1 ? 's' : ''} · <strong>${total.toLocaleString()}</strong> total votes cast`;
+      el.innerHTML = `${PROJECTS.length} projects · <strong>${total.toLocaleString()}</strong> total votes cast`;
     });
   }
 
   function _simulateLive() {
     if (!isVotingOpen()) return;
-    const idx = Math.floor(Math.random() * PROJECTS.length);
-    const p   = PROJECTS[idx];
+    const p = PROJECTS[Math.floor(Math.random() * PROJECTS.length)];
     updateVoteCount(p.id, p.votes + Math.floor(Math.random() * 4) + 1);
   }
 
-  // ── INIT ─────────────────────────────────────────────────────────────────
-  // TODO: expose refreshData() to native WebView for pull-to-refresh
-  // window.refreshData = function() { fetchProjects().then(renderAll); };
-
-  // TODO: expose receiveAuthToken(token) so the native app can pass the user session
-  // window.receiveAuthToken = function(token) { AUTH_TOKEN = token; fetchVotedIds(); };
+  // ── INIT ──────────────────────────────────────────────────────────────────
+  // Exposed for native WebView:
+  // window.refreshData      = () => fetchProjects().then(renderAll);
+  // window.receiveAuthToken = (token) => { AUTH_TOKEN = token; fetchVotedIds(); };
 
   updateRemainingUI();
   renderAll();
   tickCountdown();
-  setInterval(tickCountdown, 1000);
-  setInterval(_simulateLive, 3800);
+  setInterval(tickCountdown, 1_000);
+  setInterval(_simulateLive, 3_800);
 </script>
 </body>
 </html>
