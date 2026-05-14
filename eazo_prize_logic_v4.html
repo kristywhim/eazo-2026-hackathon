@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EAZO Global Hackathon 2026 · 奖项与筛选逻辑 · 最终内部版</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sh:#1d7a5a;--sh-bg:#edfaf4;--sh-border:#b4e8d0;--sh-dark:#085041;
+  --sf:#2a5fa8;--sf-bg:#eef4ff;--sf-border:#c0d4f4;--sf-dark:#0C447C;
+  --ny:#6a3aaa;--ny-bg:#f5f0ff;--ny-border:#d4bef8;--ny-dark:#3C3489;
+  --ol:#888780;--ol-bg:#f5f4f0;--ol-border:#d4cfc4;
+  --gold:#e8a830;--gold-bg:#fffbe6;--gold-border:#f0d888;
+  --red:#c0392b;--red-bg:#fff0ee;--red-border:#f8c0c0;
+  --dark:#1a1916;--dark2:#26241f;
+  --text:#1a1916;--text2:#555350;--text3:#9a9590;
+  --border:#e8e4db;--border2:#d4cfc4;
+  --bg:#faf9f5;--surface:#fff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:13px;line-height:1.6}
+@media print{.no-print{display:none!important}body{font-size:11px;background:#fff}.page{padding:0 24px}}
+
+.hdr{background:var(--dark);padding:32px 48px 28px}
+.hdr-eye{font-size:10px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+.hdr h1{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:#fff;margin-bottom:6px;line-height:1.2}
+.hdr h1 span{color:var(--gold)}
+.hdr-sub{font-size:12.5px;color:#888;margin-top:4px}
+.hdr-pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.hp{font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.08);color:#bbb}
+.hp-gold{background:rgba(232,168,48,.15);color:var(--gold)}
+
+.nav{background:#111;border-bottom:1px solid #2a2926;padding:0 48px;display:flex;overflow-x:auto}
+.nav a{padding:12px 16px;font-size:12px;font-weight:700;color:#555;text-decoration:none;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:color .15s}
+.nav a:hover{color:#aaa}
+.nav a.active{color:var(--gold);border-bottom-color:var(--gold)}
+
+.page{max-width:1060px;margin:0 auto;padding:0 48px 80px}
+.sec{padding-top:36px}
+.sec-label{font-family:'Syne',sans-serif;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.sec-h2{font-family:'Syne',sans-serif;font-size:19px;font-weight:800;color:var(--text);margin-bottom:4px}
+.sec-desc{font-size:13px;color:var(--text2);margin-bottom:18px}
+
+.card{background:var(--surface);border:1.5px solid var(--border);border-radius:12px;margin-bottom:12px;overflow:hidden}
+.card-hdr{padding:12px 18px;background:var(--bg);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.card-title{font-weight:700;font-size:13.5px;color:var(--text)}
+.card-sub{font-size:11.5px;color:var(--text3);margin-left:auto}
+.card-body{padding:16px 18px}
+
+.callout{border-radius:8px;padding:12px 16px;margin-bottom:12px;display:flex;gap:10px;align-items:flex-start;font-size:12.5px;line-height:1.7}
+.callout.warn{background:var(--gold-bg);border:1.5px solid var(--gold-border)}
+.callout.danger{background:var(--red-bg);border:1.5px solid var(--red-border)}
+.callout.ok{background:var(--sh-bg);border:1.5px solid var(--sh-border)}
+.callout.info{background:var(--sf-bg);border:1.5px solid var(--sf-border)}
+.callout-icon{font-size:16px;flex-shrink:0;margin-top:2px}
+
+.tl{display:flex;flex-direction:column}
+.tl-row{display:flex;align-items:stretch}
+.tl-time{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;min-width:90px;padding:8px 10px 8px 0;text-align:right;color:var(--text2);border-right:2px solid var(--border2);flex-shrink:0}
+.tl-time.stop{color:var(--red)}
+.tl-time.key{color:var(--gold)}
+.tl-pip{display:flex;flex-direction:column;align-items:center;padding:0 10px;flex-shrink:0}
+.tl-dot{width:9px;height:9px;border-radius:50%;margin-top:9px;flex-shrink:0}
+.tl-line{flex:1;width:2px;background:var(--border);margin-top:3px}
+.tl-body{padding:5px 0 10px;flex:1}
+.tl-title{font-size:13px;font-weight:700;color:var(--text);line-height:1.4}
+.tl-sub{font-size:11.5px;color:var(--text2);margin-top:2px;line-height:1.6}
+
+.qsources{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.qpill{display:inline-flex;align-items:center;border-radius:20px;padding:4px 10px;font-size:11.5px;font-weight:700;border:1.5px solid}
+.qpill.sh{background:var(--sh-bg);border-color:var(--sh);color:var(--sh-dark)}
+.qpill.sf{background:var(--sf-bg);border-color:var(--sf);color:var(--sf-dark)}
+.qpill.ny{background:var(--ny-bg);border-color:var(--ny);color:var(--ny-dark)}
+.qpill.ol{background:var(--ol-bg);border-color:var(--ol);color:var(--text2)}
+
+.score-bar{display:flex;border-radius:8px;overflow:hidden;height:36px;margin:10px 0 6px}
+.sb-v{background:var(--sf);flex:50;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:#fff}
+.sb-j{background:var(--sh);flex:40;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:#fff}
+.sb-b{background:var(--gold);flex:10;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--dark)}
+
+.prize-table{width:100%;border-collapse:collapse;font-size:13px}
+.prize-table th{font-size:9.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);padding:8px 12px;text-align:left;border-bottom:2px solid var(--border2)}
+.prize-table td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+.prize-table tr:last-child td{border-bottom:none}
+.prize-table tr.sub td{background:var(--bg);font-weight:700;font-size:12px;color:var(--text3)}
+.amt{font-family:'IBM Plex Mono',monospace;font-weight:600}
+.amt-sh{color:var(--sh)}.amt-sf{color:var(--sf)}.amt-ny{color:var(--ny)}.amt-gold{color:#a07020}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:16px}
+@media(max-width:700px){.two-col,.three-col{grid-template-columns:1fr}}
+
+.formula-box{background:var(--dark);border-radius:12px;padding:20px 24px;margin:14px 0;font-family:'IBM Plex Mono',monospace}
+.formula-main{font-size:15px;font-weight:600;color:var(--gold);line-height:2;margin-bottom:12px}
+.formula-var{font-size:12px;color:#bbb;line-height:1.9}
+.formula-var span{color:#fff;font-weight:600}
+.formula-step{background:rgba(255,255,255,.06);border-radius:8px;padding:12px 14px;margin-top:10px;font-size:11.5px;color:#bbb;line-height:1.9}
+.formula-step strong{color:var(--gold)}
+
+.global-box{background:var(--dark);border:2px solid var(--gold);border-radius:14px;padding:20px 28px;margin-top:16px}
+.global-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:var(--gold);margin-bottom:14px}
+.global-prizes{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.gp{background:rgba(255,255,255,.06);border-radius:10px;padding:16px;text-align:center}
+.gp-name{font-size:11.5px;color:#888;margin-bottom:6px}
+.gp-amt{font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:600;color:var(--gold)}
+.gp-sub{font-size:11px;color:#666;margin-top:4px}
+
+.rank-flow{display:flex;flex-direction:column;gap:0;margin:14px 0}
+.rf-item{display:flex;align-items:stretch;gap:0}
+.rf-num{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;min-width:28px;text-align:center;padding:10px 0;color:var(--gold);flex-shrink:0;display:flex;flex-direction:column;align-items:center}
+.rf-dot{width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0}
+.rf-line{flex:1;width:2px;background:#333;margin-top:4px}
+.rf-body{flex:1;padding:7px 14px 12px;border-left:none}
+.rf-title{font-size:13px;font-weight:700;color:#fff}
+.rf-sub{font-size:11.5px;color:#888;margin-top:3px;line-height:1.6}
+.rf-excl{display:inline-block;font-size:10px;background:rgba(192,57,43,.25);color:#f09995;padding:2px 7px;border-radius:4px;margin-left:6px;vertical-align:middle}
+
+.total-bar{background:var(--dark);border-radius:12px;padding:18px 28px;display:flex;align-items:center;flex-wrap:wrap;gap:14px;margin-bottom:24px}
+.tb-label{font-size:10px;color:#888;margin-bottom:3px}
+.tb-val{font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:600}
+.tb-val.gold{color:var(--gold);font-size:22px}
+.tb-val.sh{color:#4de0a8}.tb-val.sf{color:#7aaae8}.tb-val.ny{color:#c8a8f8}.tb-val.gray{color:#888}
+.tb-div{width:1px;height:36px;background:#333}
+
+.divider{height:1px;background:var(--border);margin:24px 0}
+
+.badge{display:inline-block;font-size:10px;font-weight:800;padding:2px 7px;border-radius:4px;margin-left:6px;vertical-align:middle}
+.badge-red{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}
+.badge-tbd{background:var(--ol-bg);color:var(--text3);border:1px solid var(--ol-border)}
+.badge-ok{background:var(--sh-bg);color:var(--sh);border:1px solid var(--sh-border)}
+.badge-gold{background:var(--gold-bg);color:#8a5a00;border:1px solid var(--gold-border)}
+.tbd-chip{display:inline-block;font-size:9px;font-weight:800;padding:1px 6px;border-radius:4px;background:var(--ol-bg);color:var(--text3);border:1px solid var(--ol-border)}
+
+.print-btn{position:fixed;bottom:24px;right:24px;background:var(--dark);border:1px solid var(--gold);color:var(--gold);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;padding:10px 18px;border-radius:8px;cursor:pointer;z-index:100}
+.print-btn:hover{background:var(--dark2)}
+</style>
+</head>
+<body>
+
+<button class="print-btn no-print" onclick="window.print()">🖨 打印 / PDF</button>
+
+<div class="hdr">
+  <div class="hdr-eye">🔒 内部文档 · Internal Use Only · Final Version</div>
+  <h1>EAZO Global Hackathon 2026<br><span>奖项与筛选计算逻辑 · 最终版</span></h1>
+  <div class="hdr-sub">三个赛区 · SH 上海 · SF 旧金山 · NY 纽约 · 含线上亚洲 & 国际赛区</div>
+  <div class="hdr-pills">
+    <span class="hp hp-gold">📅 5月23–24日</span>
+    <span class="hp">🇨🇳 SH · CST</span>
+    <span class="hp">🇺🇸 SF · PT</span>
+    <span class="hp">🗽 NY · ET</span>
+    <span class="hp">🌏 线上亚洲</span>
+    <span class="hp">🌍 线上国际</span>
+  </div>
+</div>
+
+<nav class="nav">
+  <a href="#overview" class="active">总览 · 赛区绑定</a>
+  <a href="#prereq">前置条件</a>
+  <a href="#referral">拉新规则</a>
+  <a href="#zones">时间节点</a>
+  <a href="#qualifier">晋级机制</a>
+  <a href="#scoring">评分公式</a>
+  <a href="#global">全球奖</a>
+  <a href="#regional">区域奖</a>
+  <a href="#special">特别奖</a>
+  <a href="#d7">D+7传播奖</a>
+  <a href="#pending">待确认项</a>
+</nav>
+
+<div class="page">
+
+<!-- OVERVIEW -->
+<div class="sec" id="overview">
+  <div class="sec-label">总览</div>
+  <div class="sec-h2">奖池结构全貌</div>
+  <div class="sec-desc">三层奖项 · 全球奖 → 区域奖 → 特别奖 · 自上而下分配，不重复获奖</div>
+
+  <div class="total-bar">
+    <div><div class="tb-label">已确认总奖池</div><div class="tb-val gold">$281,000</div></div>
+    <div class="tb-div"></div>
+    <div><div class="tb-label">🌍 全球奖 (SF独有)</div><div class="tb-val sf">$90,000</div></div>
+    <div class="tb-div"></div>
+    <div><div class="tb-label">区域奖 × 3赛区</div><div class="tb-val gray">$66,000</div></div>
+    <div class="tb-div"></div>
+    <div><div class="tb-label">🇨🇳 SH 区域奖</div><div class="tb-val sh">$22,000</div></div>
+    <div class="tb-div"></div>
+    <div><div class="tb-label">🇺🇸 SF 区域奖</div><div class="tb-val sf">$22,000</div></div>
+    <div class="tb-div"></div>
+    <div><div class="tb-label">🗽 NY 区域奖</div><div class="tb-val ny">$22,000</div></div>
+    <div class="tb-div"></div>
+    <div><div class="tb-label">特别奖 × 3赛区</div><div class="tb-val gold">$90,000</div></div>
+    <div class="tb-div"></div>
+    <div><div class="tb-label">🚀 D+7 传播奖 <span style="font-size:9px;opacity:.6">待确认</span></div><div class="tb-val gold">$35,000</div></div>
+  </div>
+
+  <div class="callout warn">
+    <div class="callout-icon">📌</div>
+    <div>
+      由于本次大赛横跨三大赛区，最终奖项的确定将以旧金山（SF）时间 5 月 24 日晚的全球颁奖典礼为准。若同一支队伍在不同环节同时入围多个奖项，系统将自动保留最高等级的奖项，并释放较低等级的奖项名额给后续队伍。<br><br>
+      <strong>📌 不重复获奖原则：</strong>奖项自上而下分配——全球奖 → 区域奖 → 特别奖。每支队伍只获得最高等级的一个奖项（D+7传播奖独立，所有队伍均可参与）。
+    </div>
+  </div>
+
+  <div style="background:var(--dark);border-radius:12px;padding:18px 24px;margin-top:4px">
+    <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:14px">🔗 赛区绑定原则 · Zone & Prize Pool Binding</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div style="background:rgba(29,122,90,.15);border:1.5px solid rgba(29,122,90,.4);border-radius:8px;padding:12px 14px">
+        <div style="font-size:11px;font-weight:700;color:#4de0a8;margin-bottom:8px">🇨🇳 上海赛区奖池</div>
+        <div style="font-size:12.5px;color:#ccc;line-height:1.9">
+          上海线下参赛队伍<br>
+          + 🌏 <strong style="color:#fff">线上亚洲赛区整体并入</strong><br>
+          <span style="font-size:11px;color:#888">时间同步 CST · 奖池归属绑定 · 未晋级线上队伍直接归入上海赛区参与剩余奖项竞选</span>
+        </div>
+      </div>
+      <div style="background:rgba(42,95,168,.15);border:1.5px solid rgba(42,95,168,.4);border-radius:8px;padding:12px 14px">
+        <div style="font-size:11px;font-weight:700;color:#7aaae8;margin-bottom:8px">🇺🇸 旧金山赛区奖池</div>
+        <div style="font-size:12.5px;color:#ccc;line-height:1.9">
+          旧金山线下参赛队伍<br>
+          + 🌍 <strong style="color:#fff">线上全球赛区整体并入</strong><br>
+          <span style="font-size:11px;color:#888">时间同步 PT · 奖池归属绑定 · 未晋级线上队伍直接归入旧金山赛区参与剩余奖项竞选</span>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:12px;font-size:11.5px;color:#888;line-height:1.7">
+      🗽 纽约赛区独立运营，无线上组别，全部参赛者均为线下。
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- PRE-REQ -->
+<div class="sec" id="prereq">
+  <div class="sec-label">前置条件</div>
+  <div class="sec-h2">参赛前必须完成</div>
+
+  <div class="two-col">
+    <div class="card">
+      <div class="card-hdr"><span>📋</span><div class="card-title">组队表填写 <span class="badge badge-red">必须完成</span></div></div>
+      <div class="card-body" style="font-size:12.5px;color:var(--text2);line-height:1.9">
+        全部线下赛区（SH · SF · NY）及线上赛区均须填写。<br>
+        最终以<strong>填写表单的邮箱地址</strong>为参赛队伍唯一标识，同一邮箱不可重复注册。
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-hdr"><span>🔒</span><div class="card-title">有效提交验证 <span class="badge badge-red">HARD STOP</span></div></div>
+      <div class="card-body" style="font-size:12.5px;color:var(--text2);line-height:1.9">
+        须在赛区截止时间前提交，且提交内容包含有效作品链接。<br>
+        <strong style="color:var(--red)">未提交 或 无链接 → 排除，不计入任何排名与奖项。</strong>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- REFERRAL -->
+<div class="sec" id="referral">
+  <div class="sec-label">拉新规则</div>
+  <div class="sec-h2">两类资格 · 适用所有赛区</div>
+
+  <div class="two-col">
+    <div class="card">
+      <div class="card-hdr" style="background:var(--sh-bg);border-bottom-color:var(--sh-border)">
+        <span>🏆</span><div class="card-title" style="color:var(--sh)">A类 · Demo 晋级资格</div>
+      </div>
+      <div class="card-body">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:28px;font-weight:600;color:var(--text);margin-bottom:10px">＞ 500票 且 前N名</div>
+        <div style="background:var(--bg);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--text2);line-height:1.7">
+          须同时满足两个条件才可进入 Demo 路演。未达500票即便排名靠前也不入选。<br><br>
+          SH / SF：拉新前10名<br>
+          NY：拉新前15名（无线上组别，名额扩至15）
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-hdr" style="background:var(--gold-bg);border-bottom-color:var(--gold-border)">
+        <span>🎊</span><div class="card-title" style="color:#8a5a00">B类 · 特别奖资格</div>
+      </div>
+      <div class="card-body">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:28px;font-weight:600;color:var(--text);margin-bottom:10px">＞ 200票 且 未进Demo</div>
+        <div style="background:var(--bg);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--text2);line-height:1.7">
+          须同时满足两个条件才符合特别奖评选资格。进入 Demo 的30组不可同时获得特别奖。无金额阶梯，$1,000/队统一奖励。
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ZONES -->
+<div class="sec" id="zones">
+  <div class="sec-label">时间节点</div>
+  <div class="sec-h2">各赛区关键节点</div>
+
+  <div class="callout warn" style="margin-bottom:16px">
+    <div class="callout-icon">🕖</div>
+    <div><strong>统一投票截止基准：各赛区公众投票通道均以当地时区 Day 2 19:00 关闭为准。</strong><br>
+    🇨🇳 SH · 19:00 CST &nbsp;｜&nbsp; 🇺🇸 SF · 19:00 PT &nbsp;｜&nbsp; 🗽 NY · 19:00 ET<br>
+    <span style="font-size:11.5px;opacity:.8">投票关闭后系统立即进行加权评分计算，生成各赛区最终排名。</span></div>
+  </div>
+
+  <div class="three-col">
+
+    <div class="card">
+      <div class="card-hdr" style="background:var(--sh-bg);border-bottom-color:var(--sh-border)">
+        <div class="card-title" style="color:var(--sh)">🇨🇳 SH + 🌏 亚洲线上 · CST</div>
+      </div>
+      <div class="card-body">
+        <div class="tl">
+          <div class="tl-row"><div class="tl-time">D1 10:00</div><div class="tl-pip"><div class="tl-dot" style="background:var(--sh)"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-title">全球开幕仪式</div></div></div>
+          <div class="tl-row"><div class="tl-time stop">D2 07:00</div><div class="tl-pip"><div class="tl-dot" style="background:var(--red)"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-title">提交截止 <span class="badge badge-red">STOP</span></div><div class="tl-sub">系统锁定 · 同步计算拉新排名</div></div></div>
+          <div class="tl-row"><div class="tl-time">D2 07–11</div><div class="tl-pip"><div class="tl-dot" style="background:var(--sh)"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-title">线下选手互评</div><div class="tl-sub">每人最多3票 · 不投自己队 · 后台独立通道</div></div></div>
+          <div class="tl-row"><div class="tl-time key">D2 11:00</div><div class="tl-pip"><div class="tl-dot" style="background:var(--gold)"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-title">互评截止 · 合并计算 → 30组名单公布</div><div class="tl-sub">拉新10 + 互评10 + 亚洲线上10 → 去重递补</div></div></div>
+          <div class="tl-row"><div class="tl-time">D2 15–19</div><div class="tl-pip"><div class="tl-dot" style="background:var(--sh)"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-title">Demo · Feishu · 5min/队</div><div class="tl-sub">线下20组 + 亚洲线上10组飞书连线 · 公众投票持续开放</div></div></div>
+          <div class="tl-row"><div class="tl-time stop">D2 19:00</div><div class="tl-pip"><div class="tl-dot" style="background:var(--red)"></div></div><div class="tl-body"><div class="tl-title">🔒 投票截止 · 加权计算启动 <span class="badge badge-red">STOP</span></div><div class="tl-sub">50%用户票 + 40%专家 + 10%互评 → 生成区域奖排名</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-hdr" style="background:var(--sf-bg);border-bottom-color:var(--sf-border)">
+        <div class="card-title" style="color:var(--sf)">🇺🇸 SF + 🌍 国际线上 · PT</div>
+      </div>
+      <div class="card-body">
+        <div class="tl">
+          <div class="tl-row"><div class="tl-time">D1 10:00</div><div class="tl-pip"><div class="tl-dot" style="background:var(--sf)"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-title">全球开幕仪式</div></div></div>
+          <div class="tl-row"><div class="tl-time stop">D1 21:00</div><div class="tl-pip"><div class="tl-dot" style="background:var(--red)"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-title">提交截止 <span class="badge badge-red">STOP</span></div><div class="tl-sub">系统锁定 · 同步计算拉新排名</div></div></div>
+          <div class="tl-row"><div class="tl-time">D1 21–24</div><div class="tl-pip"><div class="tl-dot" style="background:var(--sf)"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-title">线下选手互评</div><div class="tl-sub">24:00前完成即可 · 每人最多3票 · 不投自己队</div></div></div>
+          <div class="tl-row"><div class="tl-time key">D1 24:00</div><div class="tl-pip"><div class="tl-dot" style="background:var(--gold)"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-title">互评截止 · 合并计算 → 30组名单公布</div><div class="tl-sub">拉新10 + 互评10 + 国际线上10 → 去重递补</div></div></div>
+          <div class="tl-row"><div class="tl-time">D2 TBD</div><div class="tl-pip"><div class="tl-dot" style="background:var(--sf)"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-title">Demo · Discord · 3min/队 <span class="badge badge-tbd">时间TBD</span></div><div class="tl-sub">线下20组 + 国际线上10组 · 公众投票持续开放</div></div></div>
+          <div class="tl-row"><div class="tl-time stop">D2 19:00</div><div class="tl-pip"><div class="tl-dot" style="background:var(--red)"></div></div><div class="tl-body"><div class="tl-title">🔒 投票截止 · 加权计算启动 <span class="badge badge-red">STOP</span></div><div class="tl-sub">50%用户票 + 40%专家 + 10%互评 → 生成区域奖排名</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-hdr" style="background:var(--ny-bg);border-bottom-color:var(--ny-border)">
+        <div class="card-title" style="color:var(--ny)">🗽 NY · 全线下 · ET</div>
+      </div>
+      <div class="card-body">
+        <div class="callout ok" style="margin-bottom:12px;padding:8px 12px"><div class="callout-icon" style="font-size:13px">ℹ️</div><div style="font-size:12px">NY 无线上入口，全部30组均来自线下。Demo 为线下现场展示，无平台。</div></div>
+        <div class="tl">
+          <div class="tl-row"><div class="tl-time">D1 TBD</div><div class="tl-pip"><div class="tl-dot" style="background:var(--ny)"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-title">全球开幕仪式</div></div></div>
+          <div class="tl-row"><div class="tl-time stop">D2 TBD</div><div class="tl-pip"><div class="tl-dot" style="background:var(--red)"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-title">提交截止 <span class="badge badge-tbd">时间TBD</span></div><div class="tl-sub">系统锁定 · 计算拉新排名</div></div></div>
+          <div class="tl-row"><div class="tl-time">D2 TBD</div><div class="tl-pip"><div class="tl-dot" style="background:var(--ny)"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-title">线下选手互评 <span class="badge badge-tbd">窗口TBD</span></div><div class="tl-sub">每人最多3票 · 不投自己队</div></div></div>
+          <div class="tl-row"><div class="tl-time key">D2 TBD</div><div class="tl-pip"><div class="tl-dot" style="background:var(--gold)"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-title">互评截止 → 30组名单公布</div><div class="tl-sub">拉新15 + 互评15 → 去重递补</div></div></div>
+          <div class="tl-row"><div class="tl-time">D2 TBD</div><div class="tl-pip"><div class="tl-dot" style="background:var(--ny)"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-title">Demo · 线下现场 · 3min/队 <span class="badge badge-tbd">时间TBD</span></div><div class="tl-sub">30组全为NY线下 · 公众投票持续开放</div></div></div>
+          <div class="tl-row"><div class="tl-time stop">D2 19:00</div><div class="tl-pip"><div class="tl-dot" style="background:var(--red)"></div></div><div class="tl-body"><div class="tl-title">🔒 投票截止 · 加权计算启动 <span class="badge badge-red">STOP</span></div><div class="tl-sub">50%用户票 + 40%专家 + 10%互评 → 生成区域奖排名</div></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- QUALIFIER -->
+<div class="sec" id="qualifier">
+  <div class="sec-label">晋级机制</div>
+  <div class="sec-h2">30组来源 · 去重递补规则</div>
+
+  <div class="three-col">
+    <div>
+      <div style="font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--sh);margin-bottom:10px">🇨🇳 SH + 🌏 亚洲线上</div>
+      <div class="qsources">
+        <div class="qpill sh">A · 拉新前10 &gt;500票</div>
+        <div class="qpill sh">B · 互评前10</div>
+        <div class="qpill ol">C · 亚洲线上前10</div>
+      </div>
+      <div style="text-align:center;font-size:12px;color:var(--text3);padding:3px 0">↓ 三路合并</div>
+      <div style="background:var(--surface);border:1.5px dashed var(--border2);border-radius:8px;padding:10px 12px;text-align:center">
+        <div style="font-weight:700;font-size:13px">去重递补 → 30组</div>
+        <div style="font-size:11.5px;color:var(--text2);margin-top:2px">同队仅占1名额 · 顺位递补</div>
+      </div>
+      <div style="margin-top:8px;font-size:11.5px;color:var(--text2)">线下20组 + 亚洲线上10组飞书连线</div>
+    </div>
+    <div>
+      <div style="font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--sf);margin-bottom:10px">🇺🇸 SF + 🌍 国际线上</div>
+      <div class="qsources">
+        <div class="qpill sf">A · 拉新前10 &gt;500票</div>
+        <div class="qpill sf">B · 互评前10</div>
+        <div class="qpill ol">D · 国际线上前10</div>
+      </div>
+      <div style="text-align:center;font-size:12px;color:var(--text3);padding:3px 0">↓ 三路合并</div>
+      <div style="background:var(--surface);border:1.5px dashed var(--border2);border-radius:8px;padding:10px 12px;text-align:center">
+        <div style="font-weight:700;font-size:13px">去重递补 → 30组</div>
+        <div style="font-size:11.5px;color:var(--text2);margin-top:2px">同队仅占1名额 · 顺位递补</div>
+      </div>
+      <div style="margin-top:8px;font-size:11.5px;color:var(--text2)">线下20组 + 国际线上10组Discord连线</div>
+    </div>
+    <div>
+      <div style="font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ny);margin-bottom:10px">🗽 NY · 全线下</div>
+      <div class="qsources">
+        <div class="qpill ny">A · 拉新前15 &gt;500票</div>
+        <div class="qpill ny">B · 互评前15</div>
+      </div>
+      <div style="text-align:center;font-size:12px;color:var(--text3);padding:3px 0">↓ 两路合并</div>
+      <div style="background:var(--surface);border:1.5px dashed var(--border2);border-radius:8px;padding:10px 12px;text-align:center">
+        <div style="font-weight:700;font-size:13px">去重递补 → 30组</div>
+        <div style="font-size:11.5px;color:var(--text2);margin-top:2px">同队仅占1名额 · 顺位递补</div>
+      </div>
+      <div style="margin-top:8px;font-size:11.5px;color:var(--text2)">NY无线上组别，30组均为线下</div>
+    </div>
+  </div>
+
+  <div class="callout warn">
+    <div class="callout-icon">⚠️</div>
+    <div><strong>去重递补细则：</strong>同一队伍同时满足A类和B类，仅占1个名额。在被排除的类别中，排名下一顺位的队伍递补，直至总数满30组。线上队伍（C/D类）与线下A/B类分开计算，不互相去重。</div>
+  </div>
+
+  <div class="callout info">
+    <div class="callout-icon">📡</div>
+    <div><strong>线上赛区晋级（C / D类）：</strong>线上亚洲 / 国际赛区参赛队伍综合评分 = 用户投票 50% + 互评 10%（共 60% 加权标准化），取前10名进入对应线下赛区Demo路演。<br><span style="color:var(--text2);font-size:12px">⚠️ 专家评审仅在进入 Demo 路演后进行，线上晋级阶段不含专家评审分。</span></div>
+  </div>
+
+  <div style="background:var(--dark);border-radius:12px;padding:16px 22px;margin-top:4px">
+    <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:12px">📍 线上未晋级队伍的归属</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div style="background:rgba(255,255,255,.05);border-radius:8px;padding:12px 14px">
+        <div style="font-size:11px;font-weight:700;color:#4de0a8;margin-bottom:6px">🌏 亚洲线上 · 未进入Top 10</div>
+        <div style="font-size:12px;color:#bbb;line-height:1.8">直接并入 <strong style="color:#fff">上海赛区</strong><br>不单独开奖 · 不单独设赛道<br>同台参与上海赛区特别奖等剩余奖项竞选<br><span style="font-size:11px;color:#888">需满足拉新 &gt;200票的B类资格门槛</span></div>
+      </div>
+      <div style="background:rgba(255,255,255,.05);border-radius:8px;padding:12px 14px">
+        <div style="font-size:11px;font-weight:700;color:#7aaae8;margin-bottom:6px">🌍 国际线上 · 未进入Top 10</div>
+        <div style="font-size:12px;color:#bbb;line-height:1.8">直接并入 <strong style="color:#fff">旧金山赛区</strong><br>不单独开奖 · 不单独设赛道<br>同台参与旧金山赛区特别奖等剩余奖项竞选<br><span style="font-size:11px;color:#888">需满足拉新 &gt;200票的B类资格门槛</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- SCORING FORMULA -->
+<div class="sec" id="scoring">
+  <div class="sec-label">评分公式</div>
+  <div class="sec-h2">综合得分计算方式</div>
+  <div class="sec-desc">适用所有赛区 Demo 阶段最终排名计算</div>
+
+  <div class="score-bar">
+    <div class="sb-v">🗳 用户投票 50%</div>
+    <div class="sb-j">⚖️ 专家评审 40%</div>
+    <div class="sb-b">🤝 互评 10%</div>
+  </div>
+
+  <div class="formula-box">
+    <div class="formula-main">S = V<sub style="font-size:11px">norm</sub> × 0.50 + J<sub style="font-size:11px">norm</sub> × 0.40 + P<sub style="font-size:11px">norm</sub> × 0.10</div>
+    <div class="formula-var">
+      <span>V<sub style="font-size:10px">norm</sub></span> = 用户投票标准化分 &nbsp;·&nbsp; <span>J<sub style="font-size:10px">norm</sub></span> = 专家评审标准化分 &nbsp;·&nbsp; <span>P<sub style="font-size:10px">norm</sub></span> = 选手互评标准化分
+    </div>
+    <div class="formula-step">
+      <strong>标准化方式（Min-Max，适用三项）：</strong><br>
+      X<sub style="font-size:10px">norm</sub> = ( X<sub style="font-size:10px">raw</sub> − X<sub style="font-size:10px">min</sub> ) ÷ ( X<sub style="font-size:10px">max</sub> − X<sub style="font-size:10px">min</sub> ) × 100<br><br>
+      <strong>各分项说明：</strong><br>
+      V<sub style="font-size:10px">raw</sub>  = 队伍获得的用户投票总数（赛区内全部参赛队伍比较）<br>
+      J<sub style="font-size:10px">raw</sub>  = 评审打分均值（多位评审分数加总 ÷ 评审人数）<br>
+      P<sub style="font-size:10px">raw</sub>  = 选手互评票数直接求和（每票等值，后台独立于用户投票通道）<br><br>
+      <strong>标准化范围：</strong>以赛区内所有参与Demo的30组为基准，分别取各项最大值与最小值进行归一。结果为 0–100 分。<br><br>
+      <strong>最终排名：</strong>按 S 由高到低排名，取前20队发放区域奖。并行生成全场综合排名用于全球奖评选。
+    </div>
+  </div>
+
+  <div class="callout warn">
+    <div class="callout-icon">⚠️</div>
+    <div><strong>标准化的关键作用：</strong>用户投票为绝对数量（可达数千），专家评分为1–10分制，互评为加权积分，三者量纲不同。Min-Max归一化后均映射到0–100区间，确保权重真正生效而不被任一分项的绝对值主导。</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- GLOBAL -->
+<div class="sec" id="global">
+  <div class="sec-label">全球奖</div>
+  <div class="sec-h2">SF 独有 · 因时差分阶段颁发 · 不重复获奖</div>
+
+  <div class="global-box">
+    <div class="global-title">🌍 全球颁奖典礼 · 来自旧金山 SF · 全球同步直播</div>
+    <div class="global-prizes" style="grid-template-columns:1fr 1fr 1fr">
+      <div class="gp">
+        <div class="gp-name">🏆 Grand Prize · 全场综合最高分</div>
+        <div class="gp-amt">$50,000</div>
+        <div class="gp-sub">全场 S 值最高队伍（跨赛区统一排名）</div>
+      </div>
+      <div class="gp">
+        <div class="gp-name">🗳 People's Choice · 全场用户票最高</div>
+        <div class="gp-amt">$25,000</div>
+        <div class="gp-sub">全场 V<sub style="font-size:10px">raw</sub> 最高队伍（跨赛区统一排名）</div>
+      </div>
+      <div class="gp">
+        <div class="gp-name">🤝 Builder's Choice · 同行最欣赏</div>
+        <div class="gp-amt">$15,000</div>
+        <div class="gp-sub">全体参赛选手互投，跨赛区统计，同行最认可的作品</div>
+      </div>
+    </div>
+    <div style="font-size:12px;color:#888;line-height:1.8;padding:2px 4px">
+      全赛区所有提交且有效的参赛队伍均有资格竞争全球奖，不限于Demo入围30组。
+    </div>
+  </div>
+
+  <!-- 时差颁奖顺序说明 -->
+  <div style="margin-top:16px;border:1.5px solid var(--gold-border);border-radius:12px;overflow:hidden">
+    <div style="background:var(--gold-bg);padding:12px 18px;border-bottom:1px solid var(--gold-border)">
+      <div style="font-size:12px;font-weight:700;color:#8a5a00">⏱ 因时差缘由 · 分阶段颁发规则</div>
+    </div>
+    <div style="padding:14px 18px;background:var(--surface)">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+        <div style="background:var(--sh-bg);border:1.5px solid var(--sh-border);border-radius:8px;padding:12px 14px">
+          <div style="font-size:11px;font-weight:700;color:var(--sh);margin-bottom:6px">第一阶段 · 上海 SH（优先）</div>
+          <div style="font-size:12.5px;color:var(--text2);line-height:1.8">
+            SH Demo 结束后，<strong>优先颁发上海区域奖 Top 1–20</strong>（及 NY、SF 各自区域奖）<br>
+            <span style="font-size:11.5px;color:var(--text3)">此时全球奖尚未公布，区域奖按当前排名发放</span>
+          </div>
+        </div>
+        <div style="background:var(--sf-bg);border:1.5px solid var(--sf-border);border-radius:8px;padding:12px 14px">
+          <div style="font-size:11px;font-weight:700;color:var(--sf);margin-bottom:6px">第二阶段 · 旧金山 SF（后续）</div>
+          <div style="font-size:12.5px;color:var(--text2);line-height:1.8">
+            SF Demo 结束后，<strong>颁发全球奖</strong>：Grand Prize · People's Choice · Builder's Choice<br>
+            <span style="font-size:11.5px;color:var(--text3)">全球奖在此阶段统一公布，全球同步直播</span>
+          </div>
+        </div>
+      </div>
+      <div style="background:var(--red-bg);border:1.5px solid var(--red-border);border-radius:8px;padding:12px 14px">
+        <div style="font-size:11px;font-weight:700;color:var(--red);margin-bottom:6px">⚠️ 区域奖顺延规则 · 适用所有赛区</div>
+        <div style="font-size:12.5px;color:var(--text2);line-height:1.8">
+          若全球奖得主（Grand Prize / People's Choice / Builder's Choice）此前已被计入某赛区区域奖 Top 1–20，则该队伍<strong>仅保留全球奖，区域奖名额顺延</strong>——原排名第21位的队伍递补至第20位，以此类推，确保每个赛区始终有完整的20支区域奖获奖队伍。<br>
+          <span style="font-size:11.5px;color:var(--text3);margin-top:4px;display:block">顺延通知：全球奖公布后即时更新各赛区最终区域奖名单，通过 Discord + 官方渠道推送。</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:16px">
+    <div style="font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:12px">颁奖顺序总览（结合时差）</div>
+    <div class="rank-flow">
+      <div class="rf-item">
+        <div class="rf-num"><div class="rf-dot"></div><div class="rf-line"></div></div>
+        <div class="rf-body">
+          <div class="rf-title">Phase 1 · 各赛区区域奖（上海优先，各赛区独立）</div>
+          <div class="rf-sub">SH / NY / SF 各自按赛区综合评分发放区域奖 Top 1–20。此时全球奖尚未公布。</div>
+        </div>
+      </div>
+      <div class="rf-item">
+        <div class="rf-num"><div class="rf-dot"></div><div class="rf-line"></div></div>
+        <div class="rf-body">
+          <div class="rf-title">Phase 2 · Grand Prize <span class="rf-excl">触发顺延检查</span></div>
+          <div class="rf-sub">全场 S 最高队伍获得。若该队伍已在区域奖 Top 1–20 内，触发对应赛区顺延，原第21名递补。</div>
+        </div>
+      </div>
+      <div class="rf-item">
+        <div class="rf-num"><div class="rf-dot"></div><div class="rf-line"></div></div>
+        <div class="rf-body">
+          <div class="rf-title">Phase 2 · People's Choice <span class="rf-excl">触发顺延检查</span></div>
+          <div class="rf-sub">全场 V<sub style="font-size:10px">raw</sub> 最高队伍获得（已获 Grand Prize 者跳过，顺位递补）。同上，触发顺延检查。</div>
+        </div>
+      </div>
+      <div class="rf-item">
+        <div class="rf-num"><div class="rf-dot"></div><div class="rf-line"></div></div>
+        <div class="rf-body">
+          <div class="rf-title">Phase 2 · Builder's Choice <span class="rf-excl">触发顺延检查</span></div>
+          <div class="rf-sub">全体互投最高队伍获得（已获以上奖项者跳过，顺位递补）。同上，触发顺延检查。</div>
+        </div>
+      </div>
+      <div class="rf-item">
+        <div class="rf-num"><div class="rf-dot"></div></div>
+        <div class="rf-body">
+          <div class="rf-title">Phase 3 · 各赛区特别奖</div>
+          <div class="rf-sub">排除全球奖及最终区域奖获得者后，未进Demo且拉新 &gt; 200票的队伍进入特别奖评选池，每奖5队。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- REGIONAL -->
+<div class="sec" id="regional">
+  <div class="sec-label">区域奖</div>
+  <div class="sec-h2">三赛区统一结构 · Demo Top 1–20</div>
+
+  <div class="three-col">
+    <div class="card">
+      <div class="card-hdr" style="background:var(--sh-bg);border-bottom-color:var(--sh-border)"><div class="card-title" style="color:var(--sh)">🇨🇳 SH 区域奖</div><div class="card-sub">$22,000 · 20队</div></div>
+      <div class="card-body" style="padding:0">
+        <table class="prize-table">
+          <thead><tr><th>名次</th><th>队数</th><th>奖金</th><th>小计</th></tr></thead>
+          <tbody>
+            <tr><td>🥇 1st</td><td>1</td><td class="amt amt-sh">$5,000</td><td class="amt">$5,000</td></tr>
+            <tr><td>🥈 2nd</td><td>1</td><td class="amt amt-sh">$3,000</td><td class="amt">$3,000</td></tr>
+            <tr><td>🥉 3rd</td><td>1</td><td class="amt amt-sh">$2,000</td><td class="amt">$2,000</td></tr>
+            <tr><td>4–10名</td><td>7</td><td class="amt amt-sh">$1,000/队</td><td class="amt">$7,000</td></tr>
+            <tr><td>11–20名</td><td>10</td><td class="amt amt-sh">$500/队</td><td class="amt">$5,000</td></tr>
+            <tr class="sub"><td colspan="3">合计 · 20队</td><td class="amt amt-sh">$22,000</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-hdr" style="background:var(--sf-bg);border-bottom-color:var(--sf-border)"><div class="card-title" style="color:var(--sf)">🇺🇸 SF 区域奖</div><div class="card-sub">$22,000 · 20队</div></div>
+      <div class="card-body" style="padding:0">
+        <table class="prize-table">
+          <thead><tr><th>名次</th><th>队数</th><th>奖金</th><th>小计</th></tr></thead>
+          <tbody>
+            <tr><td>🥇 1st</td><td>1</td><td class="amt amt-sf">$5,000</td><td class="amt">$5,000</td></tr>
+            <tr><td>🥈 2nd</td><td>1</td><td class="amt amt-sf">$3,000</td><td class="amt">$3,000</td></tr>
+            <tr><td>🥉 3rd</td><td>1</td><td class="amt amt-sf">$2,000</td><td class="amt">$2,000</td></tr>
+            <tr><td>4–10名</td><td>7</td><td class="amt amt-sf">$1,000/队</td><td class="amt">$7,000</td></tr>
+            <tr><td>11–20名</td><td>10</td><td class="amt amt-sf">$500/队</td><td class="amt">$5,000</td></tr>
+            <tr class="sub"><td colspan="3">合计 · 20队</td><td class="amt amt-sf">$22,000</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-hdr" style="background:var(--ny-bg);border-bottom-color:var(--ny-border)"><div class="card-title" style="color:var(--ny)">🗽 NY 区域奖</div><div class="card-sub">$22,000 · 20队</div></div>
+      <div class="card-body" style="padding:0">
+        <table class="prize-table">
+          <thead><tr><th>名次</th><th>队数</th><th>奖金</th><th>小计</th></tr></thead>
+          <tbody>
+            <tr><td>🥇 1st</td><td>1</td><td class="amt amt-ny">$5,000</td><td class="amt">$5,000</td></tr>
+            <tr><td>🥈 2nd</td><td>1</td><td class="amt amt-ny">$3,000</td><td class="amt">$3,000</td></tr>
+            <tr><td>🥉 3rd</td><td>1</td><td class="amt amt-ny">$2,000</td><td class="amt">$2,000</td></tr>
+            <tr><td>4–10名</td><td>7</td><td class="amt amt-ny">$1,000/队</td><td class="amt">$7,000</td></tr>
+            <tr><td>11–20名</td><td>10</td><td class="amt amt-ny">$500/队</td><td class="amt">$5,000</td></tr>
+            <tr class="sub"><td colspan="3">合计 · 20队</td><td class="amt amt-ny">$22,000</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- SPECIAL -->
+<div class="sec" id="special">
+  <div class="sec-label">特别奖</div>
+  <div class="sec-h2">三赛区统一结构 · 名称待定</div>
+  <div class="sec-desc">6个奖项 × 每奖5队 × $1,000/队 = $30,000/赛区 · 三赛区合计 $90,000</div>
+
+  <div class="callout danger">
+    <div class="callout-icon">🚫</div>
+    <div>
+      <strong>特别奖参与条件：</strong>获全球奖或区域奖的队伍不参与特别奖评选。<br>
+      以下队伍<strong>均可</strong>参与特别奖评选（需满足拉新 &gt; 200票）：<br>
+      · 未进入 Demo 的线下参赛队伍<br>
+      · 未进入 Top 10 的亚洲线上队伍（并入上海赛区）<br>
+      · 未进入 Top 10 的国际线上队伍（并入旧金山赛区）
+    </div>
+  </div>
+
+  <div class="three-col">
+    <div class="card">
+      <div class="card-hdr" style="background:var(--sh-bg);border-bottom-color:var(--sh-border)"><div class="card-title" style="color:var(--sh)">🇨🇳 SH 特别奖 · $30,000</div></div>
+      <div class="card-body" style="padding:0">
+        <table class="prize-table">
+          <thead><tr><th>奖项</th><th>队数</th><th>金额</th></tr></thead>
+          <tbody>
+            <tr><td>奖项 1 <span class="tbd-chip">名称TBD</span></td><td>5</td><td class="amt amt-gold">$1,000/队</td></tr>
+            <tr><td>奖项 2 <span class="tbd-chip">名称TBD</span></td><td>5</td><td class="amt amt-gold">$1,000/队</td></tr>
+            <tr><td>奖项 3 <span class="tbd-chip">名称TBD</span></td><td>5</td><td class="amt amt-gold">$1,000/队</td></tr>
+            <tr><td>奖项 4 <span class="tbd-chip">名称TBD</span></td><td>5</td><td class="amt amt-gold">$1,000/队</td></tr>
+            <tr><td>奖项 5 <span class="tbd-chip">名称TBD</span></td><td>5</td><td class="amt amt-gold">$1,000/队</td></tr>
+            <tr><td>奖项 6 <span class="tbd-chip">名称TBD</span></td><td>5</td><td class="amt amt-gold">$1,000/队</td></tr>
+            <tr class="sub"><td colspan="2">合计 · 30队</td><td class="amt amt-gold">$30,000</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-hdr" style="background:var(--sf-bg);border-bottom-color:var(--sf-border)"><div class="card-title" style="color:var(--sf)">🇺🇸 SF 特别奖 · $30,000</div></div>
+      <div class="card-body" style="padding:0">
+        <table class="prize-table">
+          <thead><tr><th>奖项</th><th>队数</th><th>金额</th></tr></thead>
+          <tbody>
+            <tr><td>奖项 1 <span class="tbd-chip">名称TBD</span></td><td>5</td><td class="amt amt-gold">$1,000/队</td></tr>
+            <tr><td>奖项 2 <span class="tbd-chip">名称TBD</span></td><td>5</td><td class="amt amt-gold">$1,000/队</td></tr>
+            <tr><td>奖项 3 <span class="tbd-chip">名称TBD</span></td><td>5</td><td class="amt amt-gold">$1,000/队</td></tr>
+            <tr><td>奖项 4 <span class="tbd-chip">名称TBD</span></td><td>5</td><td class="amt amt-gold">$1,000/队</td></tr>
+            <tr><td>奖项 5 <span class="tbd-chip">名称TBD</span></td><td>5</td><td class="amt amt-gold">$1,000/队</td></tr>
+            <tr><td>奖项 6 <span class="tbd-chip">名称TBD</span></td><td>5</td><td class="amt amt-gold">$1,000/队</td></tr>
+            <tr class="sub"><td colspan="2">合计 · 30队</td><td class="amt amt-gold">$30,000</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-hdr" style="background:var(--ny-bg);border-bottom-color:var(--ny-border)"><div class="card-title" style="color:var(--ny)">🗽 NY 特别奖 · $30,000</div></div>
+      <div class="card-body" style="padding:0">
+        <table class="prize-table">
+          <thead><tr><th>奖项</th><th>队数</th><th>金额</th></tr></thead>
+          <tbody>
+            <tr><td>奖项 1 <span class="tbd-chip">名称TBD</span></td><td>5</td><td class="amt amt-gold">$1,000/队</td></tr>
+            <tr><td>奖项 2 <span class="tbd-chip">名称TBD</span></td><td>5</td><td class="amt amt-gold">$1,000/队</td></tr>
+            <tr><td>奖项 3 <span class="tbd-chip">名称TBD</span></td><td>5</td><td class="amt amt-gold">$1,000/队</td></tr>
+            <tr><td>奖项 4 <span class="tbd-chip">名称TBD</span></td><td>5</td><td class="amt amt-gold">$1,000/队</td></tr>
+            <tr><td>奖项 5 <span class="tbd-chip">名称TBD</span></td><td>5</td><td class="amt amt-gold">$1,000/队</td></tr>
+            <tr><td>奖项 6 <span class="tbd-chip">名称TBD</span></td><td>5</td><td class="amt amt-gold">$1,000/队</td></tr>
+            <tr class="sub"><td colspan="2">合计 · 30队</td><td class="amt amt-gold">$30,000</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- D+7 -->
+<div class="sec" id="d7">
+  <div class="sec-label">D+7 拉新传播奖 <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;background:var(--gold-bg);color:#8a5a00;border:1px solid var(--gold-border);margin-left:6px;vertical-align:middle">待最终确认</span></div>
+  <div class="sec-h2">颁奖后二次传播激励 · $35,000</div>
+  <div class="sec-desc">独立奖池 · 不与区域奖 / 特别奖 / 全球奖冲突 · 所有提交队伍均可参与</div>
+
+  <div class="callout warn">
+    <div class="callout-icon">📌</div>
+    <div>
+      <strong>计算窗口：</strong>颁奖日 00:00 起，第7天 23:59 截止，统计7天内新增拉新用户数（非累计总量）。全场统一排名，跨赛区不分区。<br>
+      <strong>参与资格：</strong>所有有效提交队伍均可参与，已获其他奖项的队伍同样有资格。<br>
+      <strong>发奖时间：</strong>计算窗口关闭后结算，颁奖后约第8天公布名单与发放。
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hdr" style="background:var(--gold-bg);border-bottom-color:var(--gold-border)">
+      <div class="card-title" style="color:#8a5a00">🚀 D+7 拉新增量排行榜 · Top 100</div>
+      <div class="card-sub">全场统一 · $35,000</div>
+    </div>
+    <div class="card-body" style="padding:0">
+      <table class="prize-table">
+        <thead><tr><th>名次</th><th>队数</th><th>奖励</th><th>小计</th></tr></thead>
+        <tbody>
+          <tr><td>🥇 第1名</td><td>1</td><td class="amt amt-gold">$4,000</td><td class="amt">$4,000</td></tr>
+          <tr><td>🥈 第2名</td><td>1</td><td class="amt amt-gold">$2,000</td><td class="amt">$2,000</td></tr>
+          <tr><td>🥉 第3名</td><td>1</td><td class="amt amt-gold">$1,000</td><td class="amt">$1,000</td></tr>
+          <tr><td>4–10名</td><td>7</td><td class="amt amt-gold">$500/队</td><td class="amt">$3,500</td></tr>
+          <tr><td>11–30名</td><td>20</td><td class="amt amt-gold">$350/队</td><td class="amt">$7,000</td></tr>
+          <tr><td>31–100名</td><td>70</td><td class="amt amt-gold">$250/队</td><td class="amt">$17,500</td></tr>
+          <tr class="sub"><td colspan="3">合计 · 100队</td><td class="amt amt-gold">$35,000</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- PENDING -->
+<div class="sec" id="pending">
+  <div class="sec-label">待确认项</div>
+  <div class="sec-h2">补充后更新本文档</div>
+
+  <div class="two-col">
+    <div class="card">
+      <div class="card-hdr"><span>⏰</span><div class="card-title">NY 具体时间节点</div><div class="card-sub"><span class="badge badge-tbd">待定</span></div></div>
+      <div class="card-body" style="font-size:12.5px;color:var(--text2);line-height:1.8">提交截止时间（ET）· 互评窗口时长 · 互评截止时间 · Demo 时间段</div>
+    </div>
+    <div class="card">
+      <div class="card-hdr"><span>🏅</span><div class="card-title">三赛区特别奖名称</div><div class="card-sub"><span class="badge badge-tbd">待定</span></div></div>
+      <div class="card-body" style="font-size:12.5px;color:var(--text2);line-height:1.8">SH / SF / NY 各6个奖项名称 · 建议3个跨赛区共同类别 + 各2–3个本地化类别</div>
+    </div>
+    <div class="card">
+      <div class="card-hdr"><span>📅</span><div class="card-title">SF Demo 具体时间</div><div class="card-sub"><span class="badge badge-tbd">待定</span></div></div>
+      <div class="card-body" style="font-size:12.5px;color:var(--text2);line-height:1.8">Day 2 Demo 路演具体时间段（PT）</div>
+    </div>
+  </div>
+</div>
+
+<div style="padding-top:32px;text-align:center;font-size:11.5px;color:var(--text3)">
+  EAZO Global Hackathon 2026 · 内部计算逻辑文档 · 最终版 · 剩余待确认项补充后更新
+</div>
+
+</div>
+<script>
+const secs=document.querySelectorAll('.sec[id]'),links=document.querySelectorAll('.nav a');
+window.addEventListener('scroll',()=>{
+  let c='';secs.forEach(s=>{if(window.scrollY>=s.offsetTop-80)c=s.id;});
+  links.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+c));
+});
+</script>
+</body>
+</html>
