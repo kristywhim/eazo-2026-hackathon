@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Eazo Hackathon 2026 — SF & NY Staff Sheet</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0c0c0e;--surface:#16161a;--surface2:#1e1e24;
+  --border:#2a2a32;--border2:#3a3a44;
+  --text:#e8e6e1;--text2:#9a9890;--text3:#5e5d58;
+  --sf:#60a5fa;--sf-dim:rgba(96,165,250,.08);--sf-glow:rgba(96,165,250,.06);
+  --ny:#a78bfa;--ny-dim:rgba(167,139,250,.08);--ny-glow:rgba(167,139,250,.06);
+  --gold:#fbbf24;--gold-dim:rgba(251,191,36,.08);
+  --red:#f87171;--red-dim:rgba(248,113,113,.08);
+  --green:#4ade80;--green-dim:rgba(74,222,128,.08);
+  --purple:#a78bfa;--purple-dim:rgba(167,139,250,.08);
+  --orange:#fb923c;--orange-dim:rgba(251,146,60,.08);
+  --cyan:#22d3ee;--pink:#f472b6;
+  --radius:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);font-size:13px;line-height:1.5}
+
+.header{padding:40px 48px 32px;background:linear-gradient(135deg,#0c0c0e 0%,#0d1020 100%);border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+.header::before{content:'';position:absolute;top:-120px;right:-80px;width:400px;height:400px;background:radial-gradient(circle,rgba(96,165,250,.05) 0%,transparent 70%);pointer-events:none}
+.header-eyebrow{font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--sf);margin-bottom:10px}
+.header h1{font-size:26px;font-weight:900;color:#fff;letter-spacing:-.01em;margin-bottom:6px}
+.header h1 span{color:var(--gold)}
+.header-meta{font-size:12px;color:var(--text2);display:flex;gap:20px;flex-wrap:wrap;margin-top:10px}
+.header-meta span{display:flex;align-items:center;gap:5px}
+
+/* Zone selector */
+.zone-tabs{display:flex;background:#111;border-bottom:2px solid var(--border)}
+.zone-tab{padding:14px 36px;font-size:14px;font-weight:800;cursor:pointer;color:var(--text3);border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .15s;letter-spacing:.02em}
+.zone-tab:hover{color:var(--text2)}
+.zone-tab.sf.active{color:var(--sf);border-bottom-color:var(--sf)}
+.zone-tab.ny.active{color:var(--ny);border-bottom-color:var(--ny)}
+.zone-panel{display:none}
+.zone-panel.active{display:block}
+
+/* Toolbar */
+.toolbar{position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:12px;padding:10px 48px;background:rgba(12,12,14,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.day-btn{font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;padding:6px 18px;border-radius:20px;border:1.5px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s}
+.day-btn:hover{color:var(--text)}
+.day-btn.sf-active{background:var(--sf);border-color:var(--sf);color:#000}
+.day-btn.ny-active{background:var(--ny);border-color:var(--ny);color:#000}
+.toolbar .spacer{flex:1}
+.print-btn{font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;padding:6px 14px;border-radius:6px;border:1px solid var(--border2);background:var(--surface);color:var(--text2);cursor:pointer;transition:all .15s}
+.print-btn:hover{background:var(--surface2);color:var(--text)}
+
+/* Legend */
+.legend{display:flex;gap:16px;flex-wrap:wrap;padding:14px 48px;background:var(--surface);border-bottom:1px solid var(--border);font-size:11px;color:var(--text2)}
+.legend-item{display:flex;align-items:center;gap:6px}
+.legend-dot{width:8px;height:8px;border-radius:50%}
+
+/* Day panels */
+.day-panel{display:none}
+.day-panel.active{display:block}
+
+/* Phase */
+.phase{padding:0 48px;margin-top:28px}
+.phase-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.phase-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.phase-label{font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--text3)}
+.phase-time{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:500;color:var(--text3)}
+
+/* Event card */
+.event-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;overflow:hidden;transition:border-color .15s}
+.event-card:hover{border-color:var(--border2)}
+.event-top{display:grid;grid-template-columns:110px 1fr;gap:0;border-bottom:1px solid var(--border)}
+.event-time{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;padding:12px 14px;color:var(--text);border-right:1px solid var(--border);display:flex;flex-direction:column;gap:2px}
+.event-time .dur{font-size:10px;font-weight:400;color:var(--text3)}
+.event-info{padding:12px 16px;display:flex;flex-direction:column;gap:4px}
+.event-title{font-size:14px;font-weight:700;color:#fff}
+.event-detail{font-size:11.5px;color:var(--text2);line-height:1.6}
+
+/* Role grid */
+.role-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0}
+.role-cell{padding:10px 14px;border-right:1px solid var(--border);border-top:1px solid var(--border);min-height:62px}
+.role-cell:last-child{border-right:none}
+.role-label{font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px;display:flex;align-items:center;gap:5px}
+.role-label .ico{font-size:11px}
+.role-input{font-family:'Outfit',sans-serif;font-size:12px;color:var(--text);background:transparent;border:1px dashed transparent;border-radius:4px;padding:3px 6px;width:100%;outline:none;min-height:20px;transition:all .12s;display:block}
+.role-input:hover{border-color:var(--border2);background:var(--surface2)}
+.role-input:focus{border-color:var(--sf);background:var(--sf-dim);border-style:solid}
+.role-input:empty::before{content:attr(data-placeholder);color:var(--text3);font-style:italic;font-size:11px}
+
+.role-label.ctrl{color:var(--green)}
+.role-label.av{color:var(--sf)}
+.role-label.checkin{color:var(--gold)}
+.role-label.guide{color:var(--orange)}
+.role-label.ops{color:var(--purple)}
+.role-label.mc{color:var(--red)}
+.role-label.photo{color:var(--cyan)}
+.role-label.tech{color:#818cf8}
+.role-label.judge{color:var(--pink)}
+.role-label.stage{color:#fca5a5}
+.role-label.discord{color:var(--sf)}
+.role-label.host{color:var(--gold)}
+
+/* Tags */
+.etag{display:inline-block;font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:6px;vertical-align:middle}
+.etag-key{background:var(--green-dim);color:var(--green)}
+.etag-hard{background:var(--red-dim);color:var(--red)}
+.etag-global{background:rgba(96,165,250,.15);color:var(--sf)}
+.etag-share{background:var(--purple-dim);color:var(--purple)}
+.etag-award{background:var(--gold-dim);color:var(--gold)}
+.etag-demo{background:var(--orange-dim);color:var(--orange)}
+.etag-ny{background:var(--ny-dim);color:var(--ny)}
+
+/* Zone callout */
+.zone-callout{margin:20px 48px 0;border-radius:10px;padding:14px 18px;font-size:13px;line-height:1.7}
+.zone-callout.sf{background:var(--sf-dim);border:1.5px solid rgba(96,165,250,.25);color:var(--text2)}
+.zone-callout.ny{background:var(--ny-dim);border:1.5px solid rgba(167,139,250,.25);color:var(--text2)}
+.zone-callout strong{color:var(--text)}
+
+.bottom-bar{padding:20px 48px 40px;text-align:center;font-size:11px;color:var(--text3)}
+
+@media print{
+  body{background:#fff;color:#111;font-size:10px}
+  .toolbar,.legend,.zone-tabs{display:none!important}
+  .header{background:#fff;border-bottom:2px solid #111;padding:20px}
+  .day-panel,.zone-panel{display:block!important}
+  .event-card{border-color:#ccc;background:#fff;page-break-inside:avoid}
+  .event-title{color:#111}
+  .role-input{border:1px solid #ddd!important;border-style:solid!important;min-height:24px;color:#111}
+  .role-label{color:#555!important}
+  :root{--surface:#fff;--surface2:#f5f5f5;--border:#ddd;--text:#111;--text2:#555}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-eyebrow">🌎 Staff Assignment Sheet · 人员分工表</div>
+  <h1>Eazo Global Hackathon 2026 — <span>SF & NY</span></h1>
+  <div class="header-meta">
+    <span>📅 Day 1 · May 23 (Fri)</span>
+    <span>📅 Day 2 · May 24 (Sat)</span>
+    <span>🇺🇸 SF · PT timezone</span>
+    <span>🗽 NY · ET timezone</span>
+  </div>
+</div>
+
+<div class="zone-tabs">
+  <div class="zone-tab sf active" onclick="switchZone('sf')">🇺🇸 San Francisco · SF</div>
+  <div class="zone-tab ny" onclick="switchZone('ny')">🗽 New York · NY</div>
+</div>
+
+<!-- ════════════ SF ════════════ -->
+<div class="zone-panel active" id="zone-sf">
+
+  <div class="zone-callout sf">
+    <strong>SF Zone Notes:</strong> Submission closes Day 1 21:00 PT · Peer review 21:00–24:00 · 30 finalists at midnight · Demo on <strong>Discord</strong> (3 min/team) · SF hosts the <strong>Global Awards Ceremony</strong> (People's Choice $25K + Grand Prize $50K) 🌍
+  </div>
+
+  <div class="toolbar">
+    <button class="day-btn sf-active" onclick="switchDay('sf',1)">Day 1 · Build Day</button>
+    <button class="day-btn" onclick="switchDay('sf',2)">Day 2 · Demo + Awards</button>
+    <div class="spacer"></div>
+    <button class="print-btn" onclick="window.print()">🖨 Print / Export PDF</button>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Overall Lead</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--sf)"></div>AV / Tech</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--gold)"></div>Check-in</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div>Floor Guide</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--purple)"></div>Ops / Comms</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>MC / Host</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--cyan)"></div>Photo / Video</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#818cf8"></div>Platform / Tech</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--pink)"></div>Judge Liaison</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#fca5a5"></div>Stage Crew</div>
+    <span style="margin-left:auto;font-style:italic;color:var(--text3)">✏️ Click any name field to edit</span>
+  </div>
+
+  <!-- SF DAY 1 -->
+  <div class="day-panel active" id="sf-day1">
+
+    <div class="phase">
+      <div class="phase-header">
+        <div class="phase-dot" style="background:var(--sf)"></div>
+        <div class="phase-label">Venue Setup & AV Check</div>
+        <div class="phase-time">07:00 – 09:30 PT</div>
+      </div>
+      <div class="event-card">
+        <div class="event-top">
+          <div class="event-time">07:00<div class="dur">150 min</div></div>
+          <div class="event-info">
+            <div class="event-title">🛠 Venue Setup & AV Rehearsal</div>
+            <div class="event-detail">Tables arranged by track (5 zones) · Check-in desk setup · Main screen + projector test · Mic test · Livestream push test · Judges' table setup · Global stream relay test (receiving SH/NY signal)</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label ctrl"><span class="ico">🎯</span> Overall Lead</div><div class="role-input" contenteditable="true" data-placeholder="Name · mobile"></div></div>
+          <div class="role-cell"><div class="role-label av"><span class="ico">🎛</span> AV / Tech</div><div class="role-input" contenteditable="true" data-placeholder="Name · screen + stream"></div></div>
+          <div class="role-cell"><div class="role-label guide"><span class="ico">🚩</span> Floor Crew</div><div class="role-input" contenteditable="true" data-placeholder="Name × 2–3 · furniture"></div></div>
+          <div class="role-cell"><div class="role-label ops"><span class="ico">📋</span> Ops</div><div class="role-input" contenteditable="true" data-placeholder="Name · materials check"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-header">
+        <div class="phase-dot" style="background:var(--gold)"></div>
+        <div class="phase-label">Check-in & Warm-up</div>
+        <div class="phase-time">09:30 – 10:00 PT</div>
+      </div>
+      <div class="event-card">
+        <div class="event-top">
+          <div class="event-time">09:30<div class="dur">30 min</div></div>
+          <div class="event-info">
+            <div class="event-title">✅ Check-in Opens <span class="etag etag-key">KEY</span></div>
+            <div class="event-detail">Verify registration · Hand out badge · Ask track → give sticker → direct to track zone · Separate VIP/Speaker check-in lane</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label ctrl"><span class="ico">🎯</span> Overall Lead</div><div class="role-input" contenteditable="true" data-placeholder="Name · floor coordination"></div></div>
+          <div class="role-cell"><div class="role-label checkin"><span class="ico">📝</span> Check-in (Participant)</div><div class="role-input" contenteditable="true" data-placeholder="Name × 3–4 people"></div></div>
+          <div class="role-cell"><div class="role-label checkin"><span class="ico">⭐</span> Check-in (VIP / Speaker)</div><div class="role-input" contenteditable="true" data-placeholder="Name × 1 person"></div></div>
+          <div class="role-cell"><div class="role-label guide"><span class="ico">🚩</span> Floor Guide</div><div class="role-input" contenteditable="true" data-placeholder="Name × 2–3 · direct to zones"></div></div>
+          <div class="role-cell"><div class="role-label av"><span class="ico">🎛</span> AV</div><div class="role-input" contenteditable="true" data-placeholder="Name · countdown screen"></div></div>
+          <div class="role-cell"><div class="role-label ops"><span class="ico">📋</span> Ops</div><div class="role-input" contenteditable="true" data-placeholder="Name · monitor check-in pace"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-header">
+        <div class="phase-dot" style="background:var(--red)"></div>
+        <div class="phase-label">Opening Ceremony</div>
+        <div class="phase-time">10:00 – 11:10 PT</div>
+      </div>
+      <div class="event-card">
+        <div class="event-top">
+          <div class="event-time">10:00–10:05<div class="dur">5 min</div></div>
+          <div class="event-info">
+            <div class="event-title">🎤 MC Welcome + Global Livestream <span class="etag etag-global">🔴 GLOBAL LIVE</span></div>
+            <div class="event-detail">MC opens · Announce global sync with SH & NY · Switch to global livestream</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label mc"><span class="ico">🎤</span> MC / Host</div><div class="role-input" contenteditable="true" data-placeholder="Name · welcome script"></div></div>
+          <div class="role-cell"><div class="role-label av"><span class="ico">🎛</span> AV</div><div class="role-input" contenteditable="true" data-placeholder="Name · switch to live feed"></div></div>
+          <div class="role-cell"><div class="role-label ctrl"><span class="ico">🎯</span> Overall Lead</div><div class="role-input" contenteditable="true" data-placeholder="Name · cue management"></div></div>
+        </div>
+      </div>
+      <div class="event-card">
+        <div class="event-top">
+          <div class="event-time">10:05–10:30<div class="dur">25 min</div></div>
+          <div class="event-info">
+            <div class="event-title">🚀 Founder Product Launch Speech <span class="etag etag-global">🔴 GLOBAL LIVE</span></div>
+            <div class="event-detail">Founder on stage · Official Eazo product launch · Vision & mission behind the event</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label ctrl"><span class="ico">🎯</span> Overall Lead</div><div class="role-input" contenteditable="true" data-placeholder="Name · timer + backstage cue"></div></div>
+          <div class="role-cell"><div class="role-label av"><span class="ico">🎛</span> AV</div><div class="role-input" contenteditable="true" data-placeholder="Name · slides + stream"></div></div>
+          <div class="role-cell"><div class="role-label mc"><span class="ico">🎤</span> MC</div><div class="role-input" contenteditable="true" data-placeholder="Name · stand by offstage"></div></div>
+          <div class="role-cell"><div class="role-label photo"><span class="ico">📸</span> Photo / Video</div><div class="role-input" contenteditable="true" data-placeholder="Name · capture speech"></div></div>
+        </div>
+      </div>
+      <div class="event-card">
+        <div class="event-top">
+          <div class="event-time">10:30–11:30<div class="dur">60 min</div></div>
+          <div class="event-info">
+            <div class="event-title">🎙 Guest Speakers (3–5) + Track & Rules Intro</div>
+            <div class="event-detail">Speakers take turns · 10–20 min each · MC controls time · Track intro + submission / voting / scoring rules explained</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label ctrl"><span class="ico">🎯</span> Overall Lead</div><div class="role-input" contenteditable="true" data-placeholder="Name · speaker cues"></div></div>
+          <div class="role-cell"><div class="role-label mc"><span class="ico">🎤</span> MC</div><div class="role-input" contenteditable="true" data-placeholder="Name · transitions + time control"></div></div>
+          <div class="role-cell"><div class="role-label av"><span class="ico">🎛</span> AV</div><div class="role-input" contenteditable="true" data-placeholder="Name · slide switching"></div></div>
+          <div class="role-cell"><div class="role-label stage"><span class="ico">🎬</span> Stage Crew</div><div class="role-input" contenteditable="true" data-placeholder="Name · mic passing + backstage"></div></div>
+          <div class="role-cell"><div class="role-label photo"><span class="ico">📸</span> Photo / Video</div><div class="role-input" contenteditable="true" data-placeholder="Name · capture each speaker"></div></div>
+        </div>
+      </div>
+      <div class="event-card">
+        <div class="event-top">
+          <div class="event-time">11:00–11:10<div class="dur">10 min</div></div>
+          <div class="event-info">
+            <div class="event-title">📸 Global Group Photo + Build Begins <span class="etag etag-global">Global Sync</span></div>
+            <div class="event-detail">All participants + speakers + staff stand for group photo → MC declares Build officially open</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label mc"><span class="ico">🎤</span> MC</div><div class="role-input" contenteditable="true" data-placeholder="Name · 3-2-1 cue"></div></div>
+          <div class="role-cell"><div class="role-label photo"><span class="ico">📸</span> Photo / Video</div><div class="role-input" contenteditable="true" data-placeholder="Name · front-facing group shot"></div></div>
+          <div class="role-cell"><div class="role-label guide"><span class="ico">🚩</span> Floor Guide</div><div class="role-input" contenteditable="true" data-placeholder="Name × 2 · organize positions"></div></div>
+          <div class="role-cell"><div class="role-label ops"><span class="ico">📋</span> Ops</div><div class="role-input" contenteditable="true" data-placeholder="Name · post photo to channels"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-header">
+        <div class="phase-dot" style="background:var(--green)"></div>
+        <div class="phase-label">Build Phase</div>
+        <div class="phase-time">11:10 – 21:00 PT</div>
+      </div>
+      <div class="event-card">
+        <div class="event-top">
+          <div class="event-time">11:10<div class="dur">—</div></div>
+          <div class="event-info">
+            <div class="event-title">⚡ Build Starts · Voting Opens <span class="etag etag-key">KEY</span></div>
+            <div class="event-detail">MC announces Build open · Screen switches to build countdown · Voting channel opens · Product links go live</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label mc"><span class="ico">🎤</span> MC</div><div class="role-input" contenteditable="true" data-placeholder="Name · announce Build start"></div></div>
+          <div class="role-cell"><div class="role-label tech"><span class="ico">💻</span> Platform / Tech</div><div class="role-input" contenteditable="true" data-placeholder="Name · open voting channel"></div></div>
+          <div class="role-cell"><div class="role-label av"><span class="ico">🎛</span> AV</div><div class="role-input" contenteditable="true" data-placeholder="Name · switch to countdown"></div></div>
+          <div class="role-cell"><div class="role-label ops"><span class="ico">📋</span> Ops</div><div class="role-input" contenteditable="true" data-placeholder="Name · post to Discord + socials"></div></div>
+        </div>
+      </div>
+      <div class="event-card">
+        <div class="event-top">
+          <div class="event-time">12:00–13:00<div class="dur">60 min</div></div>
+          <div class="event-info">
+            <div class="event-title">🍔 Lunch <span class="etag etag-share">📱 Share Moment ①</span></div>
+            <div class="event-detail">Ops circulate through zones · Help participants post on Twitter/X · "I built an app in 24h — vote for me 👇" template ready</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label ops"><span class="ico">📋</span> Social Media Ops</div><div class="role-input" contenteditable="true" data-placeholder="Name × 2–3 · cover all zones"></div></div>
+          <div class="role-cell"><div class="role-label guide"><span class="ico">🚩</span> Floor Guide</div><div class="role-input" contenteditable="true" data-placeholder="Name · food coordination"></div></div>
+        </div>
+      </div>
+      <div class="event-card">
+        <div class="event-top">
+          <div class="event-time">Every 45–60m<div class="dur">ongoing</div></div>
+          <div class="event-info">
+            <div class="event-title">💬 Bot Broadcasts + Mentor Rounds</div>
+            <div class="event-detail">Bot sends encouragement in Discord · Mentors circulate every 30–45 min · light-touch availability only, no decision-making</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label ops"><span class="ico">📋</span> Ops Bot</div><div class="role-input" contenteditable="true" data-placeholder="Name · configure bot messages"></div></div>
+          <div class="role-cell"><div class="role-label guide"><span class="ico">🚩</span> Mentor Coordination</div><div class="role-input" contenteditable="true" data-placeholder="Name · briefing mentors"></div></div>
+        </div>
+      </div>
+      <div class="event-card">
+        <div class="event-top">
+          <div class="event-time">15:30<div class="dur">15 min</div></div>
+          <div class="event-info">
+            <div class="event-title">☕ Afternoon Break <span class="etag etag-share">📱 Share Moment ②</span></div>
+            <div class="event-detail">"Show your WIP!" — screenshot your build and share it · Discord progress check</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label ops"><span class="ico">📋</span> Ops</div><div class="role-input" contenteditable="true" data-placeholder="Name · Discord push + repost WIPs"></div></div>
+          <div class="role-cell"><div class="role-label guide"><span class="ico">🚩</span> Floor Guide</div><div class="role-input" contenteditable="true" data-placeholder="Name · snack distribution"></div></div>
+        </div>
+      </div>
+      <div class="event-card">
+        <div class="event-top">
+          <div class="event-time">19:00<div class="dur">30 min</div></div>
+          <div class="event-info">
+            <div class="event-title">🍕 Dinner <span class="etag etag-share">📱 Share Moment ③</span></div>
+            <div class="event-detail">Post leaderboard snapshot → "Help the product you love — share + vote!" · Last big push before deadline</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label ops"><span class="ico">📋</span> Ops</div><div class="role-input" contenteditable="true" data-placeholder="Name · leaderboard screenshot + post"></div></div>
+          <div class="role-cell"><div class="role-label guide"><span class="ico">🚩</span> Floor Guide</div><div class="role-input" contenteditable="true" data-placeholder="Name · food coordination"></div></div>
+        </div>
+      </div>
+      <div class="event-card">
+        <div class="event-top">
+          <div class="event-time">20:50<div class="dur">—</div></div>
+          <div class="event-info">
+            <div class="event-title">🚨 10-Min Submission Warning <span class="etag etag-hard">10 MIN</span></div>
+            <div class="event-detail">"10 minutes left! 21:00 is a hard stop — no extensions. Publish your product NOW."</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label tech"><span class="ico">💻</span> Platform / Tech</div><div class="role-input" contenteditable="true" data-placeholder="Name · trigger alert + @everyone"></div></div>
+          <div class="role-cell"><div class="role-label av"><span class="ico">🎛</span> AV</div><div class="role-input" contenteditable="true" data-placeholder="Name · red countdown screen"></div></div>
+          <div class="role-cell"><div class="role-label ops"><span class="ico">📋</span> Ops</div><div class="role-input" contenteditable="true" data-placeholder="Name · Discord + floor announcement"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-header">
+        <div class="phase-dot" style="background:var(--red)"></div>
+        <div class="phase-label">Submission Deadline + Peer Review</div>
+        <div class="phase-time">21:00 – 24:00 PT</div>
+      </div>
+      <div class="event-card">
+        <div class="event-top">
+          <div class="event-time">21:00<div class="dur">—</div></div>
+          <div class="event-info">
+            <div class="event-title">🔒 Submission Closes <span class="etag etag-hard">HARD STOP</span></div>
+            <div class="event-detail">Platform locks · Count total submissions · Calculate referral top 10 · Peer review channel opens immediately</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label tech"><span class="ico">💻</span> Platform / Tech</div><div class="role-input" contenteditable="true" data-placeholder="Name · lock platform + start calc"></div></div>
+          <div class="role-cell"><div class="role-label ops"><span class="ico">📋</span> Ops</div><div class="role-input" contenteditable="true" data-placeholder="Name · announce lock to Discord"></div></div>
+          <div class="role-cell"><div class="role-label av"><span class="ico">🎛</span> AV</div><div class="role-input" contenteditable="true" data-placeholder="Name · switch screen to peer review"></div></div>
+        </div>
+      </div>
+      <div class="event-card">
+        <div class="event-top">
+          <div class="event-time">21:00–24:00<div class="dur">180 min</div></div>
+          <div class="event-info">
+            <div class="event-title">🤝 Peer Review Window · Complete before midnight</div>
+            <div class="event-detail">All participants vote via platform · Max 3 votes per person · Cannot vote for own team · Separate backend channel from public votes</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label tech"><span class="ico">💻</span> Platform / Tech</div><div class="role-input" contenteditable="true" data-placeholder="Name · monitor peer review system"></div></div>
+          <div class="role-cell"><div class="role-label ops"><span class="ico">📋</span> Ops</div><div class="role-input" contenteditable="true" data-placeholder="Name · push peer review link every 45min"></div></div>
+        </div>
+      </div>
+      <div class="event-card">
+        <div class="event-top">
+          <div class="event-time">24:00<div class="dur">—</div></div>
+          <div class="event-info">
+            <div class="event-title">📊 Peer Review Closes · Calculate · Announce 30 Finalists <span class="etag etag-key">KEY</span></div>
+            <div class="event-detail">Peer review locks → Merge 3 sources: Referral top 10 + Peer review top 10 + International online top 10 → Dedup → Post full list in Discord</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label tech"><span class="ico">💻</span> Platform / Tech</div><div class="role-input" contenteditable="true" data-placeholder="Name · run merge + dedup calc"></div></div>
+          <div class="role-cell"><div class="role-label ops"><span class="ico">📋</span> Ops</div><div class="role-input" contenteditable="true" data-placeholder="Name · post finalist list to Discord"></div></div>
+          <div class="role-cell"><div class="role-label ctrl"><span class="ico">🎯</span> Overall Lead</div><div class="role-input" contenteditable="true" data-placeholder="Name · verify list before posting"></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /sf-day1 -->
+
+  <!-- SF DAY 2 -->
+  <div class="day-panel" id="sf-day2">
+
+    <div class="phase">
+      <div class="phase-header">
+        <div class="phase-dot" style="background:var(--sf)"></div>
+        <div class="phase-label">Day 2 Setup + Demo Prep</div>
+        <div class="phase-time">Morning · TBD PT</div>
+      </div>
+      <div class="event-card">
+        <div class="event-top">
+          <div class="event-time">Morning TBD<div class="dur">—</div></div>
+          <div class="event-info">
+            <div class="event-title">🛠 Venue Flip: Build → Demo Mode</div>
+            <div class="event-detail">Rearrange seating → Set up judges' table (front center) → Stage / screen ready for demo → Discord stage channel configured · Online international participants: confirm Feishu/Discord link</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label ctrl"><span class="ico">🎯</span> Overall Lead</div><div class="role-input" contenteditable="true" data-placeholder="Name · flip coordination"></div></div>
+          <div class="role-cell"><div class="role-label av"><span class="ico">🎛</span> AV</div><div class="role-input" contenteditable="true" data-placeholder="Name · screen + Discord stage test"></div></div>
+          <div class="role-cell"><div class="role-label discord"><span class="ico">💬</span> Discord Host</div><div class="role-input" contenteditable="true" data-placeholder="Name · set up stage channel"></div></div>
+          <div class="role-cell"><div class="role-label guide"><span class="ico">🚩</span> Floor Crew</div><div class="role-input" contenteditable="true" data-placeholder="Name × 2–3 · furniture flip"></div></div>
+        </div>
+      </div>
+      <div class="event-card">
+        <div class="event-top">
+          <div class="event-time">TBD – 30 before<div class="dur">30 min</div></div>
+          <div class="event-info">
+            <div class="event-title">⚖️ Judges Arrive + Briefing</div>
+            <div class="event-detail">Judges sign in → Receive judging packet (scorecard + pen + agenda) → MC/Ops brief on demo flow, scoring dimensions, format</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label judge"><span class="ico">💎</span> Judge Liaison</div><div class="role-input" contenteditable="true" data-placeholder="Name · sign-in + briefing"></div></div>
+          <div class="role-cell"><div class="role-label mc"><span class="ico">🎤</span> MC</div><div class="role-input" contenteditable="true" data-placeholder="Name · deliver judge briefing"></div></div>
+          <div class="role-cell"><div class="role-label ops"><span class="ico">📋</span> Ops</div><div class="role-input" contenteditable="true" data-placeholder="Name · judge packets ready"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-header">
+        <div class="phase-dot" style="background:var(--orange)"></div>
+        <div class="phase-label">Demo Presentations</div>
+        <div class="phase-time">TBD PT · 30 teams × 3 min</div>
+      </div>
+      <div class="event-card">
+        <div class="event-top">
+          <div class="event-time">Demo start<div class="dur">~90–120m</div></div>
+          <div class="event-info">
+            <div class="event-title">🎤 Demo · Discord · 3 min/team <span class="etag etag-demo">Demo</span></div>
+            <div class="event-detail">30 teams in order: offline 20 teams + international online 10 teams (Discord stage) · Online teams: screen share via Discord · Offline/online interleaved · 30s warning before time up</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label ctrl"><span class="ico">🎯</span> Overall Lead</div><div class="role-input" contenteditable="true" data-placeholder="Name · queue management"></div></div>
+          <div class="role-cell"><div class="role-label mc"><span class="ico">🎤</span> MC</div><div class="role-input" contenteditable="true" data-placeholder="Name · introduce each team"></div></div>
+          <div class="role-cell"><div class="role-label discord"><span class="ico">💬</span> Discord Host</div><div class="role-input" contenteditable="true" data-placeholder="Name · manage stage invites"></div></div>
+          <div class="role-cell"><div class="role-label av"><span class="ico">🎛</span> AV</div><div class="role-input" contenteditable="true" data-placeholder="Name · timer screen + Discord display"></div></div>
+          <div class="role-cell"><div class="role-label judge"><span class="ico">💎</span> Judge Liaison</div><div class="role-input" contenteditable="true" data-placeholder="Name · collect scorecards"></div></div>
+          <div class="role-cell"><div class="role-label tech"><span class="ico">💻</span> Platform / Tech</div><div class="role-input" contenteditable="true" data-placeholder="Name · online team connection support"></div></div>
+          <div class="role-cell"><div class="role-label photo"><span class="ico">📸</span> Photo / Video</div><div class="role-input" contenteditable="true" data-placeholder="Name · capture each demo"></div></div>
+          <div class="role-cell"><div class="role-label ops"><span class="ico">📋</span> Ops</div><div class="role-input" contenteditable="true" data-placeholder="Name · voting push every 30min"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-header">
+        <div class="phase-dot" style="background:var(--red)"></div>
+        <div class="phase-label">Vote Sprint & Deadline</div>
+        <div class="phase-time">After Demo</div>
+      </div>
+      <div class="event-card">
+        <div class="event-top">
+          <div class="event-time">After demos<div class="dur">30 min</div></div>
+          <div class="event-info">
+            <div class="event-title">🗳 Final Voting Sprint</div>
+            <div class="event-detail">MC announces final push · Big screen countdown · Ops push voting link in Discord every 5 min</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label mc"><span class="ico">🎤</span> MC</div><div class="role-input" contenteditable="true" data-placeholder="Name · announce vote sprint"></div></div>
+          <div class="role-cell"><div class="role-label ops"><span class="ico">📋</span> Ops</div><div class="role-input" contenteditable="true" data-placeholder="Name · Discord voting push"></div></div>
+          <div class="role-cell"><div class="role-label av"><span class="ico">🎛</span> AV</div><div class="role-input" contenteditable="true" data-placeholder="Name · red countdown display"></div></div>
+        </div>
+      </div>
+      <div class="event-card">
+        <div class="event-top">
+          <div class="event-time">Voting close<div class="dur">—</div></div>
+          <div class="event-info">
+            <div class="event-title">🔒 Voting Closes · Calculate Final Scores <span class="etag etag-hard">HARD STOP</span></div>
+            <div class="event-detail">System locked · S = V(norm)×50% + J(norm)×40% + P(norm)×10% · Min-Max normalization · Generate zone ranking for Top 1–20</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label tech"><span class="ico">💻</span> Platform / Tech</div><div class="role-input" contenteditable="true" data-placeholder="Name · run scoring formula"></div></div>
+          <div class="role-cell"><div class="role-label ctrl"><span class="ico">🎯</span> Overall Lead</div><div class="role-input" contenteditable="true" data-placeholder="Name · verify results before reveal"></div></div>
+          <div class="role-cell"><div class="role-label judge"><span class="ico">💎</span> Judge Liaison</div><div class="role-input" contenteditable="true" data-placeholder="Name · submit final judge scores"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-header">
+        <div class="phase-dot" style="background:var(--gold)"></div>
+        <div class="phase-label">Awards Ceremony + Global Finale</div>
+        <div class="phase-time">Evening</div>
+      </div>
+      <div class="event-card">
+        <div class="event-top">
+          <div class="event-time">Awards start<div class="dur">30 min</div></div>
+          <div class="event-info">
+            <div class="event-title">🏅 SF Special Awards (6 × 5 teams) <span class="etag etag-award">Awards</span></div>
+            <div class="event-detail">Reveal 6 special award categories one by one · 5 teams per award · $1,000/team · Names TBD</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label ctrl"><span class="ico">🎯</span> Overall Lead</div><div class="role-input" contenteditable="true" data-placeholder="Name · awards flow control"></div></div>
+          <div class="role-cell"><div class="role-label mc"><span class="ico">🎤</span> MC</div><div class="role-input" contenteditable="true" data-placeholder="Name · announce each award"></div></div>
+          <div class="role-cell"><div class="role-label av"><span class="ico">🎛</span> AV</div><div class="role-input" contenteditable="true" data-placeholder="Name · display winner names"></div></div>
+          <div class="role-cell"><div class="role-label stage"><span class="ico">🎬</span> Stage Crew</div><div class="role-input" contenteditable="true" data-placeholder="Name · certificates + trophies"></div></div>
+          <div class="role-cell"><div class="role-label photo"><span class="ico">📸</span> Photo / Video</div><div class="role-input" contenteditable="true" data-placeholder="Name · capture each award"></div></div>
+        </div>
+      </div>
+      <div class="event-card">
+        <div class="event-top">
+          <div class="event-time">Awards cont.<div class="dur">30 min</div></div>
+          <div class="event-info">
+            <div class="event-title">🏆 SF Regional Awards Top 1–20 <span class="etag etag-award">Awards</span></div>
+            <div class="event-detail">11–20 scroll on screen → 4–10 announced one by one → Top 3 finale (3→2→1) · 🥇$5K 🥈$3K 🥉$2K</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label ctrl"><span class="ico">🎯</span> Overall Lead</div><div class="role-input" contenteditable="true" data-placeholder="Name · pacing control"></div></div>
+          <div class="role-cell"><div class="role-label mc"><span class="ico">🎤</span> MC</div><div class="role-input" contenteditable="true" data-placeholder="Name · Top 3 finale reveal"></div></div>
+          <div class="role-cell"><div class="role-label av"><span class="ico">🎛</span> AV</div><div class="role-input" contenteditable="true" data-placeholder="Name · scroll + name switch"></div></div>
+          <div class="role-cell"><div class="role-label stage"><span class="ico">🎬</span> Stage Crew</div><div class="role-input" contenteditable="true" data-placeholder="Name · awards + Top 3 photo"></div></div>
+          <div class="role-cell"><div class="role-label judge"><span class="ico">💎</span> Judge Liaison</div><div class="role-input" contenteditable="true" data-placeholder="Name · judges on stage for awards"></div></div>
+          <div class="role-cell"><div class="role-label photo"><span class="ico">📸</span> Photo / Video</div><div class="role-input" contenteditable="true" data-placeholder="Name · Top 3 individual photos"></div></div>
+        </div>
+      </div>
+      <div class="event-card" style="border-color:var(--gold)">
+        <div class="event-top" style="background:linear-gradient(to right,#1a1600,var(--surface))">
+          <div class="event-time" style="color:var(--gold)">~21:00 PT<div class="dur" style="color:var(--text3)">60 min</div></div>
+          <div class="event-info">
+            <div class="event-title" style="color:var(--gold)">🌍 Global Awards Ceremony — LIVE FROM SF <span class="etag" style="background:var(--gold-dim);color:var(--gold)">🌍 GLOBAL LIVE</span></div>
+            <div class="event-detail" style="color:var(--text2)">People's Choice $25,000 → Grand Prize $50,000 · SF hosts + broadcasts to SH & NY · If SF team wins, celebrate on stage</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label ctrl"><span class="ico">🎯</span> Overall Lead</div><div class="role-input" contenteditable="true" data-placeholder="Name · global ceremony coordination"></div></div>
+          <div class="role-cell"><div class="role-label mc"><span class="ico">🎤</span> MC / Host</div><div class="role-input" contenteditable="true" data-placeholder="Name · host global ceremony"></div></div>
+          <div class="role-cell"><div class="role-label av"><span class="ico">🎛</span> AV</div><div class="role-input" contenteditable="true" data-placeholder="Name · RTMP broadcast to SH + NY"></div></div>
+          <div class="role-cell"><div class="role-label tech"><span class="ico">💻</span> Platform / Tech</div><div class="role-input" contenteditable="true" data-placeholder="Name · calculate global ranking"></div></div>
+          <div class="role-cell"><div class="role-label photo"><span class="ico">📸</span> Photo / Video</div><div class="role-input" contenteditable="true" data-placeholder="Name · capture global reveal moments"></div></div>
+          <div class="role-cell"><div class="role-label ops"><span class="ico">📋</span> Ops</div><div class="role-input" contenteditable="true" data-placeholder="Name · push stream link to all channels"></div></div>
+        </div>
+      </div>
+      <div class="event-card">
+        <div class="event-top">
+          <div class="event-time">Post-awards<div class="dur">—</div></div>
+          <div class="event-info">
+            <div class="event-title">🎊 Group Photo + Launch Party <span class="etag etag-award">Celebration</span></div>
+            <div class="event-detail">Full group photo → Launch Party (music / free networking / product showcase stays open) → Publish product collection link</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label mc"><span class="ico">🎤</span> MC</div><div class="role-input" contenteditable="true" data-placeholder="Name · photo cue + party MC"></div></div>
+          <div class="role-cell"><div class="role-label photo"><span class="ico">📸</span> Photo / Video</div><div class="role-input" contenteditable="true" data-placeholder="Name · group photo + candids"></div></div>
+          <div class="role-cell"><div class="role-label ops"><span class="ico">📋</span> Ops</div><div class="role-input" contenteditable="true" data-placeholder="Name · post collection link + encourage sharing"></div></div>
+          <div class="role-cell"><div class="role-label guide"><span class="ico">🚩</span> Floor Guide</div><div class="role-input" contenteditable="true" data-placeholder="Name · direct to party area + wrap-up"></div></div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /sf-day2 -->
+
+</div><!-- /zone-sf -->
+
+
+<!-- ════════════ NY ════════════ -->
+<div class="zone-panel" id="zone-ny">
+
+  <div class="zone-callout ny">
+    <strong>NY Zone Notes:</strong> All times in ET — TBD · <strong>No online group</strong> · 30 finalists = Referral top 15 + Peer review top 15 · Demo is <strong>in-person on stage</strong> (3 min/team, no platform) · Global Awards = watch party (stream from SF)
+  </div>
+
+  <div class="toolbar">
+    <button class="day-btn ny-active" onclick="switchDay('ny',1)">Day 1 · Build Day</button>
+    <button class="day-btn" onclick="switchDay('ny',2)">Day 2 · Demo + Awards</button>
+    <div class="spacer"></div>
+    <button class="print-btn" onclick="window.print()">🖨 Print / Export PDF</button>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Overall Lead</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--ny)"></div>AV / Tech</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--gold)"></div>Check-in</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div>Floor Guide</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--purple)"></div>Ops / Comms</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>MC / Host</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--cyan)"></div>Photo / Video</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#818cf8"></div>Platform / Tech</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--pink)"></div>Judge Liaison</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#fca5a5"></div>Stage Crew</div>
+    <span style="margin-left:auto;font-style:italic;color:var(--text3)">✏️ Click any name field to edit</span>
+  </div>
+
+  <!-- NY DAY 1 -->
+  <div class="day-panel active" id="ny-day1">
+
+    <div class="phase">
+      <div class="phase-header">
+        <div class="phase-dot" style="background:var(--ny)"></div>
+        <div class="phase-label">Venue Setup & AV Check</div>
+        <div class="phase-time">TBD ET — approx. 07:00</div>
+      </div>
+      <div class="event-card">
+        <div class="event-top">
+          <div class="event-time">TBD<div class="dur">~150 min</div></div>
+          <div class="event-info">
+            <div class="event-title">🛠 Venue Setup & AV Rehearsal</div>
+            <div class="event-detail">Tables by track (5 zones) · Check-in desk · Screen + projector test · Mic check · Global livestream relay test (receiving SH/SF signal)</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label ctrl"><span class="ico">🎯</span> Overall Lead</div><div class="role-input" contenteditable="true" data-placeholder="Name · mobile"></div></div>
+          <div class="role-cell"><div class="role-label av"><span class="ico">🎛</span> AV</div><div class="role-input" contenteditable="true" data-placeholder="Name · screen + stream"></div></div>
+          <div class="role-cell"><div class="role-label guide"><span class="ico">🚩</span> Floor Crew</div><div class="role-input" contenteditable="true" data-placeholder="Name × 2–3 · furniture"></div></div>
+          <div class="role-cell"><div class="role-label ops"><span class="ico">📋</span> Ops</div><div class="role-input" contenteditable="true" data-placeholder="Name · materials check"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-header">
+        <div class="phase-dot" style="background:var(--gold)"></div>
+        <div class="phase-label">Check-in & Warm-up</div>
+        <div class="phase-time">TBD ET — approx. 09:30</div>
+      </div>
+      <div class="event-card">
+        <div class="event-top">
+          <div class="event-time">TBD<div class="dur">30 min</div></div>
+          <div class="event-info">
+            <div class="event-title">✅ Check-in Opens <span class="etag etag-key">KEY</span></div>
+            <div class="event-detail">Verify registration · Badge · Track sticker → direct to zone · VIP lane separate</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label ctrl"><span class="ico">🎯</span> Overall Lead</div><div class="role-input" contenteditable="true" data-placeholder="Name · floor coordination"></div></div>
+          <div class="role-cell"><div class="role-label checkin"><span class="ico">📝</span> Check-in (Participant)</div><div class="role-input" contenteditable="true" data-placeholder="Name × 3–4 people"></div></div>
+          <div class="role-cell"><div class="role-label checkin"><span class="ico">⭐</span> Check-in (VIP / Speaker)</div><div class="role-input" contenteditable="true" data-placeholder="Name × 1 person"></div></div>
+          <div class="role-cell"><div class="role-label guide"><span class="ico">🚩</span> Floor Guide</div><div class="role-input" contenteditable="true" data-placeholder="Name × 2–3 · direct to zones"></div></div>
+          <div class="role-cell"><div class="role-label av"><span class="ico">🎛</span> AV</div><div class="role-input" contenteditable="true" data-placeholder="Name · countdown screen"></div></div>
+          <div class="role-cell"><div class="role-label ops"><span class="ico">📋</span> Ops</div><div class="role-input" contenteditable="true" data-placeholder="Name · monitor check-in pace"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-header">
+        <div class="phase-dot" style="background:var(--red)"></div>
+        <div class="phase-label">Opening Ceremony</div>
+        <div class="phase-time">TBD ET — approx. 10:00</div>
+      </div>
+      <div class="event-card">
+        <div class="event-top">
+          <div class="event-time">TBD<div class="dur">5 min</div></div>
+          <div class="event-info">
+            <div class="event-title">🎤 MC Welcome + Global Livestream <span class="etag etag-global">🔴 GLOBAL LIVE</span></div>
+            <div class="event-detail">MC opens · Announce global sync with SH & SF · Switch to global livestream</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label mc"><span class="ico">🎤</span> MC</div><div class="role-input" contenteditable="true" data-placeholder="Name · welcome script"></div></div>
+          <div class="role-cell"><div class="role-label av"><span class="ico">🎛</span> AV</div><div class="role-input" contenteditable="true" data-placeholder="Name · switch to live feed"></div></div>
+          <div class="role-cell"><div class="role-label ctrl"><span class="ico">🎯</span> Overall Lead</div><div class="role-input" contenteditable="true" data-placeholder="Name · cue management"></div></div>
+        </div>
+      </div>
+      <div class="event-card">
+        <div class="event-top">
+          <div class="event-time">TBD<div class="dur">25 min</div></div>
+          <div class="event-info">
+            <div class="event-title">🚀 Founder Speech (livestream) + Guest Speakers <span class="etag etag-global">🔴 LIVE</span></div>
+            <div class="event-detail">Watch Founder speech via global stream · Local NY guest speakers follow · Track intro + rules explained</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label ctrl"><span class="ico">🎯</span> Overall Lead</div><div class="role-input" contenteditable="true" data-placeholder="Name · speaker cues"></div></div>
+          <div class="role-cell"><div class="role-label mc"><span class="ico">🎤</span> MC</div><div class="role-input" contenteditable="true" data-placeholder="Name · transitions + time"></div></div>
+          <div class="role-cell"><div class="role-label av"><span class="ico">🎛</span> AV</div><div class="role-input" contenteditable="true" data-placeholder="Name · slides + stream relay"></div></div>
+          <div class="role-cell"><div class="role-label photo"><span class="ico">📸</span> Photo / Video</div><div class="role-input" contenteditable="true" data-placeholder="Name · capture speakers"></div></div>
+        </div>
+      </div>
+      <div class="event-card">
+        <div class="event-top">
+          <div class="event-time">TBD<div class="dur">10 min</div></div>
+          <div class="event-info">
+            <div class="event-title">📸 Group Photo + Build Begins <span class="etag etag-global">Global Sync</span></div>
+            <div class="event-detail">All participants + speakers group photo → MC declares Build open</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label mc"><span class="ico">🎤</span> MC</div><div class="role-input" contenteditable="true" data-placeholder="Name · 3-2-1 cue"></div></div>
+          <div class="role-cell"><div class="role-label photo"><span class="ico">📸</span> Photo / Video</div><div class="role-input" contenteditable="true" data-placeholder="Name · group shot"></div></div>
+          <div class="role-cell"><div class="role-label guide"><span class="ico">🚩</span> Floor Guide</div><div class="role-input" contenteditable="true" data-placeholder="Name × 2 · organize positions"></div></div>
+          <div class="role-cell"><div class="role-label ops"><span class="ico">📋</span> Ops</div><div class="role-input" contenteditable="true" data-placeholder="Name · post to Discord + LinkedIn"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-header">
+        <div class="phase-dot" style="background:var(--green)"></div>
+        <div class="phase-label">Build Phase</div>
+        <div class="phase-time">TBD ET · Until submission deadline</div>
+      </div>
+      <div class="event-card">
+        <div class="event-top">
+          <div class="event-time">TBD<div class="dur">—</div></div>
+          <div class="event-info">
+            <div class="event-title">⚡ Build Starts · Voting Opens <span class="etag etag-key">KEY</span></div>
+            <div class="event-detail">MC announces Build open · Screen switches to build countdown · Voting opens · Product links go live</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label mc"><span class="ico">🎤</span> MC</div><div class="role-input" contenteditable="true" data-placeholder="Name · announce Build start"></div></div>
+          <div class="role-cell"><div class="role-label tech"><span class="ico">💻</span> Platform / Tech</div><div class="role-input" contenteditable="true" data-placeholder="Name · open voting channel"></div></div>
+          <div class="role-cell"><div class="role-label av"><span class="ico">🎛</span> AV</div><div class="role-input" contenteditable="true" data-placeholder="Name · switch to countdown"></div></div>
+          <div class="role-cell"><div class="role-label ops"><span class="ico">📋</span> Ops</div><div class="role-input" contenteditable="true" data-placeholder="Name · post to Discord + Twitter/LinkedIn"></div></div>
+        </div>
+      </div>
+      <div class="event-card">
+        <div class="event-top">
+          <div class="event-time">Lunch TBD<div class="dur">60 min</div></div>
+          <div class="event-info">
+            <div class="event-title">🥗 Lunch <span class="etag etag-share">📱 Share Moment ①</span></div>
+            <div class="event-detail">Ops circulate through zones · Help participants post on Twitter/X and LinkedIn · Share template ready</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label ops"><span class="ico">📋</span> Social Media Ops</div><div class="role-input" contenteditable="true" data-placeholder="Name × 2–3 · cover all zones"></div></div>
+          <div class="role-cell"><div class="role-label guide"><span class="ico">🚩</span> Floor Guide</div><div class="role-input" contenteditable="true" data-placeholder="Name · food coordination"></div></div>
+        </div>
+      </div>
+      <div class="event-card">
+        <div class="event-top">
+          <div class="event-time">Every 45–60m<div class="dur">ongoing</div></div>
+          <div class="event-info">
+            <div class="event-title">💬 Bot Broadcasts + Mentor Rounds</div>
+            <div class="event-detail">Bot sends encouragement in Discord · Mentors available light-touch</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label ops"><span class="ico">📋</span> Ops Bot</div><div class="role-input" contenteditable="true" data-placeholder="Name · configure bot messages"></div></div>
+          <div class="role-cell"><div class="role-label guide"><span class="ico">🚩</span> Mentor Coordination</div><div class="role-input" contenteditable="true" data-placeholder="Name · mentor briefing"></div></div>
+        </div>
+      </div>
+      <div class="event-card">
+        <div class="event-top">
+          <div class="event-time">Dinner TBD<div class="dur">30 min</div></div>
+          <div class="event-info">
+            <div class="event-title">🍽 Dinner <span class="etag etag-share">📱 Share Moment ②</span></div>
+            <div class="event-detail">Post leaderboard snapshot → Final push before deadline</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label ops"><span class="ico">📋</span> Ops</div><div class="role-input" contenteditable="true" data-placeholder="Name · leaderboard screenshot + post"></div></div>
+          <div class="role-cell"><div class="role-label guide"><span class="ico">🚩</span> Floor Guide</div><div class="role-input" contenteditable="true" data-placeholder="Name · food coordination"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-header">
+        <div class="phase-dot" style="background:var(--red)"></div>
+        <div class="phase-label">Submission Deadline + Peer Review</div>
+        <div class="phase-time">TBD ET</div>
+      </div>
+      <div class="event-card">
+        <div class="event-top">
+          <div class="event-time">TBD – 10min<div class="dur">—</div></div>
+          <div class="event-info">
+            <div class="event-title">🚨 10-Min Submission Warning <span class="etag etag-hard">10 MIN</span></div>
+            <div class="event-detail">"10 minutes left! Hard deadline — no extensions. Publish your product NOW."</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label tech"><span class="ico">💻</span> Platform / Tech</div><div class="role-input" contenteditable="true" data-placeholder="Name · trigger alert + @everyone"></div></div>
+          <div class="role-cell"><div class="role-label av"><span class="ico">🎛</span> AV</div><div class="role-input" contenteditable="true" data-placeholder="Name · red countdown screen"></div></div>
+          <div class="role-cell"><div class="role-label ops"><span class="ico">📋</span> Ops</div><div class="role-input" contenteditable="true" data-placeholder="Name · Discord push"></div></div>
+        </div>
+      </div>
+      <div class="event-card">
+        <div class="event-top">
+          <div class="event-time">Deadline<div class="dur">—</div></div>
+          <div class="event-info">
+            <div class="event-title">🔒 Submission Closes <span class="etag etag-hard">HARD STOP</span></div>
+            <div class="event-detail">Platform locks · Count submissions · Calculate referral top 15 · Open peer review immediately</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label tech"><span class="ico">💻</span> Platform / Tech</div><div class="role-input" contenteditable="true" data-placeholder="Name · lock + calculate top 15 referral"></div></div>
+          <div class="role-cell"><div class="role-label ops"><span class="ico">📋</span> Ops</div><div class="role-input" contenteditable="true" data-placeholder="Name · announce lock in Discord"></div></div>
+        </div>
+      </div>
+      <div class="event-card">
+        <div class="event-top">
+          <div class="event-time">TBD window<div class="dur">TBD</div></div>
+          <div class="event-info">
+            <div class="event-title">🤝 Peer Review Window <span class="etag etag-ny">NY Only · All Offline</span></div>
+            <div class="event-detail">All NY participants vote · Max 3 votes per person · Cannot vote for own team · No online participants</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label tech"><span class="ico">💻</span> Platform / Tech</div><div class="role-input" contenteditable="true" data-placeholder="Name · monitor peer review"></div></div>
+          <div class="role-cell"><div class="role-label ops"><span class="ico">📋</span> Ops</div><div class="role-input" contenteditable="true" data-placeholder="Name · push peer review link"></div></div>
+        </div>
+      </div>
+      <div class="event-card">
+        <div class="event-top">
+          <div class="event-time">Peer review end<div class="dur">—</div></div>
+          <div class="event-info">
+            <div class="event-title">📊 Peer Review Closes · Calculate · Announce 30 Finalists <span class="etag etag-key">KEY</span></div>
+            <div class="event-detail">Peer review locks → Merge: Referral top 15 + Peer review top 15 → Dedup → Post finalist list</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label tech"><span class="ico">💻</span> Platform / Tech</div><div class="role-input" contenteditable="true" data-placeholder="Name · run merge calc"></div></div>
+          <div class="role-cell"><div class="role-label ops"><span class="ico">📋</span> Ops</div><div class="role-input" contenteditable="true" data-placeholder="Name · post list to Discord + venue screen"></div></div>
+          <div class="role-cell"><div class="role-label ctrl"><span class="ico">🎯</span> Overall Lead</div><div class="role-input" contenteditable="true" data-placeholder="Name · verify before posting"></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /ny-day1 -->
+
+  <!-- NY DAY 2 -->
+  <div class="day-panel" id="ny-day2">
+
+    <div class="phase">
+      <div class="phase-header">
+        <div class="phase-dot" style="background:var(--ny)"></div>
+        <div class="phase-label">Day 2 Setup + Demo Prep</div>
+        <div class="phase-time">Morning · TBD ET</div>
+      </div>
+      <div class="event-card">
+        <div class="event-top">
+          <div class="event-time">Morning TBD<div class="dur">—</div></div>
+          <div class="event-info">
+            <div class="event-title">🛠 Venue Flip: Build → Demo Mode</div>
+            <div class="event-detail">Rearrange seating → Stage setup for in-person demos (no Discord, no online stream) → Judges' table front center · Screen ready for scoreboard</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label ctrl"><span class="ico">🎯</span> Overall Lead</div><div class="role-input" contenteditable="true" data-placeholder="Name · flip coordination"></div></div>
+          <div class="role-cell"><div class="role-label av"><span class="ico">🎛</span> AV</div><div class="role-input" contenteditable="true" data-placeholder="Name · stage screen + mic setup"></div></div>
+          <div class="role-cell"><div class="role-label guide"><span class="ico">🚩</span> Floor Crew</div><div class="role-input" contenteditable="true" data-placeholder="Name × 2–3 · furniture flip"></div></div>
+        </div>
+      </div>
+      <div class="event-card">
+        <div class="event-top">
+          <div class="event-time">TBD – 30 before<div class="dur">30 min</div></div>
+          <div class="event-info">
+            <div class="event-title">⚖️ Judges Arrive + Briefing</div>
+            <div class="event-detail">Judges sign in → Judging packet (scorecard + pen + agenda) → MC briefs on 3-min format and scoring</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label judge"><span class="ico">💎</span> Judge Liaison</div><div class="role-input" contenteditable="true" data-placeholder="Name · sign-in + briefing"></div></div>
+          <div class="role-cell"><div class="role-label mc"><span class="ico">🎤</span> MC</div><div class="role-input" contenteditable="true" data-placeholder="Name · deliver judge briefing"></div></div>
+          <div class="role-cell"><div class="role-label ops"><span class="ico">📋</span> Ops</div><div class="role-input" contenteditable="true" data-placeholder="Name · judge packets ready"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-header">
+        <div class="phase-dot" style="background:var(--orange)"></div>
+        <div class="phase-label">Demo Presentations</div>
+        <div class="phase-time">TBD ET · 30 teams × 3 min · In-Person</div>
+      </div>
+      <div class="event-card">
+        <div class="event-top">
+          <div class="event-time">Demo start<div class="dur">~90 min</div></div>
+          <div class="event-info">
+            <div class="event-title">🎤 Demo · In-Person Stage · 3 min/team <span class="etag etag-demo">Demo</span> <span class="etag etag-ny">No Online</span></div>
+            <div class="event-detail">30 teams all offline · Present on stage · Laptop connected to main screen via HDMI · 30s warning before time up · MC strictly enforces 3-min limit</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label ctrl"><span class="ico">🎯</span> Overall Lead</div><div class="role-input" contenteditable="true" data-placeholder="Name · queue + flow management"></div></div>
+          <div class="role-cell"><div class="role-label mc"><span class="ico">🎤</span> MC</div><div class="role-input" contenteditable="true" data-placeholder="Name · intro each team + timer"></div></div>
+          <div class="role-cell"><div class="role-label av"><span class="ico">🎛</span> AV</div><div class="role-input" contenteditable="true" data-placeholder="Name · HDMI switch + timer screen"></div></div>
+          <div class="role-cell"><div class="role-label judge"><span class="ico">💎</span> Judge Liaison</div><div class="role-input" contenteditable="true" data-placeholder="Name · collect scorecards"></div></div>
+          <div class="role-cell"><div class="role-label photo"><span class="ico">📸</span> Photo / Video</div><div class="role-input" contenteditable="true" data-placeholder="Name · capture each demo"></div></div>
+          <div class="role-cell"><div class="role-label ops"><span class="ico">📋</span> Ops</div><div class="role-input" contenteditable="true" data-placeholder="Name · voting push every 30min"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-header">
+        <div class="phase-dot" style="background:var(--red)"></div>
+        <div class="phase-label">Vote Sprint & Deadline</div>
+        <div class="phase-time">After Demo · TBD ET</div>
+      </div>
+      <div class="event-card">
+        <div class="event-top">
+          <div class="event-time">After demos<div class="dur">30 min</div></div>
+          <div class="event-info">
+            <div class="event-title">🗳 Final Voting Sprint + Score Calculation</div>
+            <div class="event-detail">Voting closes → S = V(norm)×50% + J(norm)×40% + P(norm)×10% → Generate NY Top 1–20 ranking</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label mc"><span class="ico">🎤</span> MC</div><div class="role-input" contenteditable="true" data-placeholder="Name · announce sprint + close"></div></div>
+          <div class="role-cell"><div class="role-label tech"><span class="ico">💻</span> Platform / Tech</div><div class="role-input" contenteditable="true" data-placeholder="Name · run scoring calc"></div></div>
+          <div class="role-cell"><div class="role-label judge"><span class="ico">💎</span> Judge Liaison</div><div class="role-input" contenteditable="true" data-placeholder="Name · submit final scores"></div></div>
+          <div class="role-cell"><div class="role-label ctrl"><span class="ico">🎯</span> Overall Lead</div><div class="role-input" contenteditable="true" data-placeholder="Name · verify results"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-header">
+        <div class="phase-dot" style="background:var(--gold)"></div>
+        <div class="phase-label">Awards + Global Watch Party</div>
+        <div class="phase-time">Evening · TBD ET</div>
+      </div>
+      <div class="event-card">
+        <div class="event-top">
+          <div class="event-time">Awards start<div class="dur">30 min</div></div>
+          <div class="event-info">
+            <div class="event-title">🏅 NY Special Awards (6 × 5 teams) <span class="etag etag-award">Awards</span></div>
+            <div class="event-detail">6 award categories one by one · 5 teams per award · $1,000/team · Names TBD</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label ctrl"><span class="ico">🎯</span> Overall Lead</div><div class="role-input" contenteditable="true" data-placeholder="Name · awards flow"></div></div>
+          <div class="role-cell"><div class="role-label mc"><span class="ico">🎤</span> MC</div><div class="role-input" contenteditable="true" data-placeholder="Name · announce each award"></div></div>
+          <div class="role-cell"><div class="role-label av"><span class="ico">🎛</span> AV</div><div class="role-input" contenteditable="true" data-placeholder="Name · display winner names"></div></div>
+          <div class="role-cell"><div class="role-label stage"><span class="ico">🎬</span> Stage Crew</div><div class="role-input" contenteditable="true" data-placeholder="Name · certificates + trophies"></div></div>
+          <div class="role-cell"><div class="role-label photo"><span class="ico">📸</span> Photo / Video</div><div class="role-input" contenteditable="true" data-placeholder="Name · capture each award"></div></div>
+        </div>
+      </div>
+      <div class="event-card">
+        <div class="event-top">
+          <div class="event-time">Awards cont.<div class="dur">30 min</div></div>
+          <div class="event-info">
+            <div class="event-title">🏆 NY Regional Awards Top 1–20 <span class="etag etag-award">Awards</span></div>
+            <div class="event-detail">11–20 scroll on screen → 4–10 one by one → Top 3 finale (3→2→1) · 🥇$5K 🥈$3K 🥉$2K</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label ctrl"><span class="ico">🎯</span> Overall Lead</div><div class="role-input" contenteditable="true" data-placeholder="Name · pacing"></div></div>
+          <div class="role-cell"><div class="role-label mc"><span class="ico">🎤</span> MC</div><div class="role-input" contenteditable="true" data-placeholder="Name · Top 3 reveal"></div></div>
+          <div class="role-cell"><div class="role-label av"><span class="ico">🎛</span> AV</div><div class="role-input" contenteditable="true" data-placeholder="Name · scroll + name switch"></div></div>
+          <div class="role-cell"><div class="role-label stage"><span class="ico">🎬</span> Stage Crew</div><div class="role-input" contenteditable="true" data-placeholder="Name · awards + Top 3 photo"></div></div>
+          <div class="role-cell"><div class="role-label judge"><span class="ico">💎</span> Judge Liaison</div><div class="role-input" contenteditable="true" data-placeholder="Name · judges on stage"></div></div>
+          <div class="role-cell"><div class="role-label photo"><span class="ico">📸</span> Photo / Video</div><div class="role-input" contenteditable="true" data-placeholder="Name · Top 3 photos"></div></div>
+        </div>
+      </div>
+      <div class="event-card" style="border-color:rgba(167,139,250,.4)">
+        <div class="event-top" style="background:linear-gradient(to right,#100018,var(--surface))">
+          <div class="event-time" style="color:var(--ny)">SF time ~21:00 PT<div class="dur" style="color:var(--text3)">60 min</div></div>
+          <div class="event-info">
+            <div class="event-title" style="color:#c4b5fd">📺 Global Awards — Watch Party from SF <span class="etag" style="background:var(--ny-dim);color:var(--ny)">🌍 Live Stream</span></div>
+            <div class="event-detail" style="color:var(--text2)">Stream SF Global Ceremony on big screen · People's Choice $25K → Grand Prize $50K · If NY team wins — celebrate on floor!</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label mc"><span class="ico">🎤</span> MC / Host</div><div class="role-input" contenteditable="true" data-placeholder="Name · host watch party"></div></div>
+          <div class="role-cell"><div class="role-label av"><span class="ico">🎛</span> AV</div><div class="role-input" contenteditable="true" data-placeholder="Name · receive SF RTMP stream"></div></div>
+          <div class="role-cell"><div class="role-label ops"><span class="ico">📋</span> Ops</div><div class="role-input" contenteditable="true" data-placeholder="Name · push stream to Discord"></div></div>
+          <div class="role-cell"><div class="role-label photo"><span class="ico">📸</span> Photo / Video</div><div class="role-input" contenteditable="true" data-placeholder="Name · capture reactions if NY wins"></div></div>
+        </div>
+      </div>
+      <div class="event-card">
+        <div class="event-top">
+          <div class="event-time">Post-awards<div class="dur">—</div></div>
+          <div class="event-info">
+            <div class="event-title">🎊 Group Photo + After Party <span class="etag etag-award">Celebration</span></div>
+            <div class="event-detail">Full group photo → After Party (music / free networking / showcase stays open) · Publish product collection link</div>
+          </div>
+        </div>
+        <div class="role-grid">
+          <div class="role-cell"><div class="role-label mc"><span class="ico">🎤</span> MC</div><div class="role-input" contenteditable="true" data-placeholder="Name · photo cue + party MC"></div></div>
+          <div class="role-cell"><div class="role-label photo"><span class="ico">📸</span> Photo / Video</div><div class="role-input" contenteditable="true" data-placeholder="Name · group photo + candids"></div></div>
+          <div class="role-cell"><div class="role-label ops"><span class="ico">📋</span> Ops</div><div class="role-input" contenteditable="true" data-placeholder="Name · post collection + encourage sharing"></div></div>
+          <div class="role-cell"><div class="role-label guide"><span class="ico">🚩</span> Floor Guide</div><div class="role-input" contenteditable="true" data-placeholder="Name · direct to party + wrap-up"></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /ny-day2 -->
+
+</div><!-- /zone-ny -->
+
+<div class="bottom-bar">
+  ✏️ All name fields are editable · Refresh resets · Export PDF to archive<br>
+  Eazo Global Hackathon 2026 · SF & NY Staff Assignment Sheet
+</div>
+
+<script>
+function switchZone(z) {
+  document.querySelectorAll('.zone-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.zone-panel').forEach(p => p.classList.remove('active'));
+  document.querySelector('.zone-tab.' + z).classList.add('active');
+  document.getElementById('zone-' + z).classList.add('active');
+}
+function switchDay(zone, n) {
+  const panel = document.getElementById('zone-' + zone);
+  panel.querySelectorAll('.day-btn').forEach((b, i) => {
+    b.classList.toggle('sf-active', zone === 'sf' && i === n - 1);
+    b.classList.toggle('ny-active', zone === 'ny' && i === n - 1);
+    if ((zone === 'sf' && i !== n - 1) || (zone === 'ny' && i !== n - 1)) {
+      b.classList.remove('sf-active', 'ny-active');
+    }
+  });
+  panel.querySelectorAll('.day-panel').forEach((p, i) => p.classList.toggle('active', i === n - 1));
+}
+</script>
+</body>
+</html>

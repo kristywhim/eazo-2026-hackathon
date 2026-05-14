@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Eazo Hackathon 2026 — 线上赛区 Rundown</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --asia:#1d7a5a;--asia-bg:#edfaf4;--asia-border:#b4e8d0;
+  --intl:#2a5fa8;--intl-bg:#eef4ff;--intl-border:#c0d4f4;
+  --gold:#e8a830;--gold-bg:#fffbe6;
+  --dark:#1a1916;--dark2:#26241f;
+  --text:#1a1916;--text2:#555350;--text3:#9a9590;
+  --border:#e8e4db;--border2:#d4cfc4;
+  --bg:#faf9f5;--surface:#fff;
+  --red:#c0392b;--purple:#6a3aaa;--purple-bg:#f5f0ff;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:13px;}
+
+/* Header */
+.hdr{background:var(--dark);padding:28px 40px 24px;}
+.hdr-eyebrow{font-size:10px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;}
+.hdr h1{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:#fff;margin-bottom:6px;}
+.hdr h1 span{color:var(--gold);}
+.hdr-sub{font-size:13px;color:#999;line-height:1.6;}
+.hdr-pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
+.pill{font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;}
+.pill-asia{background:rgba(29,122,90,.2);color:#4de0a8;}
+.pill-intl{background:rgba(42,95,168,.2);color:#7aaae8;}
+.pill-gold{background:rgba(232,168,48,.15);color:var(--gold);}
+.pill-gray{background:rgba(255,255,255,.08);color:#bbb;}
+
+/* Zone tabs */
+.zone-tabs{display:flex;background:#111;border-bottom:2px solid #2a2926;}
+.zone-tab{padding:14px 32px;font-size:13.5px;font-weight:700;cursor:pointer;color:#666;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s;display:flex;align-items:center;gap:8px;}
+.zone-tab:hover{color:#aaa;}
+.zone-tab.asia.active{color:#4de0a8;border-bottom-color:var(--asia);}
+.zone-tab.intl.active{color:#7aaae8;border-bottom-color:var(--intl);}
+.zone-panel{display:none;}
+.zone-panel.active{display:block;}
+
+/* Day tabs */
+.day-tabs{display:flex;background:#1a1916;border-bottom:1px solid #2a2926;padding-left:40px;}
+.day-tab{padding:10px 20px;font-size:12.5px;font-weight:700;cursor:pointer;color:#555;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;}
+.day-tab:hover{color:#888;}
+.day-tab.active{color:#fff;border-bottom-color:var(--gold);}
+.day-panel{display:none;}
+.day-panel.active{display:block;}
+
+.edit-bar{padding:7px 40px;background:#fffbea;border-bottom:1px solid #f0d888;font-size:11.5px;color:#7a5800;}
+
+/* Zone hero */
+.zone-hero{margin:24px 40px 0;border-radius:12px;padding:22px 28px;}
+.zone-hero.asia{background:var(--asia-bg);border:1.5px solid var(--asia-border);}
+.zone-hero.intl{background:var(--intl-bg);border:1.5px solid var(--intl-border);}
+.zone-hero-name{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:4px;}
+.zone-hero.asia .zone-hero-name{color:var(--asia);}
+.zone-hero.intl .zone-hero-name{color:var(--intl);}
+.zone-hero-sub{font-size:12.5px;color:var(--text2);margin-bottom:14px;}
+.zone-badges{display:flex;gap:6px;flex-wrap:wrap;}
+.zbadge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;}
+.zbadge-can{background:#e0f4ea;color:#1d6b4e;}
+.zbadge-note{background:#fff3d4;color:#8a5a00;}
+.zbadge-cannot{background:#fde8e8;color:#b82222;}
+
+/* Info panel */
+.info-panel{margin:16px 40px 0;}
+.info-toggle{display:flex;align-items:center;gap:8px;padding:10px 16px;background:var(--dark2);color:#bbb;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700;letter-spacing:.04em;}
+.info-toggle:hover{background:var(--dark);}
+.info-toggle .arrow{font-size:10px;transition:transform .2s;}
+.info-toggle.open .arrow{transform:rotate(90deg);}
+.info-body{display:none;padding:16px;background:var(--surface);border:1px solid var(--border);border-top:none;border-radius:0 0 8px 8px;flex-wrap:wrap;gap:16px;}
+.info-body.open{display:flex;}
+.info-group{flex:1;min-width:180px;}
+.info-group-title{font-size:9.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;}
+.info-row{margin-bottom:8px;}
+.info-label{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#bbb;}
+.info-val{font-size:12.5px;color:var(--text);padding:3px 6px;border-radius:4px;border:1px solid transparent;outline:none;display:block;min-height:22px;}
+.info-val:hover{border-color:var(--border2);background:var(--bg);cursor:text;}
+.info-val:focus{border-color:var(--gold);background:var(--gold-bg);}
+.info-val:empty::before{content:attr(placeholder);color:var(--text3);font-style:italic;}
+
+/* Section */
+.section{padding:24px 40px 0;}
+.section-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+
+/* Overview */
+.overview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-bottom:20px;}
+.ov-card{background:var(--surface);border:1.5px solid var(--border);border-radius:8px;padding:14px 16px;}
+.ov-label{font-size:9.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:5px;}
+.ov-val{font-size:14px;font-weight:700;color:var(--text);line-height:1.4;}
+.ov-sub{font-size:11px;color:var(--text3);margin-top:2px;}
+
+/* Top10 box */
+.top10-box{margin:16px 40px;border-radius:12px;overflow:hidden;}
+.top10-box.asia{border:2px solid var(--asia-border);}
+.top10-box.intl{border:2px solid var(--intl-border);}
+.top10-hdr{padding:14px 20px;display:flex;align-items:center;gap:12px;}
+.top10-box.asia .top10-hdr{background:var(--asia-bg);}
+.top10-box.intl .top10-hdr{background:var(--intl-bg);}
+.top10-icon{font-size:24px;}
+.top10-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;}
+.top10-box.asia .top10-title{color:var(--asia);}
+.top10-box.intl .top10-title{color:var(--intl);}
+.top10-sub{font-size:12px;color:var(--text2);margin-top:2px;}
+.top10-body{padding:14px 20px;background:var(--surface);font-size:13px;color:var(--text2);line-height:1.9;}
+
+/* Timeline */
+.tl{margin:0 40px 28px;}
+.tl-phase{font-size:9.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);padding:14px 0 8px;border-bottom:1px solid var(--border);margin-bottom:8px;}
+.tl-hdr{display:grid;grid-template-columns:120px 50px 1fr 130px 150px;gap:0;padding:6px 0;margin-bottom:4px;}
+.th-cell{padding:0 13px;font-size:9.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);}
+.tl-row{display:grid;grid-template-columns:120px 50px 1fr 130px 150px;gap:0;background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:5px;overflow:hidden;}
+.tl-row.key-asia{border-color:var(--asia);}
+.tl-row.key-intl{border-color:var(--intl);}
+.tl-row.hard{border-color:var(--red);}
+.tl-row.share{border-color:#60b080;}
+.tl-row.awards{border-color:var(--gold);background:linear-gradient(to right,#fffbe6,var(--surface));}
+.tl-row.top10{border-color:var(--purple);}
+.cell{padding:11px 13px;border-right:1px solid var(--border);font-size:12.5px;}
+.cell:last-child{border-right:none;}
+.cell-time{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:600;color:var(--text);display:flex;flex-direction:column;gap:2px;}
+.cell-time .tz{font-size:9.5px;font-weight:400;color:var(--text3);}
+.cell-dur{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--text3);text-align:center;}
+.cell-content{display:flex;flex-direction:column;gap:3px;}
+.cell-owner{font-size:11.5px;color:var(--text2);line-height:1.5;}
+.cell-memo{font-size:11.5px;color:var(--text2);line-height:1.55;background:var(--bg);}
+.c-title{font-size:13px;font-weight:700;color:var(--text);line-height:1.4;}
+.c-detail{font-size:12px;color:var(--text2);line-height:1.65;margin-top:2px;}
+.tag{display:inline-block;font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px;margin-left:5px;vertical-align:middle;}
+.t-global{background:#e8f0ff;color:var(--intl);}
+.t-hard{background:#fde8e8;color:var(--red);}
+.t-share{background:#e0f4ea;color:var(--asia);}
+.t-awards{background:var(--gold-bg);color:#7a5000;}
+.t-top10{background:var(--purple-bg);color:var(--purple);}
+
+/* Callout */
+.callout{border-radius:8px;padding:14px 16px;margin:16px 40px;display:flex;gap:12px;align-items:flex-start;}
+.callout.dark{background:var(--dark);border:1.5px solid var(--gold);}
+.callout-icon{font-size:18px;flex-shrink:0;margin-top:1px;}
+.callout-body{font-size:13px;line-height:1.7;}
+.callout.dark .callout-body{color:#ddd;}
+.callout.dark strong{color:var(--gold);}
+
+/* Awards pool */
+.awards-pool{margin:16px 40px 40px;border:2px solid var(--gold);border-radius:14px;overflow:hidden;}
+.ap-hdr{background:var(--dark);padding:18px 24px 14px;display:flex;align-items:center;justify-content:space-between;}
+.ap-eyebrow{font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
+.ap-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#fff;}
+.ap-sub{font-size:12px;color:#888;margin-top:4px;}
+.ap-total{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:600;color:var(--gold);}
+.ap-body{background:var(--surface);padding:20px 24px;}
+.award-list{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;}
+.award-row{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border:1px solid var(--border);border-radius:8px;background:var(--bg);font-size:13px;}
+.award-name{font-weight:600;color:var(--text);}
+.award-detail{font-size:11.5px;color:var(--text3);margin-top:2px;}
+.award-amt{font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--gold);white-space:nowrap;}
+.ap-note{padding:12px 14px;background:var(--bg);border-radius:8px;font-size:12.5px;color:var(--text2);line-height:1.7;display:flex;justify-content:space-between;align-items:center;}
+
+[contenteditable]:hover{background:rgba(232,168,48,.06);cursor:text;border-radius:3px;}
+[contenteditable]:focus{background:rgba(232,168,48,.1);outline:none;border-radius:3px;}
+.spacer{height:20px;}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-eyebrow">🌐 线上赛区 · Online Zones · 完整执行 Rundown</div>
+  <h1>Eazo Global Hackathon 2026<br><span>线上赛区 · 两天完整版</span></h1>
+  <div class="hdr-sub">线上亚洲赛区（CST）· 线上国际赛区（PT）· 大规则与上海 / 旧金山线下场一致</div>
+  <div class="hdr-pills">
+    <span class="pill pill-asia">🌏 亚洲赛区 · CST</span>
+    <span class="pill pill-intl">🌍 国际赛区 · PT</span>
+    <span class="pill pill-gold">拉新前10 → 进入线下 Demo 竞争区域奖</span>
+    <span class="pill pill-gray">特别奖 30队 · $1,000/队</span>
+  </div>
+</div>
+
+<div class="edit-bar">✏️ 所有字段可直接点击编辑 · 刷新后重置 · 建议截图或打印 PDF 存档</div>
+
+<div class="zone-tabs">
+  <div class="zone-tab asia active" onclick="switchZone('asia')">🌏 线上亚洲赛区（CST）</div>
+  <div class="zone-tab intl" onclick="switchZone('intl')">🌍 线上国际赛区（PT）</div>
+</div>
+
+<!-- ═══ 亚洲赛区 ═══ -->
+<div class="zone-panel active" id="zone-asia">
+
+  <div class="zone-hero asia">
+    <div class="zone-hero-name">🌏 线上亚洲赛区</div>
+    <div class="zone-hero-sub">与上海同步 · CST（北京时间）· 主要社群：Discord 亚洲频道 / 微信群</div>
+    <div class="zone-badges">
+      <span class="zbadge zbadge-note">⭐ 拉新前10 → 进入 SH Demo，竞争上海区域奖</span>
+      <span class="zbadge zbadge-can">✅ 特别奖 30队</span>
+      <span class="zbadge zbadge-cannot">❌ 独立区域奖（归入 SH 竞争）</span>
+      <span class="zbadge zbadge-cannot">❌ Builder's Choice（仅进入线下Demo的队伍适用）</span>
+    </div>
+  </div>
+
+  <div class="info-panel" style="margin-top:20px">
+    <div class="info-toggle" onclick="toggleInfo(this)"><span class="arrow">▶</span> 📋 前置信息（点击展开）</div>
+    <div class="info-body">
+      <div class="info-group">
+        <div class="info-group-title">🌐 社群渠道</div>
+        <div class="info-row"><div class="info-label">Discord 频道</div><div class="info-val" contenteditable="true" placeholder="#online-asia"></div></div>
+        <div class="info-row"><div class="info-label">微信群</div><div class="info-val" contenteditable="true" placeholder="群名 / 二维码"></div></div>
+        <div class="info-row"><div class="info-label">社群负责人</div><div class="info-val" contenteditable="true" placeholder="姓名 + 联系方式"></div></div>
+        <div class="info-row"><div class="info-label">线上 MC</div><div class="info-val" contenteditable="true" placeholder="姓名 + Discord handle"></div></div>
+      </div>
+      <div class="info-group">
+        <div class="info-group-title">🔗 核心链接</div>
+        <div class="info-row"><div class="info-label">提交平台</div><div class="info-val" contenteditable="true" placeholder="https://"></div></div>
+        <div class="info-row"><div class="info-label">投票页面</div><div class="info-val" contenteditable="true" placeholder="https://"></div></div>
+        <div class="info-row"><div class="info-label">Leaderboard</div><div class="info-val" contenteditable="true" placeholder="https://"></div></div>
+        <div class="info-row"><div class="info-label">SH 全球直播</div><div class="info-val" contenteditable="true" placeholder="https://"></div></div>
+        <div class="info-row"><div class="info-label">飞书会议（Demo 用）</div><div class="info-val" contenteditable="true" placeholder="会议链接 / 等候室"></div></div>
+      </div>
+      <div class="info-group">
+        <div class="info-group-title">⚠️ 应急预案</div>
+        <div class="info-row"><div class="info-label">飞书断线备用</div><div class="info-val" contenteditable="true" placeholder="30秒宽限 → 重邀 → 跳过可补位"></div></div>
+        <div class="info-row"><div class="info-label">平台宕机备用提交</div><div class="info-val" contenteditable="true" placeholder="备用提交方式"></div></div>
+        <div class="info-row"><div class="info-label">技术支持</div><div class="info-val" contenteditable="true" placeholder="姓名 + 联系方式"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="day-tabs" style="margin-top:16px">
+    <div class="day-tab active" onclick="switchDay('asia',1)">📅 Day 1 · 5月23日 · Build Day</div>
+    <div class="day-tab" onclick="switchDay('asia',2)">🎤 Day 2 · 5月24日 · Demo + 颁奖</div>
+  </div>
+
+  <!-- Asia Day 1 -->
+  <div class="day-panel active" id="asia-day1">
+    <div class="section" style="padding-top:24px">
+      <div class="section-title">Day 1 概览</div>
+      <div class="overview-grid">
+        <div class="ov-card"><div class="ov-label">日期</div><div class="ov-val">5月23日（周五）</div></div>
+        <div class="ov-card"><div class="ov-label">时区</div><div class="ov-val">CST</div><div class="ov-sub">与上海同步</div></div>
+        <div class="ov-card"><div class="ov-label">提交截止</div><div class="ov-val" style="color:var(--red)">次日 07:00 CST</div></div>
+        <div class="ov-card"><div class="ov-label">评分（未进线下）</div><div class="ov-val">50%+50%</div><div class="ov-sub">用户票 + 专家评审</div></div>
+        <div class="ov-card"><div class="ov-label">进入 SH Demo</div><div class="ov-val">拉新前 10 队</div><div class="ov-sub">竞争上海区域奖</div></div>
+      </div>
+    </div>
+
+    <div class="tl">
+      <div class="tl-hdr">
+        <div class="th-cell">时间（CST）</div><div class="th-cell">时长</div>
+        <div class="th-cell">环节内容</div><div class="th-cell">负责人</div><div class="th-cell">执行备注</div>
+      </div>
+
+      <div class="tl-phase">▌ 签到 & 开幕</div>
+
+      <div class="tl-row key-asia">
+        <div class="cell cell-time" contenteditable="true">09:30<div class="tz">CST</div></div>
+        <div class="cell cell-dur" contenteditable="true">30</div>
+        <div class="cell cell-content">
+          <div class="c-title">✅ 线上签到</div>
+          <div class="c-detail">进入 Discord 亚洲频道 / 微信群 → Bot 发欢迎消息 + 赛道选择表单 → 选择赛道，进入对应赛道频道<br>Discord：进入对应 Track 频道即视为选赛道完成</div>
+        </div>
+        <div class="cell cell-owner" contenteditable="true">社群负责人</div>
+        <div class="cell cell-memo" contenteditable="true">提前准备赛道选择表单；记录各赛道参赛人数；Mentor 在各赛道频道主动打招呼</div>
+      </div>
+
+      <div class="tl-row key-asia">
+        <div class="cell cell-time" contenteditable="true">10:00–10:30<div class="tz">CST</div></div>
+        <div class="cell cell-dur" contenteditable="true">30</div>
+        <div class="cell cell-content">
+          <div class="c-title">📺 观看全球开幕直播<span class="tag t-global">🔴 全球同步</span></div>
+          <div class="c-detail">直播链接置顶 → Founder 产品宣发 → 社群负责人在频道实时互动、解答问题</div>
+        </div>
+        <div class="cell cell-owner" contenteditable="true">社群负责人</div>
+        <div class="cell cell-memo" contenteditable="true">提前5分钟置顶链接；截图精彩画面发至频道</div>
+      </div>
+
+      <div class="tl-row key-asia">
+        <div class="cell cell-time" contenteditable="true">10:30–11:00<div class="tz">CST</div></div>
+        <div class="cell cell-dur" contenteditable="true">30</div>
+        <div class="cell cell-content">
+          <div class="c-title">📺 观看主持人：赛道介绍 + 规则说明</div>
+          <div class="c-detail">继续观看直播 → 五大赛道介绍 → 规则说明（提交 / 投票 / 评分权重）→ 重点：提交截止次日 07:00 CST</div>
+        </div>
+        <div class="cell cell-owner" contenteditable="true">社群负责人</div>
+        <div class="cell cell-memo" contenteditable="true">规则说明后在频道发文字版规则摘要</div>
+      </div>
+
+      <div class="tl-row">
+        <div class="cell cell-time" contenteditable="true">11:00–11:10<div class="tz">CST</div></div>
+        <div class="cell cell-dur" contenteditable="true">10</div>
+        <div class="cell cell-content">
+          <div class="c-title">📸 线上合影时刻<span class="tag t-global">全球同步</span></div>
+          <div class="c-detail">线下合影同时，社群负责人呼吁线上参赛者打开 Eazo Creator 截屏 → 发至频道留念</div>
+        </div>
+        <div class="cell cell-owner" contenteditable="true">社群负责人</div>
+        <div class="cell cell-memo" contenteditable="true">整理截图发官方账号；体现线上参赛者存在感</div>
+      </div>
+
+      <div class="tl-row key-asia">
+        <div class="cell cell-time" contenteditable="true">11:10<div class="tz">CST</div></div>
+        <div class="cell cell-dur" contenteditable="true">—</div>
+        <div class="cell cell-content">
+          <div class="c-title">⚡ Build 正式开始</div>
+          <div class="c-detail">Bot 推送：「Build 开始！提交越早，投票窗口越长！」→ Mentor 在各赛道频道开始异步答疑<br>Eazo Creator & Mobile 链接正式推送</div>
+        </div>
+        <div class="cell cell-owner" contenteditable="true">Bot + Mentor</div>
+        <div class="cell cell-memo" contenteditable="true">Bot 每45分钟发一次鼓励消息；Mentor 不替选手做产品决策，不评分</div>
+      </div>
+
+      <div class="tl-phase">▌ 构建 + 分享节点</div>
+
+      <div class="tl-row share">
+        <div class="cell cell-time" contenteditable="true">12:00–13:00<div class="tz">CST</div></div>
+        <div class="cell cell-dur" contenteditable="true">60</div>
+        <div class="cell cell-content">
+          <div class="c-title">🍱 午餐<span class="tag t-share">📱 分享节点①</span></div>
+          <div class="c-detail">话术：「我在 Eazo Hackathon 做了个 App → [链接]，帮我投个票！#EazoHackathon2026」→ 引导发小红书 / 微博 / 朋友圈</div>
+        </div>
+        <div class="cell cell-owner" contenteditable="true">社群负责人</div>
+        <div class="cell cell-memo" contenteditable="true">截图优质分享发运营群；官方账号转发</div>
+      </div>
+
+      <div class="tl-row share">
+        <div class="cell cell-time" contenteditable="true">15:30<div class="tz">CST</div></div>
+        <div class="cell cell-dur" contenteditable="true">15</div>
+        <div class="cell cell-content">
+          <div class="c-title">☕ 下午茶<span class="tag t-share">📱 分享节点②</span></div>
+          <div class="c-detail">「晒进度！把 Eazo Creator 截图发出去」→ 频道内接龙</div>
+        </div>
+        <div class="cell cell-owner" contenteditable="true">社群负责人</div>
+        <div class="cell cell-memo" contenteditable="true">高亮精彩 WIP，增加社群活跃度</div>
+      </div>
+
+      <div class="tl-row share">
+        <div class="cell cell-time" contenteditable="true">19:00<div class="tz">CST</div></div>
+        <div class="cell cell-dur" contenteditable="true">30</div>
+        <div class="cell cell-content">
+          <div class="c-title">🍽 晚餐<span class="tag t-share">📱 分享节点③</span></div>
+          <div class="c-detail">发当前 Leaderboard 快照 → 「帮你喜欢的产品发出去冲票！」</div>
+        </div>
+        <div class="cell cell-owner" contenteditable="true">社群负责人</div>
+        <div class="cell cell-memo" contenteditable="true">排行榜截图；拉票感最强节点</div>
+      </div>
+
+      <div class="tl-row">
+        <div class="cell cell-time" contenteditable="true">19:30–次日07:00<div class="tz">CST</div></div>
+        <div class="cell cell-dur" contenteditable="true">—</div>
+        <div class="cell cell-content">
+          <div class="c-title">🌙 通宵构建（自愿）</div>
+          <div class="c-detail">Bot 每2–3小时定时鼓励 → 值班社群负责人异步答疑</div>
+        </div>
+        <div class="cell cell-owner" contenteditable="true">Bot + 值班</div>
+        <div class="cell cell-memo" contenteditable="true">轮替话术：「深夜了，能跑就提交」/ 「凌晨了，你比昨晚更近了」</div>
+      </div>
+
+      <div class="tl-phase">▌ 提交截止</div>
+
+      <div class="tl-row hard">
+        <div class="cell cell-time" contenteditable="true">次日 06:50<div class="tz">CST</div></div>
+        <div class="cell cell-dur" contenteditable="true">—</div>
+        <div class="cell cell-content">
+          <div class="c-title">🚨 提交截止 10 分钟预警<span class="tag t-hard">10 MIN</span></div>
+          <div class="c-detail">「最后10分钟！07:00 严格截止，无延期！立刻打开 Eazo 提交！」</div>
+        </div>
+        <div class="cell cell-owner" contenteditable="true">Bot + 值班</div>
+        <div class="cell cell-memo" contenteditable="true">@所有人；Mentor 在各频道督促</div>
+      </div>
+
+      <div class="tl-row hard">
+        <div class="cell cell-time" contenteditable="true">次日 07:00<div class="tz">CST</div></div>
+        <div class="cell cell-dur" contenteditable="true">—</div>
+        <div class="cell cell-content">
+          <div class="c-title">🔒 提交截止，系统锁定<span class="tag t-hard">HARD STOP</span></div>
+          <div class="c-detail">平台关闭 → Bot：「提交已关闭！共 XX 队提交。拉新排行榜计算中…」</div>
+        </div>
+        <div class="cell cell-owner" contenteditable="true">平台 / 技术</div>
+        <div class="cell cell-memo" contenteditable="true">截止后立即计算拉新前10，供 SH Demo Day 使用</div>
+      </div>
+    </div>
+  </div><!-- /asia-day1 -->
+
+  <!-- Asia Day 2 -->
+  <div class="day-panel" id="asia-day2">
+    <div class="spacer"></div>
+
+    <div class="callout dark">
+      <div class="callout-icon">⭐</div>
+      <div class="callout-body"><strong>亚洲赛区拉新前10队 → 进入上海 SH Demo</strong><br>07:00 截止后系统计算，拉新前10队通知参与 SH 5月24日 15:00–19:00 Demo，飞书会议远程连线，与 SH 线下选手同台竞争上海区域奖。规则完全一致：50% 用户票 + 40% 专家评审 + 10% Builder's Choice（线上统一投票）。</div>
+    </div>
+
+    <div class="top10-box asia">
+      <div class="top10-hdr">
+        <div class="top10-icon">🏆</div>
+        <div>
+          <div class="top10-title">进入 SH Demo 的10队</div>
+          <div class="top10-sub">与 SH 线下完全同规则 · 50% 用户票 + 40% 专家评审 + 10% Builder's Choice</div>
+        </div>
+      </div>
+      <div class="top10-body">
+        ① 07:00 截止后计算，约 <strong>08:00 公布名单</strong><br>
+        ② 入选队伍：请于 <strong>14:30 进入飞书会议等候室</strong>测试连线<br>
+        ③ <strong>15:00 起</strong>按出场顺序进入主房间，屏幕共享演示（约8分钟/队）<br>
+        ④ 断线30秒宽限 → 重邀 → 失败跳过可补位<br>
+        ⑤ 与 SH 线下选手同等竞争 SH 区域奖 Top 1–20
+      </div>
+    </div>
+
+    <div class="tl">
+      <div class="tl-hdr">
+        <div class="th-cell">时间（CST）</div><div class="th-cell">时长</div>
+        <div class="th-cell">环节内容</div><div class="th-cell">负责人</div><div class="th-cell">执行备注</div>
+      </div>
+
+      <div class="tl-phase">▌ Day 2 开始</div>
+
+      <div class="tl-row top10">
+        <div class="cell cell-time" contenteditable="true">07:00–08:00<div class="tz">CST</div></div>
+        <div class="cell cell-dur" contenteditable="true">60</div>
+        <div class="cell cell-content">
+          <div class="c-title">📊 计算拉新前10，公布名单<span class="tag t-top10">关键节点</span></div>
+          <div class="c-detail">系统计算亚洲赛区拉新前10 → 公布名单 → 通知入选队伍准备飞书连线<br>未入选队伍：投票通道持续开放，继续冲特别奖</div>
+        </div>
+        <div class="cell cell-owner" contenteditable="true">平台 / 技术<br>社群负责人</div>
+        <div class="cell cell-memo" contenteditable="true">频道公布完整名单；告知未入选：「继续拉票，特别奖从所有提交团队评出」</div>
+      </div>
+
+      <div class="tl-row">
+        <div class="cell cell-time" contenteditable="true">10:00–10:30<div class="tz">CST</div></div>
+        <div class="cell cell-dur" contenteditable="true">30</div>
+        <div class="cell cell-content">
+          <div class="c-title">📺 观看 SH Day 2 开幕直播<span class="tag t-global">🔴 直播</span></div>
+          <div class="c-detail">SH 专家圆桌 Panel → 社群负责人在频道主持互动</div>
+        </div>
+        <div class="cell cell-owner" contenteditable="true">社群负责人</div>
+        <div class="cell cell-memo" contenteditable="true">置顶直播链接；引导参赛者讨论</div>
+      </div>
+
+      <div class="tl-row share">
+        <div class="cell cell-time" contenteditable="true">Demo 期间<div class="tz">CST · 15:00–19:00</div></div>
+        <div class="cell cell-dur" contenteditable="true">—</div>
+        <div class="cell cell-content">
+          <div class="c-title">🗳 持续投票冲刺<span class="tag t-share">📱 分享推送</span></div>
+          <div class="c-detail">每30分钟推投票入口 → Leaderboard 快照 → 鼓励参赛者拉新</div>
+        </div>
+        <div class="cell cell-owner" contenteditable="true">社群负责人</div>
+        <div class="cell cell-memo" contenteditable="true">保持频道活跃</div>
+      </div>
+
+      <div class="tl-row hard">
+        <div class="cell cell-time" contenteditable="true">投票截止<div class="tz">CST · TBD</div></div>
+        <div class="cell cell-dur" contenteditable="true">—</div>
+        <div class="cell cell-content">
+          <div class="c-title">🔒 投票截止，加权计算<span class="tag t-hard">HARD STOP</span></div>
+          <div class="c-detail">系统锁定 → 50% 用户票 + 50% 专家评审 → 特别奖评审开始</div>
+        </div>
+        <div class="cell cell-owner" contenteditable="true">平台 / 技术</div>
+        <div class="cell cell-memo" contenteditable="true">Bot：「投票已截止！特别奖结果将在颁奖时公布」</div>
+      </div>
+
+      <div class="tl-row awards">
+        <div class="cell cell-time" contenteditable="true">19:30后<div class="tz">CST</div></div>
+        <div class="cell cell-dur" contenteditable="true">30</div>
+        <div class="cell cell-content">
+          <div class="c-title">🏅 亚洲赛区特别奖揭晓（6个 × 5队）<span class="tag t-awards">颁奖</span></div>
+          <div class="c-detail">逐一宣布：🎨 产品美学奖 → 🗳 用户之选 → 💰 评审入股奖 → 🌙 深夜造物奖 → 👀 生活观察奖 → 💡 真实需求奖<br>每个奖 @5队获奖者，每队 $1,000</div>
+        </div>
+        <div class="cell cell-owner" contenteditable="true">社群负责人</div>
+        <div class="cell cell-memo" contenteditable="true">每个奖单独发布保持仪式感；@获奖者发感言；截图存档</div>
+      </div>
+
+      <div class="tl-row" style="border-color:var(--gold);background:linear-gradient(to right,#1a1916,#26241f)">
+        <div class="cell cell-time" style="color:var(--gold);background:transparent;border-color:rgba(232,168,48,.2)" contenteditable="true">SF颁奖<div class="tz" style="color:#666">CST 次日约13:00</div></div>
+        <div class="cell cell-dur" style="background:transparent;border-color:rgba(232,168,48,.2);color:#888" contenteditable="true">60</div>
+        <div class="cell cell-content" style="background:transparent;border-color:rgba(232,168,48,.2)">
+          <div class="c-title" style="color:#fff">📺 全球颁奖典礼同步直播 — 来自旧金山 SF<span class="tag" style="background:var(--gold);color:var(--dark)">🌍 全球直播</span></div>
+          <div class="c-detail" style="color:#999">直播链接置顶频道 → People's Choice $25,000 → Grand Prize $50,000 压轴<br>如亚洲赛区选手获全球奖，频道同步庆祝</div>
+        </div>
+        <div class="cell cell-owner" style="background:transparent;border-color:rgba(232,168,48,.2);color:#888" contenteditable="true">社群负责人</div>
+        <div class="cell cell-memo" style="background:transparent;border-color:rgba(232,168,48,.2);color:#888" contenteditable="true">揭晓前15分钟推直播链接；如有获奖立即@庆祝</div>
+      </div>
+    </div>
+
+    <div class="awards-pool">
+      <div class="ap-hdr">
+        <div>
+          <div class="ap-eyebrow">已确认 · 线上亚洲赛区</div>
+          <div class="ap-title">特别奖池</div>
+          <div class="ap-sub">30 队 · 从所有提交团队评出 · 每个奖5队 · 与进入SH Demo的前10队不重叠</div>
+        </div>
+        <div class="ap-total">$30,000</div>
+      </div>
+      <div class="ap-body">
+        <div class="award-list">
+          <div class="award-row"><div><div class="award-name">🎨 产品美学奖</div><div class="award-detail">设计质感最高 · 5队</div></div><div class="award-amt">$1,000/队</div></div>
+          <div class="award-row"><div><div class="award-name">🗳 用户之选</div><div class="award-detail">用户投票综合最高 · 5队</div></div><div class="award-amt">$1,000/队</div></div>
+          <div class="award-row"><div><div class="award-name">💰 评审入股奖</div><div class="award-detail">评审最想投资的产品 · 5队</div></div><div class="award-amt">$1,000/队</div></div>
+          <div class="award-row"><div><div class="award-name">🌙 深夜造物奖</div><div class="award-detail">通宵在线坚持到最后 · 5队</div></div><div class="award-amt">$1,000/队</div></div>
+          <div class="award-row"><div><div class="award-name">👀 生活观察奖</div><div class="award-detail">从真实日常生活洞察出发 · 5队</div></div><div class="award-amt">$1,000/队</div></div>
+          <div class="award-row"><div><div class="award-name">💡 真实需求奖</div><div class="award-detail">解决真实存在的用户问题 · 5队</div></div><div class="award-amt">$1,000/队</div></div>
+        </div>
+        <div class="ap-note">
+          <span>共 <strong>30 队</strong>获奖</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--asia)">Total $30,000</span>
+        </div>
+      </div>
+    </div>
+  </div><!-- /asia-day2 -->
+</div><!-- /zone-asia -->
+
+<!-- ═══ 国际赛区 ═══ -->
+<div class="zone-panel" id="zone-intl">
+
+  <div class="zone-hero intl">
+    <div class="zone-hero-name">🌍 线上国际赛区</div>
+    <div class="zone-hero-sub">与旧金山同步 · PT（太平洋时间）· 主要社群：Discord #online-international</div>
+    <div class="zone-badges">
+      <span class="zbadge zbadge-note">⭐ 拉新前10 → 进入 SF Demo，竞争旧金山区域奖</span>
+      <span class="zbadge zbadge-can">✅ 特别奖 30队</span>
+      <span class="zbadge zbadge-cannot">❌ 独立区域奖（归入 SF 竞争）</span>
+      <span class="zbadge zbadge-cannot">❌ Builder's Choice（仅进入线下Demo的队伍适用）</span>
+    </div>
+  </div>
+
+  <div class="info-panel" style="margin-top:20px">
+    <div class="info-toggle" onclick="toggleInfo(this)"><span class="arrow">▶</span> 📋 Pre-Event Reference (click to expand)</div>
+    <div class="info-body">
+      <div class="info-group">
+        <div class="info-group-title">🌐 Community Channels</div>
+        <div class="info-row"><div class="info-label">Discord Channel</div><div class="info-val" contenteditable="true" placeholder="#online-international"></div></div>
+        <div class="info-row"><div class="info-label">Community Lead</div><div class="info-val" contenteditable="true" placeholder="Name + Discord handle"></div></div>
+        <div class="info-row"><div class="info-label">Online MC</div><div class="info-val" contenteditable="true" placeholder="Name + Discord handle"></div></div>
+      </div>
+      <div class="info-group">
+        <div class="info-group-title">🔗 Core Links</div>
+        <div class="info-row"><div class="info-label">Submission Platform</div><div class="info-val" contenteditable="true" placeholder="https://"></div></div>
+        <div class="info-row"><div class="info-label">Voting Page</div><div class="info-val" contenteditable="true" placeholder="https://"></div></div>
+        <div class="info-row"><div class="info-label">Leaderboard</div><div class="info-val" contenteditable="true" placeholder="https://"></div></div>
+        <div class="info-row"><div class="info-label">SF Livestream</div><div class="info-val" contenteditable="true" placeholder="https://"></div></div>
+        <div class="info-row"><div class="info-label">Feishu Meeting (Demo)</div><div class="info-val" contenteditable="true" placeholder="Meeting link / waiting room"></div></div>
+      </div>
+      <div class="info-group">
+        <div class="info-group-title">⚠️ Contingency</div>
+        <div class="info-row"><div class="info-label">Feishu drop backup</div><div class="info-val" contenteditable="true" placeholder="30s grace → re-invite → skip"></div></div>
+        <div class="info-row"><div class="info-label">Platform backup submission</div><div class="info-val" contenteditable="true" placeholder="Backup method"></div></div>
+        <div class="info-row"><div class="info-label">Tech support</div><div class="info-val" contenteditable="true" placeholder="Name + contact"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="day-tabs" style="margin-top:16px">
+    <div class="day-tab active" onclick="switchDay('intl',1)">📅 Day 1 · May 23 · Build Day</div>
+    <div class="day-tab" onclick="switchDay('intl',2)">🎤 Day 2 · May 24 · Demo + Awards</div>
+  </div>
+
+  <!-- Intl Day 1 -->
+  <div class="day-panel active" id="intl-day1">
+    <div class="section" style="padding-top:24px">
+      <div class="section-title">Day 1 Overview</div>
+      <div class="overview-grid">
+        <div class="ov-card"><div class="ov-label">Date</div><div class="ov-val">May 23 (Friday)</div></div>
+        <div class="ov-card"><div class="ov-label">Timezone</div><div class="ov-val">PT</div><div class="ov-sub">Synced with SF</div></div>
+        <div class="ov-card"><div class="ov-label">Submission Deadline</div><div class="ov-val" style="color:var(--red)">Next day 09:00 PT</div></div>
+        <div class="ov-card"><div class="ov-label">Scoring (non-Demo)</div><div class="ov-val">50% + 50%</div><div class="ov-sub">User votes + Expert judges</div></div>
+        <div class="ov-card"><div class="ov-label">Into SF Demo</div><div class="ov-val">Top 10 by votes</div><div class="ov-sub">Compete for SF Regional Awards</div></div>
+      </div>
+    </div>
+
+    <div class="tl">
+      <div class="tl-hdr">
+        <div class="th-cell">Time (PT)</div><div class="th-cell">Dur</div>
+        <div class="th-cell">Content & Actions</div><div class="th-cell">Owner</div><div class="th-cell">Notes</div>
+      </div>
+
+      <div class="tl-phase">▌ Check-in & Opening</div>
+
+      <div class="tl-row key-intl">
+        <div class="cell cell-time" contenteditable="true">09:30<div class="tz">PT</div></div>
+        <div class="cell cell-dur" contenteditable="true">30</div>
+        <div class="cell cell-content">
+          <div class="c-title">✅ Online Check-in</div>
+          <div class="c-detail">Join Discord #online-international → Bot posts welcome + track selection form → select track, join track channel<br>Joining the track channel = track selection complete</div>
+        </div>
+        <div class="cell cell-owner" contenteditable="true">Community Lead</div>
+        <div class="cell cell-memo" contenteditable="true">Prepare track form in advance; Mentors introduce themselves in track channels; record participant count per track</div>
+      </div>
+
+      <div class="tl-row key-intl">
+        <div class="cell cell-time" contenteditable="true">10:00–10:30<div class="tz">PT</div></div>
+        <div class="cell cell-dur" contenteditable="true">30</div>
+        <div class="cell cell-content">
+          <div class="c-title">📺 Watch Global Opening Livestream<span class="tag t-global">🔴 LIVE</span></div>
+          <div class="c-detail">Pin livestream link in Discord → Founder product launch → Community lead hosts live chat, answers questions</div>
+        </div>
+        <div class="cell cell-owner" contenteditable="true">Community Lead</div>
+        <div class="cell cell-memo" contenteditable="true">Pin link 5 min early; screenshot key moments for channel</div>
+      </div>
+
+      <div class="tl-row key-intl">
+        <div class="cell cell-time" contenteditable="true">10:30–11:00<div class="tz">PT</div></div>
+        <div class="cell cell-dur" contenteditable="true">30</div>
+        <div class="cell cell-content">
+          <div class="c-title">📺 Watch MC: Track Intro + Rules</div>
+          <div class="c-detail">Continue watching → 5-track intro → rules walkthrough → key note: submission deadline next day 09:00 PT</div>
+        </div>
+        <div class="cell cell-owner" contenteditable="true">Community Lead</div>
+        <div class="cell cell-memo" contenteditable="true">Post text summary of rules in Discord after rules section ends</div>
+      </div>
+
+      <div class="tl-row">
+        <div class="cell cell-time" contenteditable="true">11:00–11:10<div class="tz">PT</div></div>
+        <div class="cell cell-dur" contenteditable="true">10</div>
+        <div class="cell cell-content">
+          <div class="c-title">📸 Virtual Group Photo<span class="tag t-global">Global Sync</span></div>
+          <div class="c-detail">Community lead calls for screenshot of Eazo Creator screen → post in Discord channel</div>
+        </div>
+        <div class="cell cell-owner" contenteditable="true">Community Lead</div>
+        <div class="cell cell-memo" contenteditable="true">Compile for official post; include international participants in global moment</div>
+      </div>
+
+      <div class="tl-row key-intl">
+        <div class="cell cell-time" contenteditable="true">11:10<div class="tz">PT</div></div>
+        <div class="cell cell-dur" contenteditable="true">—</div>
+        <div class="cell cell-content">
+          <div class="c-title">⚡ Build starts now</div>
+          <div class="c-detail">Bot: "Build starts! Submit early — earlier = longer voting window!" → Mentors begin async support in track channels</div>
+        </div>
+        <div class="cell cell-owner" contenteditable="true">Bot + Mentors</div>
+        <div class="cell cell-memo" contenteditable="true">Bot posts encouragement every 45 min; Mentors don't make product decisions for teams</div>
+      </div>
+
+      <div class="tl-phase">▌ Build + Share Moments</div>
+
+      <div class="tl-row share">
+        <div class="cell cell-time" contenteditable="true">12:30–13:15<div class="tz">PT</div></div>
+        <div class="cell cell-dur" contenteditable="true">45</div>
+        <div class="cell cell-content">
+          <div class="c-title">🍕 Lunch<span class="tag t-share">📱 Share Push ①</span></div>
+          <div class="c-detail">Template: "Building [X] at @EazoHackathon — vote for me when it's live → [link] #EazoHackathon2026" → push to Twitter / LinkedIn</div>
+        </div>
+        <div class="cell cell-owner" contenteditable="true">Community Lead</div>
+        <div class="cell cell-memo" contenteditable="true">Screenshot great posts, send to ops group; official account retweets</div>
+      </div>
+
+      <div class="tl-row share">
+        <div class="cell cell-time" contenteditable="true">15:30<div class="tz">PT</div></div>
+        <div class="cell cell-dur" contenteditable="true">15</div>
+        <div class="cell cell-content">
+          <div class="c-title">☕ Afternoon Break<span class="tag t-share">📱 Share Push ②</span></div>
+          <div class="c-detail">"Show us your progress — screenshot your Eazo app and drop it in the channel!"</div>
+        </div>
+        <div class="cell cell-owner" contenteditable="true">Community Lead</div>
+        <div class="cell cell-memo" contenteditable="true">Highlight standout WIPs; encourage cross-channel interaction</div>
+      </div>
+
+      <div class="tl-row share">
+        <div class="cell cell-time" contenteditable="true">19:00<div class="tz">PT</div></div>
+        <div class="cell cell-dur" contenteditable="true">30</div>
+        <div class="cell cell-content">
+          <div class="c-title">🍽 Dinner<span class="tag t-share">📱 Share Push ③</span></div>
+          <div class="c-detail">Post Leaderboard snapshot → "Share the app you love most and help them get votes!"</div>
+        </div>
+        <div class="cell cell-owner" contenteditable="true">Community Lead</div>
+        <div class="cell cell-memo" contenteditable="true">Leaderboard screenshot; highest-energy share moment</div>
+      </div>
+
+      <div class="tl-row">
+        <div class="cell cell-time" contenteditable="true">19:30–next day 09:00<div class="tz">PT</div></div>
+        <div class="cell cell-dur" contenteditable="true">—</div>
+        <div class="cell cell-content">
+          <div class="c-title">🌙 Overnight Build (optional)</div>
+          <div class="c-detail">Bot check-ins every 2–3 hours → duty community lead on async standby</div>
+        </div>
+        <div class="cell cell-owner" contenteditable="true">Bot + Duty Lead</div>
+        <div class="cell cell-memo" contenteditable="true">Rotating copy: "Still at it? Submit when it runs" / "Almost there — keep going"</div>
+      </div>
+
+      <div class="tl-phase">▌ Submission Deadline</div>
+
+      <div class="tl-row hard">
+        <div class="cell cell-time" contenteditable="true">Next day 08:50<div class="tz">PT</div></div>
+        <div class="cell cell-dur" contenteditable="true">—</div>
+        <div class="cell cell-content">
+          <div class="c-title">🚨 10-Minute Final Warning<span class="tag t-hard">10 MIN</span></div>
+          <div class="c-detail">"10 MINUTES to 09:00 close — no extensions. Submit NOW!"</div>
+        </div>
+        <div class="cell cell-owner" contenteditable="true">Bot + Duty Lead</div>
+        <div class="cell cell-memo" contenteditable="true">@everyone; firm tone; Mentors push in track channels</div>
+      </div>
+
+      <div class="tl-row hard">
+        <div class="cell cell-time" contenteditable="true">Next day 09:00<div class="tz">PT</div></div>
+        <div class="cell cell-dur" contenteditable="true">—</div>
+        <div class="cell cell-content">
+          <div class="c-title">🔒 Submission closes — system locked<span class="tag t-hard">HARD STOP</span></div>
+          <div class="c-detail">Platform closes → Bot: "Submission closed! XX teams submitted. Calculating top 10 by votes…"</div>
+        </div>
+        <div class="cell cell-owner" contenteditable="true">Platform / Tech</div>
+        <div class="cell cell-memo" contenteditable="true">Begin calculating top 10 immediately for SF Demo Day</div>
+      </div>
+    </div>
+  </div><!-- /intl-day1 -->
+
+  <!-- Intl Day 2 -->
+  <div class="day-panel" id="intl-day2">
+    <div class="spacer"></div>
+
+    <div class="callout dark">
+      <div class="callout-icon">⭐</div>
+      <div class="callout-body"><strong>International Zone Top 10 → Enter SF Demo</strong><br>After 09:00 PT close, top 10 by votes join SF May 24 Demo (15:00–19:00 PT) via Feishu remote screenshare, competing alongside SF in-person teams for SF Regional Awards. Same rules: 50% user votes + 40% expert judges + 10% Builder's Choice (online unified voting).</div>
+    </div>
+
+    <div class="top10-box intl">
+      <div class="top10-hdr">
+        <div class="top10-icon">🏆</div>
+        <div>
+          <div class="top10-title">Top 10 → SF Demo</div>
+          <div class="top10-sub">Same rules as SF in-person · 50% user votes + 40% expert judges + 10% Builder's Choice</div>
+        </div>
+      </div>
+      <div class="top10-body">
+        ① Calculated after 09:00 PT, <strong>announced ~10:00 PT</strong><br>
+        ② Selected teams: join <strong>Feishu waiting room by 14:30 PT</strong> for connection test<br>
+        ③ From <strong>15:00 PT</strong>, enter main room in stage order, screenshare Eazo App (~8 min/team)<br>
+        ④ Drop: 30s grace → re-invite → skip if unresolved (can return within 15 min)<br>
+        ⑤ Compete equally with SF in-person teams for SF Regional Awards Top 1–20
+      </div>
+    </div>
+
+    <div class="tl">
+      <div class="tl-hdr">
+        <div class="th-cell">Time (PT)</div><div class="th-cell">Dur</div>
+        <div class="th-cell">Content & Actions</div><div class="th-cell">Owner</div><div class="th-cell">Notes</div>
+      </div>
+
+      <div class="tl-phase">▌ Day 2 Start</div>
+
+      <div class="tl-row top10">
+        <div class="cell cell-time" contenteditable="true">09:00–10:00<div class="tz">PT</div></div>
+        <div class="cell cell-dur" contenteditable="true">60</div>
+        <div class="cell cell-content">
+          <div class="c-title">📊 Calculate top 10, announce list<span class="tag t-top10">Key Moment</span></div>
+          <div class="c-detail">Calculate International Zone top 10 → announce in Discord → notify selected teams to prep Feishu<br>Remaining: voting stays open, keep pushing for special awards</div>
+        </div>
+        <div class="cell cell-owner" contenteditable="true">Platform / Tech<br>Community Lead</div>
+        <div class="cell cell-memo" contenteditable="true">Post full list; tell non-selected: "Keep voting — special awards open to all submitted teams"</div>
+      </div>
+
+      <div class="tl-row">
+        <div class="cell cell-time" contenteditable="true">10:00–10:30<div class="tz">PT</div></div>
+        <div class="cell cell-dur" contenteditable="true">30</div>
+        <div class="cell cell-content">
+          <div class="c-title">📺 Watch SF Day 2 Opening + Expert Panel<span class="tag t-global">🔴 LIVE</span></div>
+          <div class="c-detail">Community lead hosts Discord live chat during Panel</div>
+        </div>
+        <div class="cell cell-owner" contenteditable="true">Community Lead</div>
+        <div class="cell cell-memo" contenteditable="true">Pin livestream; encourage discussion</div>
+      </div>
+
+      <div class="tl-row share">
+        <div class="cell cell-time" contenteditable="true">During Demo<div class="tz">PT · 15:00–19:00</div></div>
+        <div class="cell cell-dur" contenteditable="true">—</div>
+        <div class="cell cell-content">
+          <div class="c-title">🗳 Ongoing Voting Sprint<span class="tag t-share">📱 Share Push</span></div>
+          <div class="c-detail">Post voting link every 30 min → Leaderboard snapshots → "Which app wowed you? Share + vote!"</div>
+        </div>
+        <div class="cell cell-owner" contenteditable="true">Community Lead</div>
+        <div class="cell cell-memo" contenteditable="true">Keep Discord active during SF Demo hours</div>
+      </div>
+
+      <div class="tl-row hard">
+        <div class="cell cell-time" contenteditable="true">Voting close<div class="tz">PT · TBD</div></div>
+        <div class="cell cell-dur" contenteditable="true">—</div>
+        <div class="cell cell-content">
+          <div class="c-title">🔒 Voting closes — calculation begins<span class="tag t-hard">HARD STOP</span></div>
+          <div class="c-detail">System locked → 50% user votes + 50% expert judges → special award review begins</div>
+        </div>
+        <div class="cell cell-owner" contenteditable="true">Platform / Tech</div>
+        <div class="cell cell-memo" contenteditable="true">Bot: "Voting closed! Special award results at the ceremony."</div>
+      </div>
+
+      <div class="tl-row awards">
+        <div class="cell cell-time" contenteditable="true">After SF Awards<div class="tz">PT · ~21:30+</div></div>
+        <div class="cell cell-dur" contenteditable="true">30</div>
+        <div class="cell cell-content">
+          <div class="c-title">🏅 International Zone Special Awards (6 × 5 teams)<span class="tag t-awards">Awards</span></div>
+          <div class="c-detail">Announce in Discord: 🎨 产品美学奖 → 🗳 用户之选 → 💰 评审入股奖 → 🌍 全球视野奖 → 💬 Discord 人气奖 → 🌐 世界公民奖<br>Each award @5 teams, $1,000/team</div>
+        </div>
+        <div class="cell cell-owner" contenteditable="true">Community Lead</div>
+        <div class="cell cell-memo" contenteditable="true">Announce each award separately; @winners for reactions; screenshot for records</div>
+      </div>
+
+      <div class="tl-row" style="border-color:var(--gold);background:linear-gradient(to right,#1a1916,#26241f)">
+        <div class="cell cell-time" style="color:var(--gold);background:transparent;border-color:rgba(232,168,48,.2)" contenteditable="true">21:00 PT<div class="tz" style="color:#666">SF Grand Finale</div></div>
+        <div class="cell cell-dur" style="background:transparent;border-color:rgba(232,168,48,.2);color:#888" contenteditable="true">60</div>
+        <div class="cell cell-content" style="background:transparent;border-color:rgba(232,168,48,.2)">
+          <div class="c-title" style="color:#fff">📺 Global Awards Ceremony — Live from SF<span class="tag" style="background:var(--gold);color:var(--dark)">🌍 LIVE</span></div>
+          <div class="c-detail" style="color:#999">Pin SF stream in Discord → People's Choice $25,000 → Grand Prize $50,000<br>Community lead hosts reactions; celebrate if any international team wins</div>
+        </div>
+        <div class="cell cell-owner" style="background:transparent;border-color:rgba(232,168,48,.2);color:#888" contenteditable="true">Community Lead</div>
+        <div class="cell cell-memo" style="background:transparent;border-color:rgba(232,168,48,.2);color:#888" contenteditable="true">Pin stream 15 min early; celebrate loudly if international participant wins</div>
+      </div>
+    </div>
+
+    <div class="awards-pool">
+      <div class="ap-hdr">
+        <div>
+          <div class="ap-eyebrow">Confirmed · Online International Zone</div>
+          <div class="ap-title">Special Awards Pool</div>
+          <div class="ap-sub">30 teams · From all submitted teams · 5 teams per award · Does not overlap with top 10 entering SF Demo</div>
+        </div>
+        <div class="ap-total">$30,000</div>
+      </div>
+      <div class="ap-body">
+        <div class="award-list">
+          <div class="award-row"><div><div class="award-name">🎨 产品美学奖 · Product Aesthetics</div><div class="award-detail">Highest design quality · 5 teams</div></div><div class="award-amt">$1,000/team</div></div>
+          <div class="award-row"><div><div class="award-name">🗳 用户之选 · User's Choice</div><div class="award-detail">Highest combined user votes · 5 teams</div></div><div class="award-amt">$1,000/team</div></div>
+          <div class="award-row"><div><div class="award-name">💰 评审入股奖 · Judges' Pick</div><div class="award-detail">Product judges most want to invest in · 5 teams</div></div><div class="award-amt">$1,000/team</div></div>
+          <div class="award-row"><div><div class="award-name">🌍 全球视野奖 · Global Vision</div><div class="award-detail">Product built for a global audience · 5 teams</div></div><div class="award-amt">$1,000/team</div></div>
+          <div class="award-row"><div><div class="award-name">💬 Discord 人气奖 · Discord Spirit</div><div class="award-detail">Most active and engaged team in community · 5 teams</div></div><div class="award-amt">$1,000/team</div></div>
+          <div class="award-row"><div><div class="award-name">🌐 世界公民奖 · World Citizen</div><div class="award-detail">Product bridging cultures or serving diverse communities · 5 teams</div></div><div class="award-amt">$1,000/team</div></div>
+        </div>
+        <div class="ap-note">
+          <span><strong>30 teams</strong> awarded</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--intl)">Total $30,000</span>
+        </div>
+      </div>
+    </div>
+  </div><!-- /intl-day2 -->
+</div><!-- /zone-intl -->
+
+<script>
+function switchZone(z){
+  document.querySelectorAll('.zone-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.zone-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelector('.zone-tab.'+z).classList.add('active');
+  document.getElementById('zone-'+z).classList.add('active');
+}
+function switchDay(zone,n){
+  const p=document.getElementById('zone-'+zone);
+  p.querySelectorAll('.day-tab').forEach((t,i)=>t.classList.toggle('active',i===n-1));
+  p.querySelectorAll('.day-panel').forEach((p,i)=>p.classList.toggle('active',i===n-1));
+}
+function toggleInfo(el){
+  el.classList.toggle('open');
+  el.nextElementSibling.classList.toggle('open');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1531 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Eazo Hackathon 2026 — 全场次 Rundown v2</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif;
+  background: #f5f4f0; color: #1a1916; font-size: 13px;
+}
+.page-header {
+  background: #1a1916; color: #fff; padding: 18px 32px 14px;
+}
+.page-header h1 { font-size: 17px; font-weight: 700; letter-spacing: .02em; margin-bottom: 4px; }
+.page-header .sub { font-size: 11.5px; color: #aaa8a4; line-height: 1.6; }
+.page-header .pills { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.hpill { font-size: 10.5px; font-weight: 600; padding: 3px 10px; border-radius: 20px; letter-spacing: .04em; }
+.hpill-gold { background: #e8a830; color: #1a1916; }
+.hpill-green { background: #1d9e75; color: #fff; }
+.hpill-blue { background: #2a5fa8; color: #fff; }
+.hpill-coral { background: #d85a30; color: #fff; }
+
+.venue-tabs { display: flex; background: #2a2926; padding: 0 24px; border-bottom: 2px solid #3a3936; }
+.venue-tab {
+  padding: 12px 22px; font-size: 12.5px; font-weight: 600; color: #888; cursor: pointer;
+  border-bottom: 3px solid transparent; margin-bottom: -2px; letter-spacing: .05em;
+  text-transform: uppercase; transition: all .15s; display: flex; align-items: center; gap: 7px;
+}
+.venue-tab:hover { color: #ccc; }
+.venue-tab.active { color: #fff; border-bottom-color: #e8a830; }
+
+.day-tabs { display: flex; gap: 8px; padding: 12px 24px 0; background: #fff; border-bottom: 1px solid #e0ddd8; }
+.day-tab {
+  padding: 7px 16px; font-size: 11.5px; font-weight: 600; cursor: pointer;
+  border-radius: 6px 6px 0 0; background: #f0ede8; color: #666;
+  border: 1px solid #ddd; border-bottom: none; transition: all .15s; letter-spacing: .04em;
+}
+.day-tab.active { background: #1a1916; color: #fff; border-color: #1a1916; }
+
+.venue-content { display: none; }
+.venue-content.active { display: block; }
+.day-content { display: none; }
+.day-content.active { display: block; }
+
+.legend {
+  display: flex; gap: 14px; flex-wrap: wrap; padding: 9px 24px;
+  background: #faf9f6; border-bottom: 1px solid #eae8e3;
+  font-size: 11px; color: #666; align-items: center;
+}
+.legend-item { display: flex; align-items: center; gap: 5px; }
+.legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+.judge-box {
+  margin: 0; padding: 10px 24px; background: #fff8f0; border-bottom: 2px solid #e8a830;
+  font-size: 12px; color: #5a3800; line-height: 1.7;
+}
+.judge-box strong { font-weight: 700; color: #1a1916; }
+.jrow { display: flex; gap: 24px; flex-wrap: wrap; }
+.jcol { display: flex; flex-direction: column; gap: 2px; }
+.jlabel { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #aa7800; margin-bottom: 1px; }
+
+.table-wrap { overflow-x: auto; background: #fff; }
+table { width: 100%; min-width: 1020px; border-collapse: collapse; }
+thead tr th {
+  background: #1a1916; color: #fff; font-size: 10.5px; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase; padding: 9px 11px;
+  text-align: left; border-right: 1px solid #333; white-space: nowrap;
+}
+thead tr th:last-child { border-right: none; }
+tbody tr td {
+  padding: 9px 11px; border-bottom: 1px solid #eae8e3;
+  border-right: 1px solid #eae8e3; vertical-align: top; line-height: 1.55;
+}
+tbody tr td:last-child { border-right: none; }
+tbody tr:last-child td { border-bottom: none; }
+
+tr.sep td {
+  background: #1a1916; color: #fff; font-weight: 700; font-size: 11.5px;
+  letter-spacing: .08em; text-align: center; padding: 8px 12px;
+}
+tr.sep.green td  { background: #1d6b4e; }
+tr.sep.amber td  { background: #7a3818; }
+tr.sep.purple td { background: #3d2580; }
+tr.sep.blue td   { background: #1a4a8a; }
+tr.sep.judge td  { background: #7a4800; }
+
+tr.setup    td { background: #f5f4f0; }
+tr.build    td { background: #fffbe6; }
+tr.share    td { background: #fef3d8; }
+tr.key      td { background: #fff8ed; font-weight: 500; }
+tr.demo     td { background: #fff8f5; }
+tr.vote     td { background: #f0f8ee; }
+tr.party    td { background: #f8f0ff; }
+tr.deadline td { background: #fff0f0; }
+tr.panel    td { background: #fef5e0; }
+
+td.time  { font-family: 'SF Mono', Menlo, monospace; font-size: 11.5px; font-weight: 600; white-space: nowrap; min-width: 105px; color: #1a1916; }
+td.dur   { text-align: center; font-family: monospace; font-size: 11.5px; color: #888; min-width: 50px; }
+td.cnt   { font-weight: 400; min-width: 210px; }
+td.cnt b { font-weight: 700; }
+td.spk   { color: #444; min-width: 120px; font-size: 12px; line-height: 1.6; }
+td.scr   { color: #555; min-width: 130px; font-size: 12px; line-height: 1.6; }
+td.mem   { color: #555; font-size: 11.5px; min-width: 170px; line-height: 1.6; }
+td.loc   { color: #333; font-weight: 600; font-size: 11.5px; min-width: 72px; }
+
+.tag {
+  display: inline-block; font-size: 10px; font-weight: 700; padding: 1px 6px;
+  border-radius: 3px; margin-left: 4px; vertical-align: middle; letter-spacing: .03em; white-space: nowrap;
+}
+.tg { background: #ccf0e4; color: #0d6b50; }
+.ta { background: #fde8c0; color: #8a5000; }
+.tb { background: #d4e8fa; color: #1a5fa8; }
+.tp { background: #e8e4fc; color: #4a3aaa; }
+.tr { background: #ffe0de; color: #c0392b; }
+.tj { background: #fde8c0; color: #7a4800; border: 1px solid #e8a830; }
+
+/* ── Pre-event info panel ── */
+.info-panel {
+  background: #fff; border-bottom: 2px solid #e0ddd8;
+  padding: 0;
+}
+.info-toggle {
+  display: flex; align-items: center; gap: 10px; padding: 11px 24px;
+  cursor: pointer; user-select: none;
+  background: #faf9f6; border-bottom: 1px solid #eae8e3;
+  font-size: 12px; font-weight: 700; color: #444; letter-spacing: .04em;
+}
+.info-toggle:hover { background: #f2f0eb; }
+.info-toggle .arrow { font-size: 10px; transition: transform .2s; }
+.info-toggle.open .arrow { transform: rotate(90deg); }
+.info-body { display: none; padding: 16px 24px 20px; }
+.info-body.open { display: flex; flex-wrap: wrap; gap: 16px; }
+
+.info-group {
+  background: #faf9f6; border: 1px solid #e8e5de; border-radius: 8px;
+  padding: 13px 15px; min-width: 200px; flex: 1;
+}
+.info-group-title {
+  font-size: 9.5px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+  color: #888; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
+}
+.info-row { display: flex; flex-direction: column; gap: 2px; margin-bottom: 9px; }
+.info-row:last-child { margin-bottom: 0; }
+.info-label {
+  font-size: 9.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  color: #aaa;
+}
+.info-val {
+  font-size: 12px; color: #1a1916; border-radius: 4px; padding: 3px 6px;
+  border: 1px solid transparent; transition: border .15s, background .15s;
+  min-height: 22px; outline: none; line-height: 1.5;
+}
+.info-val:hover { border-color: #d0cdc6; background: #fff; cursor: text; }
+.info-val:focus { border-color: #e8a830; background: #fffef8; }
+.info-val[placeholder]:empty:before {
+  content: attr(placeholder); color: #bbb; font-style: italic;
+}
+.edit-hint {
+  font-size: 10px; color: #bbb; padding: 0 24px 8px; font-style: italic;
+}
+.info-group.warn { background: #fff8ed; border-color: #f0d090; }
+.info-group.alert { background: #fff0f0; border-color: #f0b0b0; }
+
+/* ── Editable cells ── */
+td[contenteditable], div[contenteditable].info-val {
+  outline: none;
+  transition: background .12s, box-shadow .12s;
+}
+td[contenteditable]:hover {
+  background: rgba(232,168,48,.07) !important;
+  box-shadow: inset 0 0 0 1.5px rgba(232,168,48,.4);
+  cursor: text;
+}
+td[contenteditable]:focus {
+  background: #fffef5 !important;
+  box-shadow: inset 0 0 0 2px #e8a830;
+  position: relative; z-index: 2;
+}
+.edit-mode-banner {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 24px; background: #fffbea; border-bottom: 1px solid #f0d888;
+  font-size: 11.5px; color: #7a5800;
+}
+.edit-mode-banner strong { font-weight: 700; }
+
+/* ── Role highlighting ── */
+.role-bar { display:flex; gap:8px; padding:10px 24px; background:#161614; border-bottom:1px solid #2e2d2a; flex-wrap:wrap; align-items:center; }
+.role-label { font-size:10.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#666; margin-right:4px; }
+.rbtn { font-size:11.5px; font-weight:700; padding:5px 14px; border-radius:20px; border:1.5px solid #2e2d2a; background:transparent; color:#666; cursor:pointer; transition:all .15s; font-family:inherit; display:flex; align-items:center; gap:5px; }
+.rbtn:hover { border-color:#666; color:#ccc; }
+.rbtn.r-host.active    { background:#c0392b; border-color:#c0392b; color:#fff; }
+.rbtn.r-vol.active     { background:#1d9e75; border-color:#1d9e75; color:#fff; }
+.rbtn.r-mentor.active  { background:#6a3aaa; border-color:#6a3aaa; color:#fff; }
+.rbtn.r-judge.active   { background:#e8a830; border-color:#e8a830; color:#1a1916; }
+
+.role-callout { display:none; padding:12px 24px; border-left:4px solid; margin:0; }
+.role-callout.active { display:block; }
+.role-callout.r-host   { background:#fff5f5; border-color:#c0392b; }
+.role-callout.r-vol    { background:#f0faf6; border-color:#1d9e75; }
+.role-callout.r-mentor { background:#f5f0ff; border-color:#6a3aaa; }
+.role-callout.r-judge  { background:#fffbea; border-color:#e8a830; }
+.rc-title { font-size:12px; font-weight:700; margin-bottom:6px; }
+.rc-items { font-size:11.5px; line-height:1.9; color:#444; }
+.rc-items b { color:#1a1916; }
+
+tr.role-match td { outline:2px solid; outline-offset:-2px; }
+tr.role-dimmed td { opacity:.22; }
+tr.role-match.r-host   td { outline-color:#c0392b; background:#fff9f9 !important; }
+tr.role-match.r-vol    td { outline-color:#1d9e75; background:#f5fdf9 !important; }
+tr.role-match.r-mentor td { outline-color:#6a3aaa; background:#faf5ff !important; }
+tr.role-match.r-judge  td { outline-color:#e8a830; background:#fffdf0 !important; }
+</style>
+</head>
+<body>
+<div class="page-header">
+<h1>⚡ Eazo Global Hackathon 2026 — 全场次执行 Rundown v2</h1>
+<div class="sub">
+    上海 SH · 旧金山 SF：两天完整场次，5月23日（Build Day）+ 5月24日（Demo Day + Lunch Party + 颁奖）<br/>
+    纽约 NY：一日制，5月24日，Build 为主体，Demo 压缩至16:30后
+  </div>
+<div class="pills">
+<span class="hpill hpill-gold">🕙 所有场次均 10:00 开场</span>
+<span class="hpill hpill-green">🔴 Demo Day 全程直播</span>
+<span class="hpill hpill-blue">⏱ SH/SF Demo ≤3min · NY Demo ≤3min</span>
+<span class="hpill hpill-coral">⚖️ 评审仅出席第24日（SH/SF）</span>
+</div>
+</div>
+<div class="venue-tabs">
+<div class="venue-tab active" onclick="showVenue('sh')">🇨🇳 上海 SH</div>
+<div class="venue-tab" onclick="showVenue('sf')">🇺🇸 旧金山 SF</div>
+<div class="venue-tab" onclick="showVenue('ny')">🗽 纽约 NY</div>
+<div class="venue-tab" onclick="showVenue('on_en')">🌐 Online · EN (SF TZ)</div>
+<div class="venue-tab" onclick="showVenue('on_cn')">🌐 Online · CN (SH TZ)</div>
+</div><div class="edit-mode-banner">✏️ <strong>可编辑文档</strong> — 所有表格单元格均可直接点击编辑  ·  <strong>刷新后重置</strong>，请及时截图或打印 PDF 存档  ·  All table cells are directly editable — changes reset on refresh.</div>
+<div class="role-bar">
+<span class="role-label">角色视图</span>
+<button class="rbtn" onclick="setRole('all')">全局视图</button>
+<button class="rbtn r-host" onclick="setRole('host')">🎙 主持人 Host</button>
+<button class="rbtn r-vol" onclick="setRole('vol')">🙋 Volunteer</button>
+<button class="rbtn r-mentor" onclick="setRole('mentor')">🧑‍🏫 Mentor（导师）</button>
+<button class="rbtn r-judge" onclick="setRole('judge')">⚖️ Judge / Guest</button>
+</div>
+<div class="role-callout r-host" id="callout-host">
+<div class="rc-title">🎙 主持人 Host — 你的核心职责</div>
+<div class="rc-items">
+<b>Day 1：</b>开幕热场 → 介绍 Founder → 串联赛道介绍 → 各餐时分享节点广播 → 提交截止预警广播<br/>
+<b>Day 2：</b>热场 → 主持圆桌 Panel（严格30min内结束）→ Demo规则宣讲 → 每队 Demo 计时+呼叫 → 超时打断 → 休息节点广播 → 投票预警 → 颁奖全程串场<br/>
+<b>关键原则：</b>你是节奏的守门人。任何环节超时优先打断，礼貌但坚定。
+  </div>
+</div>
+<div class="role-callout r-vol" id="callout-vol">
+<div class="rc-title">🙋 Volunteer — 你的核心职责</div>
+<div class="rc-items">
+<b>签到组：</b>核对名单 → 发胸牌 + 赛道贴纸 → 引导入座 → 处理临时到场<br/>
+<b>场务组：</b>桌椅布置 / 标识上墙 / 餐饮摆台 / 通宵零食补给<br/>
+<b>社媒组：</b>各分享节点现场示范发帖 → 截图优质分享发至运营群<br/>
+<b>舞台组：</b>话筒传递 / 举时间提示牌（1min / STOP）/ 管理 Demo 队列 / 线上等候室<br/>
+<b>关键原则：</b>主动！不要等参赛者来找你。每个分享节点主动走到参赛者旁边帮他们发帖。
+  </div>
+</div>
+<div class="role-callout r-mentor" id="callout-mentor">
+<div class="rc-title">🧑‍🏫 Mentor 导师 — 你的核心职责（按赛道负责）</div>
+<div class="rc-items">
+<b>负责范围：</b>你的赛道分区 — 主动巡场，不要等选手来问你<br/>
+<b>Build阶段：</b>每30–45分钟在赛道区走一圈 → 了解各队进展 → 给产品方向建议 → 鼓励尽早提交<br/>
+<b>你不做的事：</b>不参与评分，不替选手做产品决策，不给技术实现建议（仅平台操作可帮）<br/>
+<b>关键信号：</b>如果某队卡住超过1小时没有进展，及时告知运营负责人<br/>
+<b>Day 2：</b>可选参与，观看自己赛道的 Demo；无需出席颁奖
+  </div>
+</div>
+<div class="role-callout r-judge" id="callout-judge">
+<div class="rc-title">⚖️ Judge / Guest 评审嘉宾 — 你只需要出席 Day 2</div>
+<div class="rc-items">
+<b>到场时间：</b>Day 2 09:30（30分钟前到场，领取评审礼包）<br/>
+<b>10:00–10:30：</b>上台参与圆桌 Panel 论坛（主持人主导节奏，你只需准备1–2句开场观点）<br/>
+<b>10:30 起：</b>入座评审席（前排中央），全程观看 Demo，每队打分<br/>
+<b>评分维度：</b>创新性 / 用户价值 / 完成度 / 商业潜力 / 现场表现<br/>
+<b>颁奖环节：</b>上台为获奖项目颁奖 / 见证徽章揭晓<br/>
+<b>关键原则：</b>打分不等投票截止，随时可提交；如需提前离场请提前告知运营负责人
+  </div>
+</div>
+
+<!-- ═══ SH ═══ -->
+<div class="venue-content active" id="venue-sh">
+<!-- SH 前置信息 -->
+<div class="info-panel">
+<div class="info-toggle" onclick="toggleInfo(this)">
+<span class="arrow">▶</span>
+      📋 前置信息 — 上海场次执行参考（点击展开）
+    </div>
+<div class="info-body">
+<div class="info-group">
+<div class="info-group-title">🏢 场地信息</div>
+<div class="info-row"><span class="info-label">场地名称</span><div class="info-val" contenteditable="true" placeholder="待确认"></div></div>
+<div class="info-row"><span class="info-label">地址</span><div class="info-val" contenteditable="true" placeholder="待确认"></div></div>
+<div class="info-row"><span class="info-label">场地联系人</span><div class="info-val" contenteditable="true" placeholder="姓名 + 手机"></div></div>
+<div class="info-row"><span class="info-label">场地容量</span><div class="info-val" contenteditable="true" placeholder="人"></div></div>
+<div class="info-row"><span class="info-label">入场路线/停车</span><div class="info-val" contenteditable="true" placeholder="说明"></div></div>
+</div>
+<div class="info-group">
+<div class="info-group-title">👥 关键联系人</div>
+<div class="info-row"><span class="info-label">现场总负责人</span><div class="info-val" contenteditable="true" placeholder="姓名 + 手机"></div></div>
+<div class="info-row"><span class="info-label">场务负责人</span><div class="info-val" contenteditable="true" placeholder="姓名 + 手机"></div></div>
+<div class="info-row"><span class="info-label">音视频/直播</span><div class="info-val" contenteditable="true" placeholder="姓名 + 手机"></div></div>
+<div class="info-row"><span class="info-label">主持人 MC</span><div class="info-val" contenteditable="true" placeholder="姓名 + 手机"></div></div>
+<div class="info-row"><span class="info-label">运营负责人</span><div class="info-val" contenteditable="true" placeholder="姓名 + 手机"></div></div>
+<div class="info-row"><span class="info-label">平台/技术</span><div class="info-val" contenteditable="true" placeholder="姓名 + 手机"></div></div>
+<div class="info-row"><span class="info-label">摄影/摄像</span><div class="info-val" contenteditable="true" placeholder="姓名 + 手机"></div></div>
+</div>
+<div class="info-group">
+<div class="info-group-title">🔗 核心链接</div>
+<div class="info-row"><span class="info-label">报名/提交平台</span><div class="info-val" contenteditable="true" placeholder="https://"></div></div>
+<div class="info-row"><span class="info-label">投票页面</span><div class="info-val" contenteditable="true" placeholder="https://"></div></div>
+<div class="info-row"><span class="info-label">Leaderboard</span><div class="info-val" contenteditable="true" placeholder="https://"></div></div>
+<div class="info-row"><span class="info-label">直播推流地址</span><div class="info-val" contenteditable="true" placeholder="RTMP://"></div></div>
+<div class="info-row"><span class="info-label">直播观看链接</span><div class="info-val" contenteditable="true" placeholder="https://"></div></div>
+<div class="info-row"><span class="info-label">参赛者群（微信/Discord）</span><div class="info-val" contenteditable="true" placeholder="群名 / 二维码位置"></div></div>
+<div class="info-row"><span class="info-label">评审打分入口</span><div class="info-val" contenteditable="true" placeholder="https://"></div></div>
+</div>
+<div class="info-group">
+<div class="info-group-title">📡 Wi-Fi &amp; 设备</div>
+<div class="info-row"><span class="info-label">Wi-Fi 名称</span><div class="info-val" contenteditable="true" placeholder="SSID"></div></div>
+<div class="info-row"><span class="info-label">Wi-Fi 密码</span><div class="info-val" contenteditable="true" placeholder="密码"></div></div>
+<div class="info-row"><span class="info-label">备用热点</span><div class="info-val" contenteditable="true" placeholder="设备名 + 密码"></div></div>
+<div class="info-row"><span class="info-label">主投影/屏幕</span><div class="info-val" contenteditable="true" placeholder="分辨率 / 备机"></div></div>
+<div class="info-row"><span class="info-label">音响设备</span><div class="info-val" contenteditable="true" placeholder="型号 / 备用话筒数量"></div></div>
+<div class="info-row"><span class="info-label">翻页笔</span><div class="info-val" contenteditable="true" placeholder="数量 + 型号"></div></div>
+</div>
+<div class="info-group warn">
+<div class="info-group-title">📦 物料清单（Day 1 进场前核查）</div>
+<div class="info-row"><span class="info-label">胸牌</span><div class="info-val" contenteditable="true" placeholder="数量"></div></div>
+<div class="info-row"><span class="info-label">赛道色贴纸（5色）</span><div class="info-val" contenteditable="true" placeholder="各色数量"></div></div>
+<div class="info-row"><span class="info-label">Builder's Choice 贴纸（每人3张）</span><div class="info-val" contenteditable="true" placeholder="总数量"></div></div>
+<div class="info-row"><span class="info-label">评审评分表（打印）</span><div class="info-val" contenteditable="true" placeholder="份数"></div></div>
+<div class="info-row"><span class="info-label">奖状/奖杯</span><div class="info-val" contenteditable="true" placeholder="Top1/2/3 + 徽章奖状"></div></div>
+<div class="info-row"><span class="info-label">Day 1 餐食</span><div class="info-val" contenteditable="true" placeholder="供应商 + 联系人 + 确认份数"></div></div>
+<div class="info-row"><span class="info-label">Lunch Party 餐食（Day 2）</span><div class="info-val" contenteditable="true" placeholder="供应商 + 联系人 + 确认份数"></div></div>
+<div class="info-row"><span class="info-label">通宵零食/饮品</span><div class="info-val" contenteditable="true" placeholder="类型 + 数量"></div></div>
+</div>
+<div class="info-group alert">
+<div class="info-group-title">🚨 应急联系 &amp; 预案</div>
+<div class="info-row"><span class="info-label">技术故障备用方案</span><div class="info-val" contenteditable="true" placeholder="备机/热点/手动计时说明"></div></div>
+<div class="info-row"><span class="info-label">场地紧急联系</span><div class="info-val" contenteditable="true" placeholder="物业/安保 + 手机"></div></div>
+<div class="info-row"><span class="info-label">医疗急救</span><div class="info-val" contenteditable="true" placeholder="急救箱位置 / 附近医院"></div></div>
+<div class="info-row"><span class="info-label">平台宕机预案</span><div class="info-val" contenteditable="true" placeholder="备用提交方式"></div></div>
+<div class="info-row"><span class="info-label">直播中断预案</span><div class="info-label" contenteditable="true" placeholder="录屏备份 / 重连流程"></div></div>
+</div>
+</div>
+<div class="edit-hint">✏️ 所有字段均可直接点击编辑，刷新后重置（建议截图或导出PDF存档）</div>
+</div>
+<div class="day-tabs">
+<div class="day-tab active" onclick="showDay('sh','d1')">Day 1 · 5月23日（Build Day）</div>
+<div class="day-tab" onclick="showDay('sh','d2')">Day 2 · 5月24日（Demo + 颁奖）⚖️ 评审出席日</div>
+</div>
+<!-- SH D1 -->
+<div class="day-content active" id="sh-d1">
+<div class="legend">
+<div class="legend-item"><div class="legend-dot" style="background:#f5f4f0"></div>场务/准备</div>
+<div class="legend-item"><div class="legend-dot" style="background:#fffbe6"></div>构建时间</div>
+<div class="legend-item"><div class="legend-dot" style="background:#fef3d8"></div>休息/分享节点</div>
+<div class="legend-item"><div class="legend-dot" style="background:#fff0f0"></div>硬截止</div>
+</div>
+<div class="table-wrap"><table>
+<thead><tr><th>TIME (CST)</th><th>时长(min)</th><th>环节内容 &amp; 执行动作</th><th>主讲/负责人</th><th>SCREEN</th><th>MEMO / 执行注意</th><th>地点</th></tr></thead>
+<tbody>
+<tr class="sep green"><td colspan="7">DAY 1 · 5月23日（周五）· 上海 Build Day  ｜  地点：[上海场地待定]</td></tr>
+<tr class="setup"><td class="time" contenteditable="true">07:00–09:30</td><td class="dur" contenteditable="true">150</td>
+<td class="cnt" contenteditable="true"><b>🛠 场地搭建</b><br/>主舞台搭建；签到台就位；投影/音响安装调试；KV 上墙；黑客松桌椅按赛道分区摆放</td>
+<td class="spk" contenteditable="true">场务负责人<br/>音视频团队</td>
+<td class="scr" contenteditable="true">主KV待机<br/>设备测试</td>
+<td class="mem" contenteditable="true">Wi-Fi 满负荷测试；备投切换测试；签到系统预上线；确认直播推流 RTMP key</td>
+<td class="loc" contenteditable="true">主会场</td></tr>
+<tr class="setup"><td class="time" contenteditable="true">09:30–10:00</td><td class="dur" contenteditable="true">30</td>
+<td class="cnt" contenteditable="true"><b>✅ 签到 &amp; 选择赛道</b><br/>确认姓名/队伍，领取胸牌；进场即选赛道（共5条，全程不变）；登记队名；引导入座</td>
+<td class="spk" contenteditable="true">签到组<br/>引导志愿者</td>
+<td class="scr" contenteditable="true">签到屏：队伍列表<br/>赛道展示 KV</td>
+<td class="mem" contenteditable="true">备：胸牌、姓名贴、赛道色贴纸<br/>线上选手：报名已选，开赛前平台确认</td>
+<td class="loc" contenteditable="true">入口/前台</td></tr>
+<tr class="key"><td class="time" contenteditable="true">10:00–10:30</td><td class="dur" contenteditable="true">30</td>
+<td class="cnt" contenteditable="true"><b>🎙 开幕 + Founder 产品发布</b><span class="tag tg">全球同步</span><br/>主持人开场热场 → <b>Founder 上台：产品发布演讲（≤30min）</b>，展示 Eazo 平台核心能力、本次 Hackathon 愿景；5大赛道逐一介绍；规则说明（提交/投票/评分权重）</td>
+<td class="spk" contenteditable="true">主持人<br/>Eazo 创始人/代表</td>
+<td class="scr" contenteditable="true">主KV → 演讲PPT<br/>赛道 Slides<br/>四赛场时区图</td>
+<td class="mem" contenteditable="true">10:00 CST 准时开场，同步四赛场；直播提前5分钟测试；话筒/翻页笔提前就位</td>
+<td class="loc" contenteditable="true">主舞台</td></tr>
+
+<tr class="share"><td class="time" contenteditable="true">10:30–10:40</td><td class="dur" contenteditable="true">10</td>
+<td class="cnt" contenteditable="true"><b>📸 全球同步大合影</b><span class="tag tg">全球同步</span><br/>Founder 演讲刚结束，全场气氛最高点 → 全体参赛者 + 工作人员 + 嘉宾上台/就位 → 拍大合影<br/>摄影师提前就位；主持人统一口令；线上参赛者截图留念</td>
+<td class="spk" contenteditable="true">主持人（组织）<br/>摄影师（执行）</td>
+<td class="scr" contenteditable="true">合影背景 KV（大屏）<br/>倒计时 3-2-1 动效</td>
+<td class="mem" contenteditable="true">摄影师提前在舞台正前方架好机位；拍完立刻告知「好了！」；全程不超过10分钟；同步截图发四赛场直播流</td>
+<td class="loc" contenteditable="true">主舞台 + 全场</td></tr>
+
+<tr class="build"><td class="time" contenteditable="true">10:40–12:30</td><td class="dur" contenteditable="true">110</td>
+<td class="cnt" contenteditable="true"><b>💻 构建阶段 · Round 1</b><span class="tag tp">Build</span><br/>Build → Deploy → Publish；导师/嘉宾巡回答疑；鼓励尽早提交（早=更长投票窗口）</td>
+<td class="spk" contenteditable="true">—</td>
+<td class="scr" contenteditable="true">构建流程指引<br/>Eazo 平台演示</td>
+<td class="mem" contenteditable="true">每30分钟群内发鼓励播报；确认全员登录 Eazo；导师记录各赛道进度</td>
+<td class="loc" contenteditable="true">主会场（赛道分区）</td></tr>
+<tr class="share"><td class="time" contenteditable="true">12:30–13:15</td><td class="dur" contenteditable="true">45</td>
+<td class="cnt" contenteditable="true"><b>🍱 午餐</b><span class="tag ta">📱 分享节点①</span><br/>运营上台手把手示范发帖（朋友圈/小红书/Twitter）；发布话术模板；引导群内接龙晒链接</td>
+<td class="spk" contenteditable="true">运营负责人（台上）</td>
+<td class="scr" contenteditable="true">话术模板<br/>发帖示例截图</td>
+<td class="mem" contenteditable="true">话术①：「我在 Eazo Hackathon 做了个 App → [链接]，帮我投个票！」</td>
+<td class="loc" contenteditable="true">用餐区/主会场</td></tr>
+<tr class="build"><td class="time" contenteditable="true">13:15–15:30</td><td class="dur" contenteditable="true">135</td>
+<td class="cnt" contenteditable="true"><b>💻 构建阶段 · Round 2</b><span class="tag tp">Build</span><br/>持续构建；每60分钟群内播报提交进度</td>
+<td class="spk" contenteditable="true">—</td><td class="scr" contenteditable="true">进度倒计时</td>
+<td class="mem" contenteditable="true">「已有 XX 队提交，赶紧冲！」导师提醒：「能跑就提交，后续可迭代」</td>
+<td class="loc" contenteditable="true">主会场</td></tr>
+<tr class="share"><td class="time" contenteditable="true">15:30–15:45</td><td class="dur" contenteditable="true">15</td>
+<td class="cnt" contenteditable="true"><b>☕ 下午茶</b><span class="tag ta">📱 分享节点②</span><br/>运营推进度截图分享模板</td>
+<td class="spk" contenteditable="true">运营负责人</td>
+<td class="scr" contenteditable="true">新话术模板</td>
+<td class="mem" contenteditable="true">话术②：「做到一半了，来给我加油 → [进度截图]」</td>
+<td class="loc" contenteditable="true">休息区</td></tr>
+<tr class="build"><td class="time" contenteditable="true">15:45–17:30</td><td class="dur" contenteditable="true">105</td>
+<td class="cnt" contenteditable="true"><b>💻 构建阶段 · Round 3</b><span class="tag tp">Build</span></td>
+<td class="spk" contenteditable="true">—</td><td class="scr" contenteditable="true">进度倒计时</td>
+<td class="mem" contenteditable="true">导师加频巡场；群内提醒「App 能跑就提交」</td>
+<td class="loc" contenteditable="true">主会场</td></tr>
+<tr class="share"><td class="time" contenteditable="true">17:30–18:00</td><td class="dur" contenteditable="true">30</td>
+<td class="cnt" contenteditable="true"><b>🔍 中场检查 · 嘉宾巡场</b><span class="tag ta">📱 分享节点③</span><br/>嘉宾逐桌体验各队 App；运营：「把产品链接发到群里，现在是最佳拉票时机」</td>
+<td class="spk" contenteditable="true">嘉宾/导师<br/>运营负责人</td>
+<td class="scr" contenteditable="true">Leaderboard 测试大屏</td>
+<td class="mem" contenteditable="true">话术③：「嘉宾正在看你的产品，快把链接发出去！」</td>
+<td class="loc" contenteditable="true">主会场全区</td></tr>
+<tr class="build"><td class="time" contenteditable="true">18:00–19:00</td><td class="dur" contenteditable="true">60</td>
+<td class="cnt" contenteditable="true"><b>💻 构建阶段 · Round 4</b><span class="tag tp">Build</span></td>
+<td class="spk" contenteditable="true">—</td><td class="scr" contenteditable="true">—</td><td class="mem" contenteditable="true">—</td>
+<td class="loc" contenteditable="true">主会场</td></tr>
+<tr class="share"><td class="time" contenteditable="true">19:00–19:45</td><td class="dur" contenteditable="true">45</td>
+<td class="cnt" contenteditable="true"><b>🍽 晚餐</b><span class="tag ta">📱 分享节点④</span><br/>运营复盘本轮最高传播链接；制造追赶感</td>
+<td class="spk" contenteditable="true">运营负责人</td>
+<td class="scr" contenteditable="true">当前排行榜快照</td>
+<td class="mem" contenteditable="true">话术④：「谁传播最广？把你最喜欢的项目发出去帮他们冲票！」</td>
+<td class="loc" contenteditable="true">用餐区</td></tr>
+<tr class="build"><td class="time" contenteditable="true">19:45–次日08:30</td><td class="dur" contenteditable="true">—</td>
+<td class="cnt" contenteditable="true"><b>🌙 通宵构建冲刺</b><span class="tag tp">Build</span><br/>持续构建；运营值班在线；08:30 最终预警广播</td>
+<td class="spk" contenteditable="true">运营值班</td><td class="scr" contenteditable="true">—</td>
+<td class="mem" contenteditable="true">每2小时群内发鼓励消息；提供零食/咖啡；保安确认通宵开放</td>
+<td class="loc" contenteditable="true">主会场（开放）</td></tr>
+<tr class="deadline"><td class="time" contenteditable="true">次日 09:00</td><td class="dur" contenteditable="true">—</td>
+<td class="cnt" contenteditable="true"><b>🔒 提交硬截止</b><span class="tag tr">HARD STOP</span><br/>平台提交系统关闭；时间戳即 Demo 出场顺序</td>
+<td class="spk" contenteditable="true">运营/平台</td>
+<td class="scr" contenteditable="true">提交截止倒计时</td>
+<td class="mem" contenteditable="true">截止后名单立即锁定；生成并打印 Demo 出场顺序表</td>
+<td class="loc" contenteditable="true">—</td></tr>
+</tbody>
+</table></div>
+</div>
+<!-- SH D2 -->
+<div class="day-content" id="sh-d2">
+<div class="judge-box">
+<div class="jrow">
+<div class="jcol"><span class="jlabel">⚖️ 评审出席日</span><strong>5月24日全程</strong></div>
+<div class="jcol"><span class="jlabel">环节① 10:00–10:30</span>上台参与圆桌 Panel 论坛</div>
+<div class="jcol"><span class="jlabel">环节② 圆桌后</span>入座台下，全程观看 Demo，现场打分+点评</div>
+<div class="jcol"><span class="jlabel">环节③ Lunch Party</span>出席颁奖，为获奖项目/选手颁奖</div>
+</div>
+</div>
+<div class="legend">
+<div class="legend-item"><div class="legend-dot" style="background:#f5f4f0"></div>场务</div>
+<div class="legend-item"><div class="legend-dot" style="background:#fef5e0"></div>评审工作环节</div>
+<div class="legend-item"><div class="legend-dot" style="background:#fff8f5"></div>Demo 展示</div>
+<div class="legend-item"><div class="legend-dot" style="background:#f0f8ee"></div>投票</div>
+<div class="legend-item"><div class="legend-dot" style="background:#f8f0ff"></div>颁奖/Party</div>
+<div class="legend-item"><div class="legend-dot" style="background:#fff0f0"></div>硬截止</div>
+</div>
+<div class="table-wrap"><table>
+<thead><tr><th>TIME (CST)</th><th>时长(min)</th><th>环节内容 &amp; 执行动作</th><th>主讲/负责人</th><th>SCREEN</th><th>MEMO / 执行注意</th><th>地点</th></tr></thead>
+<tbody>
+<tr class="sep amber"><td colspan="7">DAY 2 · 5月24日（周六）· 上海 Demo Day + Lunch Party + 颁奖  ｜  地点：[上海场地待定]</td></tr>
+<tr class="setup"><td class="time" contenteditable="true">08:00–09:30</td><td class="dur" contenteditable="true">90</td>
+<td class="cnt" contenteditable="true"><b>🛠 Demo Day 场地准备</b><br/>舞台微调（去掉黑客松桌椅一半，保留观众席）；直播推流测试；核对提交名单；打印出场顺序表；评审席前排中央就位</td>
+<td class="spk" contenteditable="true">场务负责人<br/>直播技术</td>
+<td class="scr" contenteditable="true">直播测试<br/>出场顺序待机</td>
+<td class="mem" contenteditable="true">确认所有提交 App 链接可访问；评审席备评分表/评分系统/水；线上选手连线账号测试</td>
+<td class="loc" contenteditable="true">主舞台/后台</td></tr>
+<tr class="setup"><td class="time" contenteditable="true">09:30–10:00</td><td class="dur" contenteditable="true">30</td>
+<td class="cnt" contenteditable="true"><b>🎟 入场 &amp; 评审就位</b><br/>参赛者/观众入场；评审嘉宾签到，引导入座；主持人与评审后台对齐流程</td>
+<td class="spk" contenteditable="true">接待志愿者<br/>主持人</td>
+<td class="scr" contenteditable="true">主KV：Day 2 开场画面</td>
+<td class="mem" contenteditable="true">评审嘉宾提前到场；提供评审礼包（评分表/笔/水）；确认打分方式（纸质/系统）</td>
+<td class="loc" contenteditable="true">入口/评审席</td></tr>
+<tr class="sep judge"><td colspan="7">⚖️ 评审工作·环节① — 开场圆桌 Panel 论坛</td></tr>
+<tr class="panel"><td class="time" contenteditable="true">10:00–10:30</td><td class="dur" contenteditable="true">30</td>
+<td class="cnt" contenteditable="true"><b>🎙 开场 + 圆桌 Panel 论坛</b><span class="tag tj">评审上台</span><span class="tag tg">🔴 直播开始</span><br/>• 主持人开场热场，宣布 Day 2 正式开始<br/>• 评审嘉宾上台就座圆桌<br/>• 主持人引导圆桌交流：AI创业趋势 / 评审视角 / 对参赛者的期待<br/>• 30分钟内结束，过渡到 Demo<br/>• 结束后评审直接下台入座评审席（无需离场）</td>
+<td class="spk" contenteditable="true">主持人（主导节奏）<br/><b>全体评审嘉宾</b><br/>（圆桌参与）</td>
+<td class="scr" contenteditable="true">主KV → 圆桌直播<br/>评审嘉宾名牌/简介PPT</td>
+<td class="mem" contenteditable="true">评审提前准备1–2句开场观点；主持人严格掌控节奏，不超时；直播同步四赛场；结束后评审留场移至评审席</td>
+<td class="loc" contenteditable="true">主舞台（圆桌布置）</td></tr>
+<tr class="sep amber"><td colspan="7">⚖️ 评审工作·环节② — Demo Day 项目路演 &amp; 现场打分点评</td></tr>
+<tr class="demo"><td class="time" contenteditable="true">10:30–10:40</td><td class="dur" contenteditable="true">10</td>
+<td class="cnt" contenteditable="true"><b>📋 Demo Day 规则说明</b><br/>主持人宣布：出场顺序（提交时间戳）；每队≤3分钟；超时打断；线上选手连线方式；投票通道说明</td>
+<td class="spk" contenteditable="true">主持人</td>
+<td class="scr" contenteditable="true">Demo 规则 PPT<br/>出场顺序表</td>
+<td class="mem" contenteditable="true">规则清晰宣布；告知评审：全天均可打分，投票截止前有效；确认线上等候室就绪</td>
+<td class="loc" contenteditable="true">主舞台</td></tr>
+<tr class="demo"><td class="time" contenteditable="true">10:40 起（轮流）</td><td class="dur" contenteditable="true">≤3min/队</td>
+<td class="cnt" contenteditable="true"><b>📱 项目 Demo 路演</b>（按提交顺序逐队）<span class="tag tb">每队 ≤3min</span><br/>推荐结构：① App 核心场景演示（1.5min）② 技术实现亮点（30s）③ 商业化方向/目标用户（30s）<br/>线上选手：主持人呼叫 → 远程投屏（提前5分钟进等候室）<br/><br/><b>评审工作：</b>入座台下，全程观看；为每位选手现场打分；可做简短专业点评（主持人协调时间）</td>
+<td class="spk" contenteditable="true">参赛队伍（依次）<br/>主持人（计时+主持）<br/><b>评审嘉宾（台下打分）</b></td>
+<td class="scr" contenteditable="true">选手 App 投屏<br/>3min 倒计时大屏<br/>线上：远程投屏画面</td>
+<td class="mem" contenteditable="true">评分维度建议：创新性 / 用户价值 / 完成度 / 商业潜力 / 现场表现<br/>超时：主持人举牌→打断<br/>专家评审占综合分 40%</td>
+<td class="loc" contenteditable="true">主舞台 / 评审席</td></tr>
+<tr class="share"><td class="time" contenteditable="true">每60分钟</td><td class="dur" contenteditable="true">10</td>
+<td class="cnt" contenteditable="true"><b>☕ 休息</b><span class="tag ta">📱 分享节点</span><br/>运营：「刚才哪个产品让你眼前一亮？发到朋友圈附上链接」；评审可休息、饮水</td>
+<td class="spk" contenteditable="true">运营负责人</td>
+<td class="scr" contenteditable="true">实时 Leaderboard<br/>新一轮话术模板</td>
+<td class="mem" contenteditable="true">每轮话术不同；直播持续推流；评审席备饮品</td>
+<td class="loc" contenteditable="true">主会场</td></tr>
+<tr class="sep judge"><td colspan="7">⚖️ 评审工作·环节③ — Lunch Party 午餐交流会 &amp; 颁奖</td></tr>
+<tr class="vote"><td class="time" contenteditable="true">Demo 展示完毕后</td><td class="dur" contenteditable="true">—</td>
+<td class="cnt" contenteditable="true"><b>🍽 Lunch Party 开始 + 自由体验产品</b><span class="tag ta">📱 分享节点</span><br/>提供午餐；自由体验各队 App；投票通道持续开放；Leaderboard 实时滚动；直播继续</td>
+<td class="spk" contenteditable="true">运营负责人</td>
+<td class="scr" contenteditable="true">Leaderboard 滚动大屏</td>
+<td class="mem" contenteditable="true">Eazo 注册用户可投票，每人3票；评审可补充打分；开始局部布置颁奖区</td>
+<td class="loc" contenteditable="true">用餐区/展示区</td></tr>
+<tr class="vote"><td class="time" contenteditable="true">截止前 60min</td><td class="dur" contenteditable="true">—</td>
+<td class="cnt" contenteditable="true"><b>⚠️ 投票最后1小时预警</b><br/>全平台推送；主持人现场宣布；Leaderboard 快照公布</td>
+<td class="spk" contenteditable="true">主持人 + 运营</td>
+<td class="scr" contenteditable="true">Leaderboard 快照<br/>60min 倒计时</td>
+<td class="mem" contenteditable="true">话术：「快截止了！帮你最喜欢的产品最后冲一票 → [链接]」</td>
+<td class="loc" contenteditable="true">主会场</td></tr>
+<tr class="vote"><td class="time" contenteditable="true">截止前 10min</td><td class="dur" contenteditable="true">10</td>
+<td class="cnt" contenteditable="true"><b>⏱ 10分钟最终倒计时</b></td>
+<td class="spk" contenteditable="true">主持人 + 运营</td>
+<td class="scr" contenteditable="true">10min 倒计时</td>
+<td class="mem" contenteditable="true">停止其他活动，聚焦最终冲票</td>
+<td class="loc" contenteditable="true">主会场</td></tr>
+<tr class="deadline"><td class="time" contenteditable="true">投票截止（TBD）</td><td class="dur" contenteditable="true">—</td>
+<td class="cnt" contenteditable="true"><b>🔒 投票截止，系统锁定</b><span class="tag tr">HARD STOP</span></td>
+<td class="spk" contenteditable="true">平台/技术</td>
+<td class="scr" contenteditable="true">截止公告</td>
+<td class="mem" contenteditable="true">系统自动锁定；综合加权计算（50%用户票+40%专家+10%互评）；结果保密至颁奖</td>
+<td class="loc" contenteditable="true">—</td></tr>
+<tr class="sep purple"><td colspan="7">🎉 颁奖典礼 — 评审嘉宾出席颁奖</td></tr>
+<tr class="party"><td class="time" contenteditable="true">颁奖环节</td><td class="dur" contenteditable="true">20</td>
+<td class="cnt" contenteditable="true"><b>🏅 成就徽章公布</b><span class="tag tp">里程碑</span><br/>先行者/破百俱乐部/千里马/光速上线/破圈/社媒之选 逐一揭晓<br/>评审嘉宾台上见证</td>
+<td class="spk" contenteditable="true">主持人<br/><b>评审嘉宾（台上）</b></td>
+<td class="scr" contenteditable="true">徽章动效 PPT<br/>获得者名单</td>
+<td class="mem" contenteditable="true">每个徽章配解读词；获奖队伍上台拍照；摄影全程跟进</td>
+<td class="loc" contenteditable="true">主舞台</td></tr>
+<tr class="party"><td class="time" contenteditable="true">颁奖环节</td><td class="dur" contenteditable="true">20</td>
+<td class="cnt" contenteditable="true"><b>🏆 上海区域奖 Top 3</b><span class="tag tb">$8K · $5K · $3K</span><br/>3名→2名→1名逐步揭晓；每名上台致辞1分钟<br/><b>评审嘉宾为获奖项目/选手颁奖</b></td>
+<td class="spk" contenteditable="true">主持人<br/><b>评审嘉宾（颁奖）</b></td>
+<td class="scr" contenteditable="true">项目 PPT 1–10<br/>奖项动效</td>
+<td class="mem" contenteditable="true">奖状/奖杯提前准备就位；摄影跟进每位上台获奖者；颁奖嘉宾站位提前确认</td>
+<td class="loc" contenteditable="true">主舞台</td></tr>
+<tr class="party"><td class="time" contenteditable="true">颁奖后 · 等待 SF</td><td class="dur" contenteditable="true">—</td>
+<td class="cnt" contenteditable="true"><b>⏸ 全球奖项倒数 + 社交活动</b><br/>上海区域奖颁奖完毕；自由交流；运营持续推帖；主持人预热全球颁奖直播（旧金山 SF 时间）<br/>⚠️ People's Choice / Grand Prize 仅在 SF 颁出，上海同步直播</td>
+<td class="spk" contenteditable="true">主持人 + 运营</td>
+<td class="scr" contenteditable="true">Leaderboard / 社交媒体墙</td>
+<td class="mem" contenteditable="true">确认大屏接收 SF 直播信号就绪；主持人告知全场：全球奖项约 XX:XX（CST）揭晓，届时同步直播</td>
+<td class="loc" contenteditable="true">主会场</td></tr>
+<tr class="party"><td class="time" contenteditable="true">SF 颁奖时刻<br/><em style="font-size:11px;color:#888">（CST 同步 SF 21:00 PT）</em></td><td class="dur" contenteditable="true">60</td>
+<td class="cnt" contenteditable="true"><b>📺 全球奖项直播 — 来自旧金山 SF</b><span class="tag tg">🔴 同步直播</span><br/>大屏直播：People's Choice $25,000 → Grand Prize $50,000<br/>主持人主持上海现场反应；如上海参赛队获奖，现场同步庆祝</td>
+<td class="spk" contenteditable="true">主持人（现场氛围）<br/>大屏：SF 直播画面</td>
+<td class="scr" contenteditable="true">SF 直播信号（大屏）<br/>上海反应摄像机</td>
+<td class="mem" contenteditable="true">AV：确认接收 SF RTMP 推流；如上海队获大奖，提前备庆祝物料（彩带/话筒）；摄影全程记录</td>
+<td class="loc" contenteditable="true">主舞台 / 大屏</td></tr>
+<tr class="share"><td class="time" contenteditable="true">颁奖后</td><td class="dur" contenteditable="true">—</td>
+<td class="cnt" contenteditable="true"><b>🎊 自由交流 + 二次传播冲刺</b><span class="tag ta">📱 传播</span><br/>自由社交；运营推发帖话术；官方发布作品合集页面；大合影</td>
+<td class="spk" contenteditable="true">运营</td>
+<td class="scr" contenteditable="true">背景音乐<br/>作品合集 QR</td>
+<td class="mem" contenteditable="true">话术：「我参加了 Eazo Global Hackathon！我的产品 → [链接]」@EazoOfficial<br/>大合影：全体参赛者+评审嘉宾</td>
+<td class="loc" contenteditable="true">主会场</td></tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<!-- ═══ SF ═══ -->
+<div class="venue-content" id="venue-sf">
+<!-- SF Pre-Event Info -->
+<div class="info-panel">
+<div class="info-toggle" onclick="toggleInfo(this)">
+<span class="arrow">▶</span>
+      📋 Pre-Event Reference — San Francisco (click to expand)
+    </div>
+<div class="info-body">
+<div class="info-group">
+<div class="info-group-title">🏢 Venue</div>
+<div class="info-row"><span class="info-label">Venue Name</span><div class="info-val" contenteditable="true" placeholder="TBD"></div></div>
+<div class="info-row"><span class="info-label">Address</span><div class="info-val" contenteditable="true" placeholder="TBD"></div></div>
+<div class="info-row"><span class="info-label">Venue Contact</span><div class="info-val" contenteditable="true" placeholder="Name + Phone"></div></div>
+<div class="info-row"><span class="info-label">Capacity</span><div class="info-val" contenteditable="true" placeholder="pax"></div></div>
+<div class="info-row"><span class="info-label">Entry / Parking</span><div class="info-val" contenteditable="true" placeholder="Instructions"></div></div>
+<div class="info-row"><span class="info-label">Load-in access time</span><div class="info-val" contenteditable="true" placeholder="e.g. 6:30 AM earliest"></div></div>
+</div>
+<div class="info-group">
+<div class="info-group-title">👥 Key Contacts</div>
+<div class="info-row"><span class="info-label">On-site Lead</span><div class="info-val" contenteditable="true" placeholder="Name + Phone"></div></div>
+<div class="info-row"><span class="info-label">Venue / Logistics</span><div class="info-val" contenteditable="true" placeholder="Name + Phone"></div></div>
+<div class="info-row"><span class="info-label">AV / Livestream</span><div class="info-val" contenteditable="true" placeholder="Name + Phone"></div></div>
+<div class="info-row"><span class="info-label">MC</span><div class="info-val" contenteditable="true" placeholder="Name + Phone"></div></div>
+<div class="info-row"><span class="info-label">Ops Lead</span><div class="info-val" contenteditable="true" placeholder="Name + Phone"></div></div>
+<div class="info-row"><span class="info-label">Platform / Tech</span><div class="info-val" contenteditable="true" placeholder="Name + Phone"></div></div>
+<div class="info-row"><span class="info-label">Photo / Video</span><div class="info-val" contenteditable="true" placeholder="Name + Phone"></div></div>
+<div class="info-row"><span class="info-label">Global Simulcast Coord</span><div class="info-val" contenteditable="true" placeholder="Name — handles SF↔SH↔NY sync"></div></div>
+</div>
+<div class="info-group">
+<div class="info-group-title">🔗 Core Links</div>
+<div class="info-row"><span class="info-label">Submission Platform</span><div class="info-val" contenteditable="true" placeholder="https://"></div></div>
+<div class="info-row"><span class="info-label">Voting Page</span><div class="info-val" contenteditable="true" placeholder="https://"></div></div>
+<div class="info-row"><span class="info-label">Leaderboard</span><div class="info-val" contenteditable="true" placeholder="https://"></div></div>
+<div class="info-row"><span class="info-label">Livestream RTMP</span><div class="info-val" contenteditable="true" placeholder="rtmp://"></div></div>
+<div class="info-row"><span class="info-label">Livestream View URL</span><div class="info-val" contenteditable="true" placeholder="https://"></div></div>
+<div class="info-row"><span class="info-label">Participant Discord / Slack</span><div class="info-val" contenteditable="true" placeholder="Link or channel name"></div></div>
+<div class="info-row"><span class="info-label">Judge Scoring Portal</span><div class="info-val" contenteditable="true" placeholder="https://"></div></div>
+<div class="info-row"><span class="info-label">Grand Prize Simulcast Feed (outbound to SH/NY)</span><div class="info-val" contenteditable="true" placeholder="RTMP or stream key"></div></div>
+</div>
+<div class="info-group">
+<div class="info-group-title">📡 Wi-Fi &amp; AV</div>
+<div class="info-row"><span class="info-label">Wi-Fi SSID</span><div class="info-val" contenteditable="true" placeholder="Network name"></div></div>
+<div class="info-row"><span class="info-label">Wi-Fi Password</span><div class="info-val" contenteditable="true" placeholder="Password"></div></div>
+<div class="info-row"><span class="info-label">Backup Hotspot</span><div class="info-val" contenteditable="true" placeholder="Device name + password"></div></div>
+<div class="info-row"><span class="info-label">Main Screen / Projector</span><div class="info-val" contenteditable="true" placeholder="Spec / backup unit"></div></div>
+<div class="info-row"><span class="info-label">Audio System</span><div class="info-val" contenteditable="true" placeholder="Model / # of spare mics"></div></div>
+<div class="info-row"><span class="info-label">Clicker / Presentation Remote</span><div class="info-val" contenteditable="true" placeholder="Qty + model"></div></div>
+</div>
+<div class="info-group warn">
+<div class="info-group-title">📦 Materials Checklist (verify before Day 1 load-in)</div>
+<div class="info-row"><span class="info-label">Name Badges</span><div class="info-val" contenteditable="true" placeholder="Qty"></div></div>
+<div class="info-row"><span class="info-label">Track Stickers (5 colors)</span><div class="info-val" contenteditable="true" placeholder="Qty per color"></div></div>
+<div class="info-row"><span class="info-label">Builder's Choice Stickers (3 per person)</span><div class="info-val" contenteditable="true" placeholder="Total qty"></div></div>
+<div class="info-row"><span class="info-label">Judge Score Sheets (printed)</span><div class="info-val" contenteditable="true" placeholder="Copies"></div></div>
+<div class="info-row"><span class="info-label">Certificates / Trophies</span><div class="info-val" contenteditable="true" placeholder="Top 1/2/3 + badges"></div></div>
+<div class="info-row"><span class="info-label">Day 1 Food (catering)</span><div class="info-val" contenteditable="true" placeholder="Vendor + contact + confirmed headcount"></div></div>
+<div class="info-row"><span class="info-label">Day 2 Lunch Party (catering)</span><div class="info-val" contenteditable="true" placeholder="Vendor + contact + confirmed headcount"></div></div>
+<div class="info-row"><span class="info-label">Overnight Snacks / Drinks</span><div class="info-val" contenteditable="true" placeholder="Type + qty"></div></div>
+<div class="info-row"><span class="info-label">Grand Prize Award Prop (special item if any)</span><div class="info-val" contenteditable="true" placeholder="e.g. oversized check, trophy"></div></div>
+</div>
+<div class="info-group alert">
+<div class="info-group-title">🚨 Emergency &amp; Contingency</div>
+<div class="info-row"><span class="info-label">Tech Failure Backup Plan</span><div class="info-val" contenteditable="true" placeholder="Backup device / hotspot / manual timer"></div></div>
+<div class="info-row"><span class="info-label">Building Emergency Contact</span><div class="info-val" contenteditable="true" placeholder="Security / Facilities + phone"></div></div>
+<div class="info-row"><span class="info-label">Nearest Medical / First Aid</span><div class="info-val" contenteditable="true" placeholder="First aid kit location / nearest ER"></div></div>
+<div class="info-row"><span class="info-label">Platform Down Protocol</span><div class="info-val" contenteditable="true" placeholder="Backup submission method"></div></div>
+<div class="info-row"><span class="info-label">Simulcast Failure (Grand Prize)</span><div class="info-val" contenteditable="true" placeholder="Backup: record locally + restream; delay window"></div></div>
+</div>
+</div>
+<div class="edit-hint">✏️ All fields are editable — click to type. Changes are lost on refresh; screenshot or print to PDF to save.</div>
+</div>
+<div class="day-tabs">
+<div class="day-tab active" onclick="showDay('sf','d1')">Day 1 · May 23 (Build Day)</div>
+<div class="day-tab" onclick="showDay('sf','d2')">Day 2 · May 24 (Demo + Awards) ⚖️ Judge Day</div>
+</div>
+<!-- SF D1 -->
+<div class="day-content active" id="sf-d1">
+<div class="legend">
+<div class="legend-item"><div class="legend-dot" style="background:#f5f4f0"></div>Setup</div>
+<div class="legend-item"><div class="legend-dot" style="background:#fffbe6"></div>Build</div>
+<div class="legend-item"><div class="legend-dot" style="background:#fef3d8"></div>Break / Share</div>
+<div class="legend-item"><div class="legend-dot" style="background:#fff0f0"></div>Hard Deadline</div>
+</div>
+<div class="table-wrap"><table>
+<thead><tr><th>TIME (PT)</th><th>DUR(min)</th><th>CONTENT &amp; ACTIONS</th><th>SPEAKER / LEAD</th><th>SCREEN</th><th>MEMO / NOTES</th><th>LOCATION</th></tr></thead>
+<tbody>
+<tr class="sep green"><td colspan="7">DAY 1 · May 23 (Fri) · San Francisco Build Day  ｜  Venue: [SF Venue TBD]</td></tr>
+<tr class="setup"><td class="time" contenteditable="true">07:00–09:30 PT</td><td class="dur" contenteditable="true">150</td>
+<td class="cnt" contenteditable="true"><b>🛠 Venue Setup</b><br/>Stage build; registration desk; AV/projector install &amp; test; KV on wall; hackathon tables arranged by track zone</td>
+<td class="spk" contenteditable="true">Venue Lead<br/>AV Team</td>
+<td class="scr" contenteditable="true">KV standby<br/>Tech test</td>
+<td class="mem" contenteditable="true">Wi-Fi load test; backup projector switch; registration system pre-launch; confirm live stream RTMP keys</td>
+<td class="loc" contenteditable="true">Main Hall</td></tr>
+<tr class="setup"><td class="time" contenteditable="true">09:30–10:00 PT</td><td class="dur" contenteditable="true">30</td>
+<td class="cnt" contenteditable="true"><b>✅ Check-in &amp; Track Selection</b><br/>Confirm name/team, pick up badge; select one track (5 tracks, locked all day); register team name; guide to seat</td>
+<td class="spk" contenteditable="true">Registration Team<br/>Volunteers</td>
+<td class="scr" contenteditable="true">Registration screen<br/>Track display KV</td>
+<td class="mem" contenteditable="true">Prep: badges, name tags, track stickers (color-coded)<br/>Online teams: track selected at registration, confirm on platform before 10:00</td>
+<td class="loc" contenteditable="true">Entrance / Lobby</td></tr>
+<tr class="key"><td class="time" contenteditable="true">10:00–10:30 PT</td><td class="dur" contenteditable="true">30</td>
+<td class="cnt" contenteditable="true"><b>🎙 Opening + Founder Product Launch</b><span class="tag tg">Global Sync</span><br/>MC opens → <b>Founder on stage: product launch keynote (≤30 min)</b>, showcasing Eazo platform and hackathon vision; 5-track intro; full rules walkthrough (submission / voting / scoring weights)</td>
+<td class="spk" contenteditable="true">MC<br/>Eazo Founder / Rep</td>
+<td class="scr" contenteditable="true">Main KV → Keynote slides<br/>Track intro slides<br/>Global timezone graphic</td>
+<td class="mem" contenteditable="true">10:00 PT sharp — synced all venues; live stream test 5 min before; confirm mic/clicker</td>
+<td class="loc" contenteditable="true">Main Stage</td></tr>
+
+<tr class="share"><td class="time" contenteditable="true">10:30–10:40 PT</td><td class="dur" contenteditable="true">10</td>
+<td class="cnt" contenteditable="true"><b>📸 Global Group Photo</b><span class="tag tg">Global Sync</span><br/>Founder keynote just ended — energy is at its peak → all participants + staff + guests gather for the group photo<br/>Photographer pre-positioned; MC cues the crowd; online participants take a screenshot simultaneously</td>
+<td class="spk" contenteditable="true">MC (organizes)<br/>Photographer (executes)</td>
+<td class="scr" contenteditable="true">Group photo KV (backdrop on screen)<br/>3-2-1 countdown animation</td>
+<td class="mem" contenteditable="true">Photographer set up center-front before 10:30; call it done in under 10 min; broadcast photo to all venue streams immediately; SF photo is the global hero shot</td>
+<td class="loc" contenteditable="true">Main Stage + Full Hall</td></tr>
+
+<tr class="build"><td class="time" contenteditable="true">10:40–12:30 PT</td><td class="dur" contenteditable="true">110</td>
+<td class="cnt" contenteditable="true"><b>💻 Build Phase · Round 1</b><span class="tag tp">Build</span><br/>Build → Deploy → Publish; mentors on floor Q&amp;A early submission encouraged</td>
+<td class="spk" contenteditable="true">—</td>
+<td class="scr" contenteditable="true">Build flow guide<br/>Eazo platform demo</td>
+<td class="mem" contenteditable="true">Ops broadcast every 30 min in group chat; confirm all on Eazo; mentors log track progress</td>
+<td class="loc" contenteditable="true">Main Hall (Track Zones)</td></tr>
+<tr class="share"><td class="time" contenteditable="true">12:30–13:15 PT</td><td class="dur" contenteditable="true">45</td>
+<td class="cnt" contenteditable="true"><b>🍱 Lunch</b><span class="tag ta">📱 Share Push ①</span><br/>Ops on stage: live social posting demo (Twitter/LinkedIn); share template walkthrough; group chat link chain</td>
+<td class="spk" contenteditable="true">Ops Lead (on stage)</td>
+<td class="scr" contenteditable="true">Share template<br/>Post examples</td>
+<td class="mem" contenteditable="true">Copy ①: "I'm building an app at Eazo Hackathon → [link], vote for me!"</td>
+<td class="loc" contenteditable="true">Dining / Hall</td></tr>
+<tr class="build"><td class="time" contenteditable="true">13:15–15:30 PT</td><td class="dur" contenteditable="true">135</td>
+<td class="cnt" contenteditable="true"><b>💻 Build Phase · Round 2</b><span class="tag tp">Build</span><br/>Continue building; mentors rotate; group broadcast every 60 min</td>
+<td class="spk" contenteditable="true">—</td><td class="scr" contenteditable="true">Progress countdown</td>
+<td class="mem" contenteditable="true">Group: "XX teams submitted — how's yours?" Reminder: "If it runs, submit now"</td>
+<td class="loc" contenteditable="true">Main Hall</td></tr>
+<tr class="share"><td class="time" contenteditable="true">15:30–15:45 PT</td><td class="dur" contenteditable="true">15</td>
+<td class="cnt" contenteditable="true"><b>☕ Afternoon Break</b><span class="tag ta">📱 Share Push ②</span><br/>Ops pushes progress-screenshot share template</td>
+<td class="spk" contenteditable="true">Ops Lead</td>
+<td class="scr" contenteditable="true">New share template</td>
+<td class="mem" contenteditable="true">Copy ②: "Halfway there — cheer me on → [progress screenshot]"</td>
+<td class="loc" contenteditable="true">Break Area</td></tr>
+<tr class="build"><td class="time" contenteditable="true">15:45–17:30 PT</td><td class="dur" contenteditable="true">105</td>
+<td class="cnt" contenteditable="true"><b>💻 Build Phase · Round 3</b><span class="tag tp">Build</span></td>
+<td class="spk" contenteditable="true">—</td><td class="scr" contenteditable="true">Progress countdown</td>
+<td class="mem" contenteditable="true">Mentors increase frequency; group: "App runs? Submit now"</td>
+<td class="loc" contenteditable="true">Main Hall</td></tr>
+<tr class="share"><td class="time" contenteditable="true">17:30–18:00 PT</td><td class="dur" contenteditable="true">30</td>
+<td class="cnt" contenteditable="true"><b>🔍 Mid-Point Check · Guest Walk-Around</b><span class="tag ta">📱 Share Push ③</span><br/>Guests/mentors walk around; ops: "Post your app link in the group NOW"</td>
+<td class="spk" contenteditable="true">Guests / Mentors<br/>Ops Lead</td>
+<td class="scr" contenteditable="true">Leaderboard (test mode)</td>
+<td class="mem" contenteditable="true">Copy ③: "Guests checking apps — post your link!" Ops collects links into group summary</td>
+<td class="loc" contenteditable="true">Full Hall</td></tr>
+<tr class="build"><td class="time" contenteditable="true">18:00–19:00 PT</td><td class="dur" contenteditable="true">60</td>
+<td class="cnt" contenteditable="true"><b>💻 Build Phase · Round 4</b><span class="tag tp">Build</span></td>
+<td class="spk" contenteditable="true">—</td><td class="scr" contenteditable="true">—</td><td class="mem" contenteditable="true">—</td>
+<td class="loc" contenteditable="true">Main Hall</td></tr>
+<tr class="share"><td class="time" contenteditable="true">19:00–19:45 PT</td><td class="dur" contenteditable="true">45</td>
+<td class="cnt" contenteditable="true"><b>🍽 Dinner</b><span class="tag ta">📱 Share Push ④</span><br/>Ops leads group share recap: "whose link spread furthest?"</td>
+<td class="spk" contenteditable="true">Ops Lead</td>
+<td class="scr" contenteditable="true">Leaderboard snapshot</td>
+<td class="mem" contenteditable="true">Copy ④: "Whose product got shared most? Post your fav and help them get votes!"</td>
+<td class="loc" contenteditable="true">Dining Area</td></tr>
+<tr class="build"><td class="time" contenteditable="true">19:45–Next Day 08:30 PT</td><td class="dur" contenteditable="true">—</td>
+<td class="cnt" contenteditable="true"><b>🌙 Overnight Build Sprint</b><span class="tag tp">Build</span><br/>Continue; ops on-call; 08:30 PT final all-channel warning</td>
+<td class="spk" contenteditable="true">Ops On-call</td><td class="scr" contenteditable="true">—</td>
+<td class="mem" contenteditable="true">Group check-in every 2 hours; snacks/coffee; confirm overnight venue access</td>
+<td class="loc" contenteditable="true">Main Hall (Open)</td></tr>
+<tr class="deadline"><td class="time" contenteditable="true">Next Day 09:00 PT</td><td class="dur" contenteditable="true">—</td>
+<td class="cnt" contenteditable="true"><b>🔒 Submission Hard Deadline</b><span class="tag tr">HARD STOP</span><br/>Platform closes; timestamp = Demo stage order</td>
+<td class="spk" contenteditable="true">Ops / Platform</td>
+<td class="scr" contenteditable="true">Deadline countdown</td>
+<td class="mem" contenteditable="true">After close: roster locked; generate and print Demo stage order list</td>
+<td class="loc" contenteditable="true">—</td></tr>
+</tbody>
+</table></div>
+</div>
+<!-- SF D2 -->
+<div class="day-content" id="sf-d2">
+<div class="judge-box">
+<div class="jrow">
+<div class="jcol"><span class="jlabel">⚖️ Judge Attendance Day</span><strong>May 24 — Full Day</strong></div>
+<div class="jcol"><span class="jlabel">Session ① 10:00–10:30</span>Opening Round Table Panel — on stage</div>
+<div class="jcol"><span class="jlabel">Session ② Post-panel</span>Sit in audience, score all demos in real-time + brief comments</div>
+<div class="jcol"><span class="jlabel">Session ③ Lunch Party</span>Present awards to winning projects / teams</div>
+</div>
+</div>
+<div class="legend">
+<div class="legend-item"><div class="legend-dot" style="background:#f5f4f0"></div>Setup</div>
+<div class="legend-item"><div class="legend-dot" style="background:#fef5e0"></div>Judge Sessions</div>
+<div class="legend-item"><div class="legend-dot" style="background:#fff8f5"></div>Demo</div>
+<div class="legend-item"><div class="legend-dot" style="background:#f0f8ee"></div>Voting</div>
+<div class="legend-item"><div class="legend-dot" style="background:#f8f0ff"></div>Awards / Party</div>
+<div class="legend-item"><div class="legend-dot" style="background:#fff0f0"></div>Hard Deadline</div>
+</div>
+<div class="table-wrap"><table>
+<thead><tr><th>TIME (PT)</th><th>DUR(min)</th><th>CONTENT &amp; ACTIONS</th><th>SPEAKER / LEAD</th><th>SCREEN</th><th>MEMO / NOTES</th><th>LOCATION</th></tr></thead>
+<tbody>
+<tr class="sep amber"><td colspan="7">DAY 2 · May 24 (Sat) · San Francisco Demo Day + Lunch Party + Awards  ｜  SF = Global Awards Hub</td></tr>
+<tr class="setup"><td class="time" contenteditable="true">08:00–09:30 PT</td><td class="dur" contenteditable="true">90</td>
+<td class="cnt" contenteditable="true"><b>🛠 Demo Day Setup</b><br/>Stage reconfigure (remove half hacker tables, keep audience seating); live stream test; verify submission roster; print stage order; judge seats at front center</td>
+<td class="spk" contenteditable="true">Venue Lead<br/>Live Stream Tech</td>
+<td class="scr" contenteditable="true">Stream test<br/>Stage order standby</td>
+<td class="mem" contenteditable="true">Verify all submitted app links accessible; judge prep: scoring sheets/system/water; test online participant screenshare</td>
+<td class="loc" contenteditable="true">Main Stage / Back</td></tr>
+<tr class="setup"><td class="time" contenteditable="true">09:30–10:00 PT</td><td class="dur" contenteditable="true">30</td>
+<td class="cnt" contenteditable="true"><b>🎟 Doors Open + Judges Arrive</b><br/>Participants &amp; audience check in; judges sign in, escorted to seats; MC aligns flow with judges backstage</td>
+<td class="spk" contenteditable="true">Reception Volunteers<br/>MC</td>
+<td class="scr" contenteditable="true">Main KV: Day 2 visual</td>
+<td class="mem" contenteditable="true">Judges arrive early; judge kits (scoring sheet / pen / water); confirm scoring method; brief judges on timeline</td>
+<td class="loc" contenteditable="true">Entrance / Judge Seats</td></tr>
+<tr class="sep judge"><td colspan="7">⚖️ Judge Session ① — Opening Round Table Panel</td></tr>
+<tr class="panel"><td class="time" contenteditable="true">10:00–10:30 PT</td><td class="dur" contenteditable="true">30</td>
+<td class="cnt" contenteditable="true"><b>🎙 Opening + Round Table Panel</b><span class="tag tj">JUDGES ON STAGE</span><span class="tag tg">🔴 LIVE ON</span><br/>• MC opens Day 2, announces schedule<br/>• All judges take seats at round table on stage<br/>• MC facilitates panel: AI entrepreneurship trends / judging perspective / message to builders<br/>• Conclude in 30 min — smooth handoff to Demo<br/>• After panel: judges step off stage directly to judge seats (no exit)</td>
+<td class="spk" contenteditable="true">MC (facilitates)<br/><b>All Judges (panelists)</b></td>
+<td class="scr" contenteditable="true">Main KV → Live panel<br/>Judge name cards / bio PPT</td>
+<td class="mem" contenteditable="true">Judges prep 1–2 sentences of opening remarks; MC controls timing strictly; live stream synced all venues; after panel judges stay in room, move to judge seats</td>
+<td class="loc" contenteditable="true">Main Stage (Round Table)</td></tr>
+<tr class="sep amber"><td colspan="7">⚖️ Judge Session ② — Demo Day Project Pitches &amp; Live Scoring</td></tr>
+<tr class="demo"><td class="time" contenteditable="true">10:30–10:40 PT</td><td class="dur" contenteditable="true">10</td>
+<td class="cnt" contenteditable="true"><b>📋 Demo Day Rules Briefing</b><br/>MC announces: stage order = submission timestamp; ≤3 min per team; time enforced; online team screenshare; voting now open</td>
+<td class="spk" contenteditable="true">MC</td>
+<td class="scr" contenteditable="true">Demo rules slide<br/>Stage order list</td>
+<td class="mem" contenteditable="true">Clear rules to avoid disputes; inform judges: score valid all day until voting closes; confirm online waiting room ready</td>
+<td class="loc" contenteditable="true">Main Stage</td></tr>
+<tr class="demo"><td class="time" contenteditable="true">10:40 onward (rolling)</td><td class="dur" contenteditable="true">≤3min/team</td>
+<td class="cnt" contenteditable="true"><b>📱 Project Demos</b> (submission order)<span class="tag tb">≤3 min each</span><br/>Recommended: ① App core demo (1.5min) ② Tech highlights (30s) ③ Business / target users (30s)<br/>Online teams: MC calls → remote screenshare (join waiting room 5 min early)<br/><br/><b>Judge Action:</b> Seated in judge row, watch all demos; score each team in real-time (scoring system / paper); may give brief professional comment (MC coordinates)</td>
+<td class="spk" contenteditable="true">Teams (in order)<br/>MC (timer + host)<br/><b>Judges (scoring in seat)</b></td>
+<td class="scr" contenteditable="true">Team App screenshare<br/>3-min countdown<br/>Remote feed (online)</td>
+<td class="mem" contenteditable="true">Suggested scoring dimensions: Innovation / User Value / Completion / Business Potential / Presentation<br/>Overtime: MC signals → interrupt<br/>Expert scores = 40% of final weight</td>
+<td class="loc" contenteditable="true">Main Stage / Judge Row</td></tr>
+<tr class="share"><td class="time" contenteditable="true">Every 60 min</td><td class="dur" contenteditable="true">10</td>
+<td class="cnt" contenteditable="true"><b>☕ Break + Share Push</b><span class="tag ta">📱 Share</span><br/>Ops: "Which product impressed you? Post it with the link — right now"<br/>Judges may rest, drink water</td>
+<td class="spk" contenteditable="true">Ops Lead</td>
+<td class="scr" contenteditable="true">Live Leaderboard<br/>New share template</td>
+<td class="mem" contenteditable="true">New copy each round; stream stays live; water at judge seats</td>
+<td class="loc" contenteditable="true">Main Hall</td></tr>
+<tr class="sep judge"><td colspan="7">⚖️ Judge Session ③ — Lunch Party &amp; Awards Ceremony</td></tr>
+<tr class="vote"><td class="time" contenteditable="true">Post-demos</td><td class="dur" contenteditable="true">—</td>
+<td class="cnt" contenteditable="true"><b>🍽 Lunch Party + Free Product Experience</b><span class="tag ta">📱 Share</span><br/>Lunch served; freely explore apps; voting open; Leaderboard live; stream continues</td>
+<td class="spk" contenteditable="true">Ops Lead</td>
+<td class="scr" contenteditable="true">Rolling Leaderboard</td>
+<td class="mem" contenteditable="true">Eazo registered users only, 3 votes max; judges may continue scoring; venue sets up award section</td>
+<td class="loc" contenteditable="true">Dining / Experience Area</td></tr>
+<tr class="vote"><td class="time" contenteditable="true">60 min before close</td><td class="dur" contenteditable="true">—</td>
+<td class="cnt" contenteditable="true"><b>⚠️ Final Hour Warning</b></td>
+<td class="spk" contenteditable="true">MC + Ops</td>
+<td class="scr" contenteditable="true">Leaderboard snapshot<br/>60-min countdown</td>
+<td class="mem" contenteditable="true">Copy: "Last hour — get one more vote for your favorite → [link]"</td>
+<td class="loc" contenteditable="true">Hall</td></tr>
+<tr class="vote"><td class="time" contenteditable="true">10 min before close</td><td class="dur" contenteditable="true">10</td>
+<td class="cnt" contenteditable="true"><b>⏱ 10-Min Final Countdown</b></td>
+<td class="spk" contenteditable="true">MC + Ops</td>
+<td class="scr" contenteditable="true">10-min countdown</td>
+<td class="mem" contenteditable="true">Stop all else; final vote sprint</td>
+<td class="loc" contenteditable="true">Hall</td></tr>
+<tr class="deadline"><td class="time" contenteditable="true">Voting Close (TBD)</td><td class="dur" contenteditable="true">—</td>
+<td class="cnt" contenteditable="true"><b>🔒 Voting Closes — System Locked</b><span class="tag tr">HARD STOP</span></td>
+<td class="spk" contenteditable="true">Platform / Tech</td>
+<td class="scr" contenteditable="true">Closure announcement</td>
+<td class="mem" contenteditable="true">Auto-lock; weighted calc (50% votes + 40% expert + 10% peer); results under embargo</td>
+<td class="loc" contenteditable="true">—</td></tr>
+<tr class="sep purple"><td colspan="7">🎉 AWARDS CEREMONY — SF = Global Hub · Judges present awards</td></tr>
+<tr class="party"><td class="time" contenteditable="true">Awards</td><td class="dur" contenteditable="true">20</td>
+<td class="cnt" contenteditable="true"><b>🏅 Achievement Badges Reveal</b><span class="tag tp">Milestones</span><br/>All 6 badges revealed one by one; judges witness on stage</td>
+<td class="spk" contenteditable="true">MC + <b>Judges (on stage)</b></td>
+<td class="scr" contenteditable="true">Badge animation PPT</td>
+<td class="mem" contenteditable="true">One-liner per badge; winners on stage for photo</td>
+<td class="loc" contenteditable="true">Main Stage</td></tr>
+<tr class="party"><td class="time" contenteditable="true">Awards</td><td class="dur" contenteditable="true">20</td>
+<td class="cnt" contenteditable="true"><b>🏆 SF Regional Awards Top 3</b><span class="tag tb">$8K · $5K · $3K</span><br/>3rd → 2nd → 1st; 1-min speech each<br/><b>Judges present awards on stage</b></td>
+<td class="spk" contenteditable="true">MC + <b>Judges (presenting)</b></td>
+<td class="scr" contenteditable="true">Project slides<br/>Award animations</td>
+<td class="mem" contenteditable="true">Awards/certificates pre-positioned; photo per winner; sync timing with SH/NY</td>
+<td class="loc" contenteditable="true">Main Stage</td></tr>
+<tr class="party"><td class="time" contenteditable="true">Awards</td><td class="dur" contenteditable="true">20</td>
+<td class="cnt" contenteditable="true"><b>🗳️ People's Choice $25,000</b><span class="tag ta">Global #1 Public Vote</span><br/>All four venues simulcast; video link-in if winner at another venue</td>
+<td class="spk" contenteditable="true">MC + Eazo CEO</td>
+<td class="scr" contenteditable="true">Reveal animation</td>
+<td class="mem" contenteditable="true">Coordinate global simulcast; backup video link confirmed</td>
+<td class="loc" contenteditable="true">Main Stage</td></tr>
+<tr class="party"><td class="time" contenteditable="true">Grand Finale</td><td class="dur" contenteditable="true">30</td>
+<td class="cnt" contenteditable="true"><b>🏆 Grand Prize $50,000 — Final Reveal</b><span class="tag ta">Global #1 Composite</span><br/>Countdown reveal; winners on stage; full celebration; global live stream climax<br/><b>Judges on stage to witness</b></td>
+<td class="spk" contenteditable="true">MC + Eazo CEO<br/><b>Judges (on stage)</b></td>
+<td class="scr" contenteditable="true">Grand Prize reveal animation</td>
+<td class="mem" contenteditable="true">Reserve time for winner speech; full photo/video; global stream climax</td>
+<td class="loc" contenteditable="true">Main Stage</td></tr>
+<tr class="share"><td class="time" contenteditable="true">Post-awards</td><td class="dur" contenteditable="true">—</td>
+<td class="cnt" contenteditable="true"><b>🎊 Celebration + Post-Win Push</b><span class="tag ta">📱 Amplification</span><br/>Free networking; ops pushes share template; official project collection published; group photo</td>
+<td class="spk" contenteditable="true">Ops</td>
+<td class="scr" contenteditable="true">Music<br/>Project collection QR</td>
+<td class="mem" contenteditable="true">Copy: "I competed at Eazo Global Hackathon! My app → [link]" @EazoOfficial</td>
+<td class="loc" contenteditable="true">Main Hall</td></tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<!-- ═══ NY ═══ -->
+<div class="venue-content" id="venue-ny">
+<!-- NY Pre-Event Info -->
+<div class="info-panel">
+<div class="info-toggle" onclick="toggleInfo(this)">
+<span class="arrow">▶</span>
+      📋 Pre-Event Reference — New York City (click to expand)
+    </div>
+<div class="info-body">
+<div class="info-group">
+<div class="info-group-title">🏢 Venue</div>
+<div class="info-row"><span class="info-label">Venue Name</span><div class="info-val" contenteditable="true" placeholder="TBD"></div></div>
+<div class="info-row"><span class="info-label">Address</span><div class="info-val" contenteditable="true" placeholder="TBD"></div></div>
+<div class="info-row"><span class="info-label">Venue Contact</span><div class="info-val" contenteditable="true" placeholder="Name + Phone"></div></div>
+<div class="info-row"><span class="info-label">Capacity</span><div class="info-val" contenteditable="true" placeholder="pax"></div></div>
+<div class="info-row"><span class="info-label">Entry / Subway / Parking</span><div class="info-val" contenteditable="true" placeholder="Instructions"></div></div>
+<div class="info-row"><span class="info-label">Load-in access time</span><div class="info-val" contenteditable="true" placeholder="e.g. 8:00 AM earliest"></div></div>
+</div>
+<div class="info-group">
+<div class="info-group-title">👥 Key Contacts</div>
+<div class="info-row"><span class="info-label">On-site Lead</span><div class="info-val" contenteditable="true" placeholder="Name + Phone"></div></div>
+<div class="info-row"><span class="info-label">Venue / Logistics</span><div class="info-val" contenteditable="true" placeholder="Name + Phone"></div></div>
+<div class="info-row"><span class="info-label">AV / Livestream</span><div class="info-val" contenteditable="true" placeholder="Name + Phone"></div></div>
+<div class="info-row"><span class="info-label">MC</span><div class="info-val" contenteditable="true" placeholder="Name + Phone"></div></div>
+<div class="info-row"><span class="info-label">Ops Lead</span><div class="info-val" contenteditable="true" placeholder="Name + Phone"></div></div>
+<div class="info-row"><span class="info-label">Platform / Tech</span><div class="info-val" contenteditable="true" placeholder="Name + Phone"></div></div>
+<div class="info-row"><span class="info-label">Photo / Video</span><div class="info-val" contenteditable="true" placeholder="Name + Phone"></div></div>
+<div class="info-row"><span class="info-label">SF Simulcast Coordinator</span><div class="info-val" contenteditable="true" placeholder="Name — receives SF stream at 00:00 ET"></div></div>
+</div>
+<div class="info-group">
+<div class="info-group-title">🔗 Core Links</div>
+<div class="info-row"><span class="info-label">Submission Platform</span><div class="info-val" contenteditable="true" placeholder="https://"></div></div>
+<div class="info-row"><span class="info-label">Voting Page</span><div class="info-val" contenteditable="true" placeholder="https://"></div></div>
+<div class="info-row"><span class="info-label">Leaderboard</span><div class="info-val" contenteditable="true" placeholder="https://"></div></div>
+<div class="info-row"><span class="info-label">Livestream View URL</span><div class="info-val" contenteditable="true" placeholder="https://"></div></div>
+<div class="info-row"><span class="info-label">Participant Discord / Slack</span><div class="info-val" contenteditable="true" placeholder="Link or channel name"></div></div>
+<div class="info-row"><span class="info-label">Judge Scoring Portal</span><div class="info-val" contenteditable="true" placeholder="https://"></div></div>
+<div class="info-row"><span class="info-label">SF Grand Prize Inbound Stream</span><div class="info-val" contenteditable="true" placeholder="URL to receive SF livestream at 00:00 ET"></div></div>
+</div>
+<div class="info-group">
+<div class="info-group-title">📡 Wi-Fi &amp; AV</div>
+<div class="info-row"><span class="info-label">Wi-Fi SSID</span><div class="info-val" contenteditable="true" placeholder="Network name"></div></div>
+<div class="info-row"><span class="info-label">Wi-Fi Password</span><div class="info-val" contenteditable="true" placeholder="Password"></div></div>
+<div class="info-row"><span class="info-label">Backup Hotspot</span><div class="info-val" contenteditable="true" placeholder="Device name + password"></div></div>
+<div class="info-row"><span class="info-label">Main Screen / Projector</span><div class="info-val" contenteditable="true" placeholder="Spec / backup unit"></div></div>
+<div class="info-row"><span class="info-label">Audio System</span><div class="info-val" contenteditable="true" placeholder="Model / # of spare mics"></div></div>
+</div>
+<div class="info-group warn">
+<div class="info-group-title">📦 Materials Checklist (one-day event — verify morning of May 24)</div>
+<div class="info-row"><span class="info-label">Name Badges</span><div class="info-val" contenteditable="true" placeholder="Qty"></div></div>
+<div class="info-row"><span class="info-label">Track Stickers (5 colors)</span><div class="info-val" contenteditable="true" placeholder="Qty per color"></div></div>
+<div class="info-row"><span class="info-label">Builder's Choice Stickers (3 per person)</span><div class="info-val" contenteditable="true" placeholder="Total qty"></div></div>
+<div class="info-row"><span class="info-label">Judge Score Sheets (printed)</span><div class="info-val" contenteditable="true" placeholder="Copies"></div></div>
+<div class="info-row"><span class="info-label">Certificates / Trophies</span><div class="info-val" contenteditable="true" placeholder="Top 1/2/3 + badges"></div></div>
+<div class="info-row"><span class="info-label">All-day Catering</span><div class="info-val" contenteditable="true" placeholder="Vendor + contact + confirmed headcount (breakfast, lunch, dinner)"></div></div>
+<div class="info-row"><span class="info-label">Party Drinks / Setup</span><div class="info-val" contenteditable="true" placeholder="Bar setup / sponsor drinks"></div></div>
+<div class="info-row"><span class="info-label">Big Screen for SF Simulcast</span><div class="info-val" contenteditable="true" placeholder="Confirm second screen / HDMI input for SF stream"></div></div>
+</div>
+<div class="info-group alert">
+<div class="info-group-title">🚨 Emergency &amp; Contingency</div>
+<div class="info-row"><span class="info-label">Tech Failure Backup Plan</span><div class="info-val" contenteditable="true" placeholder="Backup device / hotspot / manual timer"></div></div>
+<div class="info-row"><span class="info-label">Building Emergency Contact</span><div class="info-val" contenteditable="true" placeholder="Security / Facilities + phone"></div></div>
+<div class="info-row"><span class="info-label">Nearest Medical / First Aid</span><div class="info-val" contenteditable="true" placeholder="First aid kit location / nearest ER"></div></div>
+<div class="info-row"><span class="info-label">Platform Down Protocol</span><div class="info-val" contenteditable="true" placeholder="Backup submission method"></div></div>
+<div class="info-row"><span class="info-label">SF Simulcast Drops at Midnight</span><div class="info-val" contenteditable="true" placeholder="Backup: MC reads results via phone call; delay acceptable up to 15 min"></div></div>
+</div>
+</div>
+<div class="edit-hint">✏️ All fields are editable — click to type. Changes are lost on refresh; screenshot or print to PDF to save.</div>
+</div>
+<div style="background:#e8f4ff;border-bottom:2px solid #2a5fa8;padding:12px 24px;display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap">
+<div style="flex-shrink:0;padding-top:2px">
+<span style="background:#2a5fa8;color:#fff;font-size:10.5px;font-weight:700;padding:3px 10px;border-radius:4px;letter-spacing:.05em">ONE DAY · May 24</span>
+</div>
+<div style="font-size:12px;color:#1a3a6a;line-height:1.8;flex:1">
+<strong style="color:#1a1916">核心逻辑：Build 是主体。</strong>给参赛者充足的构建时间（10:40–16:00，共 ~5.3 小时），Demo 压缩至每队 ≤2 分钟，16:30 后集中展示，投票截止 19:00，晚间颁奖+Party。<br/>
+<span style="color:#555">Submission deadline: <b>16:00 ET</b>  ·  Demo starts: <b>16:30 ET</b>  ·  Voting closes: <b>19:00 ET</b>  ·  Party + Awards: <b>19:30 ET</b></span>
+</div>
+</div>
+<div class="legend">
+<div class="legend-item"><div class="legend-dot" style="background:#f5f4f0"></div>Setup</div>
+<div class="legend-item"><div class="legend-dot" style="background:#fffbe6"></div>Build（主体）</div>
+<div class="legend-item"><div class="legend-dot" style="background:#fef3d8"></div>Break / Share</div>
+<div class="legend-item"><div class="legend-dot" style="background:#fff8f5"></div>Demo（压缩 ≤2min）</div>
+<div class="legend-item"><div class="legend-dot" style="background:#f0f8ee"></div>Voting</div>
+<div class="legend-item"><div class="legend-dot" style="background:#f8f0ff"></div>Party / Awards</div>
+<div class="legend-item"><div class="legend-dot" style="background:#fff0f0"></div>Hard Deadline</div>
+</div>
+<div class="table-wrap"><table>
+<thead><tr><th>TIME (ET)</th><th>DUR(min)</th><th>CONTENT &amp; ACTIONS</th><th>SPEAKER / LEAD</th><th>SCREEN</th><th>MEMO / NOTES</th><th>LOCATION</th></tr></thead>
+<tbody>
+<tr class="sep blue"><td colspan="7">ONE DAY · May 24 (Sat) · New York City  ｜  Venue: [NYC Venue TBD]  ·  Build-First One-Day Format</td></tr>
+<tr class="setup"><td class="time" contenteditable="true">07:30–09:30 ET</td><td class="dur" contenteditable="true">120</td>
+<td class="cnt" contenteditable="true"><b>🛠 Venue Setup</b><br/>Stage + hackathon tables (pre-configured: minimal transition from build → demo mode); AV install; KV on wall; judge seats reserved front center</td>
+<td class="spk" contenteditable="true">Venue Lead<br/>AV Team</td>
+<td class="scr" contenteditable="true">KV standby<br/>Tech test</td>
+<td class="mem" contenteditable="true">Pre-plan seating so build→demo transition needs zero furniture move; confirm Wi-Fi capacity; RTMP keys ready</td>
+<td class="loc" contenteditable="true">Main Hall</td></tr>
+<tr class="setup"><td class="time" contenteditable="true">09:30–10:00 ET</td><td class="dur" contenteditable="true">30</td>
+<td class="cnt" contenteditable="true"><b>✅ Check-in &amp; Track Selection</b><br/>Badge pickup; select track; team name registration; guide to seats</td>
+<td class="spk" contenteditable="true">Registration Team<br/>Volunteers</td>
+<td class="scr" contenteditable="true">Registration screen<br/>Track KV</td>
+<td class="mem" contenteditable="true">Extra staff to move lines fast; remind participants: build starts 10:40 (after group photo), don't miss it; deadline is 16:00</td>
+<td class="loc" contenteditable="true">Entrance / Lobby</td></tr>
+<tr class="key"><td class="time" contenteditable="true">10:00–10:30 ET</td><td class="dur" contenteditable="true">30</td>
+<td class="cnt" contenteditable="true"><b>🎙 Opening + Founder Product Launch</b><span class="tag tg">Global Sync</span><br/>MC opens → <b>Founder on stage: product launch keynote (≤30 min)</b>, showcasing Eazo platform and hackathon vision; 5-track intro; rules walkthrough<br/><b>NYC-specific:</b> explicitly explain 1-day format — build 10:30–16:00, submit by 16:00, Demo from 16:30</td>
+<td class="spk" contenteditable="true">MC<br/>Eazo Founder / Rep</td>
+<td class="scr" contenteditable="true">Main KV → Keynote slides<br/>NYC 1-day schedule visual<br/>Timezone graphic</td>
+<td class="mem" contenteditable="true">10:00 ET sharp; NYC: 10:00 ET / SF: 07:00 PT / SH: 22:00 CST (prev night)<br/><b>Announce clearly: build window 10:40–16:00 — plan accordingly; submit the moment app runs</b></td>
+<td class="loc" contenteditable="true">Main Stage</td></tr>
+
+<tr class="share"><td class="time" contenteditable="true">10:30–10:40 ET</td><td class="dur" contenteditable="true">10</td>
+<td class="cnt" contenteditable="true"><b>📸 Global Group Photo</b><span class="tag tg">Global Sync</span><br/>Right after Founder keynote — everyone still on their feet → MC gathers all for a quick group photo<br/>Keep it fast: 10 min max. Online participants screenshot their screens simultaneously.</td>
+<td class="spk" contenteditable="true">MC (organizes)<br/>Photographer (executes)</td>
+<td class="scr" contenteditable="true">Group photo KV backdrop on screen<br/>3-2-1 countdown</td>
+<td class="mem" contenteditable="true">Photographer pre-positioned before 10:30; NYC 1-day format — don't let photo run over; get it done fast, build time is precious</td>
+<td class="loc" contenteditable="true">Main Stage + Hall</td></tr>
+
+<tr class="sep green"><td colspan="7">💻 BUILD PHASE — Main Block (10:40–16:00 ET · ~5.3 Hours)</td></tr>
+<tr class="build"><td class="time" contenteditable="true">10:40–12:30 ET</td><td class="dur" contenteditable="true">110</td>
+<td class="cnt" contenteditable="true"><b>💻 Build Phase · Round 1</b><span class="tag tp">Build</span><br/>Build → Deploy → Publish; mentors on floor; early submission strongly pushed</td>
+<td class="spk" contenteditable="true">—</td>
+<td class="scr" contenteditable="true">Build flow guide<br/>Countdown to 16:00</td>
+<td class="mem" contenteditable="true">Ops broadcast every 20 min (higher frequency — compressed day); "Submit the moment it runs — iterate until 16:00"</td>
+<td class="loc" contenteditable="true">Main Hall</td></tr>
+<tr class="share"><td class="time" contenteditable="true">12:30–13:00 ET</td><td class="dur" contenteditable="true">30</td>
+<td class="cnt" contenteditable="true"><b>🍱 Lunch</b><span class="tag ta">📱 Share Push ①</span><br/>Shorter lunch session; ops demos social posting; remind teams: <b>3.5 hours of build remain after lunch</b></td>
+<td class="spk" contenteditable="true">Ops Lead (on stage)</td>
+<td class="scr" contenteditable="true">Share template</td>
+<td class="mem" contenteditable="true">Copy ①: "Building right now at Eazo NYC Hackathon → [link], vote for me!"<br/>Bold reminder: deadline is 16:00</td>
+<td class="loc" contenteditable="true">Dining / Hall</td></tr>
+<tr class="build"><td class="time" contenteditable="true">13:00–15:00 ET</td><td class="dur" contenteditable="true">120</td>
+<td class="cnt" contenteditable="true"><b>💻 Build Phase · Round 2</b><span class="tag tp">Build</span><br/>Main sprint; mentors high-frequency rotation; countdown prominent on screen</td>
+<td class="spk" contenteditable="true">—</td>
+<td class="scr" contenteditable="true">Countdown: time to 16:00</td>
+<td class="mem" contenteditable="true">Group broadcast every 30 min; at 14:00: "2 hours left — submit if app runs"; mentors rotate every 15 min</td>
+<td class="loc" contenteditable="true">Main Hall</td></tr>
+<tr class="share"><td class="time" contenteditable="true">15:00–15:15 ET</td><td class="dur" contenteditable="true">15</td>
+<td class="cnt" contenteditable="true"><b>☕ Final Break</b><span class="tag ta">📱 Share Push ②</span><br/>Last recharge; ops pushes "almost done" share template; 1-hour deadline warning</td>
+<td class="spk" contenteditable="true">Ops Lead</td>
+<td class="scr" contenteditable="true">Share template<br/>60-min countdown to 16:00</td>
+<td class="mem" contenteditable="true">Copy ②: "Last hour — almost done building → [link]"<br/>All channels: "SUBMISSION CLOSES AT 16:00"</td>
+<td class="loc" contenteditable="true">Break Area</td></tr>
+<tr class="build"><td class="time" contenteditable="true">15:15–15:50 ET</td><td class="dur" contenteditable="true">35</td>
+<td class="cnt" contenteditable="true"><b>💻 Build Phase · Final Crunch</b><span class="tag tp">Build</span><br/>Last push; mentors give final encouragement; explicit warnings at 15:30 and 15:50</td>
+<td class="spk" contenteditable="true">—</td>
+<td class="scr" contenteditable="true">Minutes-to-16:00 countdown</td>
+<td class="mem" contenteditable="true">At 15:50 all channels: "10 minutes to close — do not miss it"</td>
+<td class="loc" contenteditable="true">Main Hall</td></tr>
+<tr class="deadline"><td class="time" contenteditable="true">16:00 ET</td><td class="dur" contenteditable="true">—</td>
+<td class="cnt" contenteditable="true"><b>🔒 Submission Hard Deadline</b><span class="tag tr">HARD STOP</span><br/>Eazo platform submission closes; timestamp = Demo stage order</td>
+<td class="spk" contenteditable="true">Ops / Platform</td>
+<td class="scr" contenteditable="true">Deadline announcement<br/>Stage order revealed</td>
+<td class="mem" contenteditable="true">30-min warning at 15:30, 10-min at 15:50; after close: roster locked; generate and print Demo stage order</td>
+<td class="loc" contenteditable="true">—</td></tr>
+<tr class="setup"><td class="time" contenteditable="true">16:00–16:30 ET</td><td class="dur" contenteditable="true">30</td>
+<td class="cnt" contenteditable="true"><b>🔄 Transition: Demo Day Prep</b><br/>Minimal venue adjustment (pre-configured); judges sign in &amp; take seats; MC briefs Demo rules; stage order posted</td>
+<td class="spk" contenteditable="true">Venue Team<br/>MC</td>
+<td class="scr" contenteditable="true">Stage order posted<br/>Demo rules slide ready</td>
+<td class="mem" contenteditable="true">Smooth transition because setup was pre-planned; confirm online team screenshare tested; judges receive scoring sheets</td>
+<td class="loc" contenteditable="true">Main Stage</td></tr>
+<tr class="sep amber"><td colspan="7">📱 DEMO DAY — NYC Compressed · 16:30–18:30 ET  ·  ≤3 min per team</td></tr>
+<tr class="demo"><td class="time" contenteditable="true">16:30–16:40 ET</td><td class="dur" contenteditable="true">10</td>
+<td class="cnt" contenteditable="true"><b>🎙 Demo Day Opening</b><span class="tag tg">🔴 LIVE ON</span><br/>MC explains NYC compressed rules: <b>≤3 minutes per team</b>; stage order = submission timestamp; voting open now</td>
+<td class="spk" contenteditable="true">MC</td>
+<td class="scr" contenteditable="true">Demo rules slide<br/>Stage order</td>
+<td class="mem" contenteditable="true">Live stream ON; confirm online waiting room ready; NYC uses 3-min limit to fit all demos in ~2 hours; MC must be firm</td>
+<td class="loc" contenteditable="true">Main Stage</td></tr>
+<tr class="demo"><td class="time" contenteditable="true">16:40–18:30 ET</td><td class="dur" contenteditable="true">110</td>
+<td class="cnt" contenteditable="true"><b>📱 Project Demos</b> (submission order)<span class="tag tb">≤3 min each</span><br/>Compressed format: ① Open app &amp; demo core scenario (1 min) ② Key differentiator (30s) ③ Who it's for (30s)<br/>Online teams: MC calls → remote screenshare (join waiting room 5 min early)<br/><b>Judges: seated, score each team in real-time</b></td>
+<td class="spk" contenteditable="true">Teams (in order)<br/>MC (strict timer)<br/><b>Judges (scoring)</b></td>
+<td class="scr" contenteditable="true">App screenshare<br/>3-min countdown<br/>Remote feed (online)</td>
+<td class="mem" contenteditable="true">NYC 3-min is strict — MC interrupts at time; no exceptions<br/>Expert judges score all demos (40% weight); mid-demos 8-min break with share push</td>
+<td class="loc" contenteditable="true">Main Stage / Judge Row</td></tr>
+<tr class="share"><td class="time" contenteditable="true">Mid-demos</td><td class="dur" contenteditable="true">8</td>
+<td class="cnt" contenteditable="true"><b>☕ Mid-Demo Break</b><span class="tag ta">📱 Share Push</span><br/>"Which product just wowed you? Post it with the link — right now"</td>
+<td class="spk" contenteditable="true">Ops Lead</td>
+<td class="scr" contenteditable="true">Live Leaderboard</td>
+<td class="mem" contenteditable="true">Stream stays live; encourage remote viewers to vote</td>
+<td class="loc" contenteditable="true">Hall</td></tr>
+<tr class="sep blue"><td colspan="7">🗳 VOTING SPRINT · 18:30–19:00 ET</td></tr>
+<tr class="vote"><td class="time" contenteditable="true">18:30–19:00 ET</td><td class="dur" contenteditable="true">30</td>
+<td class="cnt" contenteditable="true"><b>🎯 Post-Demo Voting Sprint + Product Experience</b><span class="tag ta">📱 Share</span><br/>Explore submitted apps; ops drives final votes; Leaderboard live; at 18:50 — 10-min final countdown blast</td>
+<td class="spk" contenteditable="true">Ops Lead<br/>MC (announcements)</td>
+<td class="scr" contenteditable="true">Rolling Leaderboard<br/>10-min countdown at 18:50</td>
+<td class="mem" contenteditable="true">Copy: "Last chance — vote for your fav Eazo NYC app → [link]"<br/>Parallel: venue transitions to party</td>
+<td class="loc" contenteditable="true">Hall</td></tr>
+<tr class="deadline"><td class="time" contenteditable="true">19:00 ET</td><td class="dur" contenteditable="true">—</td>
+<td class="cnt" contenteditable="true"><b>🔒 Voting Closes — System Locked</b><span class="tag tr">HARD STOP</span></td>
+<td class="spk" contenteditable="true">Platform / Tech</td>
+<td class="scr" contenteditable="true">Closure announcement</td>
+<td class="mem" contenteditable="true">Auto-lock; weighted calc begins; coordinate with SF on global award simulcast timing (SF 21:00 PT = NYC 00:00 ET)</td>
+<td class="loc" contenteditable="true">—</td></tr>
+<tr class="setup"><td class="time" contenteditable="true">19:00–19:30 ET</td><td class="dur" contenteditable="true">30</td>
+<td class="cnt" contenteditable="true"><b>🔄 Results Calc + Party Flip</b><br/>Backend scoring; venue flips to party lighting/music/drinks; dinner served; peer vote sticker tallies uploaded</td>
+<td class="spk" contenteditable="true">Ops / Backend<br/>Venue Team</td>
+<td class="scr" contenteditable="true">"Calculating…" standby KV</td>
+<td class="mem" contenteditable="true">Venue flip: drinks station on, party lighting, music; judges relax; coordinate SF for simulcast</td>
+<td class="loc" contenteditable="true">Hall</td></tr>
+<tr class="sep purple"><td colspan="7">🎉 LAUNCH PARTY + NYC AWARDS · Global Simulcast from SF at 21:00 PT = 00:00 ET</td></tr>
+<tr class="party"><td class="time" contenteditable="true">19:30–20:00 ET</td><td class="dur" contenteditable="true">30</td>
+<td class="cnt" contenteditable="true"><b>🥂 Launch Party + Day Highlights Reel</b><br/>Drinks; MC runs highlight video (best build moments + top demos)</td>
+<td class="spk" contenteditable="true">MC (warm-up)</td>
+<td class="scr" contenteditable="true">Party KV / music<br/>Highlights reel</td>
+<td class="mem" contenteditable="true">Single-day cut: build energy + top demo moments; upbeat NYC pace; photography on</td>
+<td class="loc" contenteditable="true">Hall (Party mode)</td></tr>
+<tr class="party"><td class="time" contenteditable="true">20:00–20:20 ET</td><td class="dur" contenteditable="true">20</td>
+<td class="cnt" contenteditable="true"><b>🏅 Achievement Badges — NYC</b><span class="tag tp">Milestones</span><br/>6 badges revealed; judges on stage to present/witness</td>
+<td class="spk" contenteditable="true">MC + <b>Judges (on stage)</b></td>
+<td class="scr" contenteditable="true">Badge animation</td>
+<td class="mem" contenteditable="true">Winners on stage for photo; NYC-specific badge winners</td>
+<td class="loc" contenteditable="true">Main Stage</td></tr>
+<tr class="party"><td class="time" contenteditable="true">20:20–20:50 ET</td><td class="dur" contenteditable="true">30</td>
+<td class="cnt" contenteditable="true"><b>🏆 NYC Regional Awards Top 3</b><span class="tag tb">$8K · $5K · $3K</span><br/>3rd → 2nd → 1st; 1-min speech each<br/><b>Judges present awards on stage</b></td>
+<td class="spk" contenteditable="true">MC + <b>Judges (presenting)</b></td>
+<td class="scr" contenteditable="true">Project slides + award animation</td>
+<td class="mem" contenteditable="true">Awards/certificates pre-positioned; photo per winner; sync timing with SF/SH</td>
+<td class="loc" contenteditable="true">Main Stage</td></tr>
+<tr class="party"><td class="time" contenteditable="true">20:50–21:00 ET</td><td class="dur" contenteditable="true">10</td>
+<td class="cnt" contenteditable="true"><b>⏸ Bridge: Social + Countdown to Global Reveals</b><br/>MC hypes crowd for midnight global simulcast; final pre-Grand Prize share push</td>
+<td class="spk" contenteditable="true">MC</td>
+<td class="scr" contenteditable="true">Leaderboard / social feed</td>
+<td class="mem" contenteditable="true">Manage energy for late-night simulcast finale; confirm SF stream is ready to broadcast to NYC screen</td>
+<td class="loc" contenteditable="true">Hall</td></tr>
+<tr class="party"><td class="time" contenteditable="true">00:00 ET<br/><em style="font-size:11px;color:#888">(SF 21:00 PT)</em></td><td class="dur" contenteditable="true">60</td>
+<td class="cnt" contenteditable="true"><b>📺 Global Awards Simulcast from SF</b><br/>NYC screens broadcast SF live: People's Choice $25,000 → Grand Prize $50,000<br/>MC hosts NYC crowd reaction; if NYC team wins, celebrate in-room simultaneously</td>
+<td class="spk" contenteditable="true">MC (crowd host)<br/>Screens: SF live feed</td>
+<td class="scr" contenteditable="true">Live feed from SF<br/>NYC reaction cam</td>
+<td class="mem" contenteditable="true">AV: SF RTMP feeds to NYC screen; NYC MC keeps crowd energy up; if NYC team wins Grand Prize — in-room celebration coordinated</td>
+<td class="loc" contenteditable="true">Main Stage / Screen</td></tr>
+<tr class="share"><td class="time" contenteditable="true">Post-awards ET</td><td class="dur" contenteditable="true">—</td>
+<td class="cnt" contenteditable="true"><b>🎊 Celebration + Post-Win Push</b><span class="tag ta">📱 Amplification</span><br/>Free networking; ops pushes share template; official project collection published; group photo</td>
+<td class="spk" contenteditable="true">Ops</td>
+<td class="scr" contenteditable="true">Music<br/>Project collection QR</td>
+<td class="mem" contenteditable="true">Copy: "I competed at Eazo Global Hackathon NYC! My app → [link]" @EazoOfficial</td>
+<td class="loc" contenteditable="true">Hall</td></tr>
+</tbody>
+</table></div>
+</div>
+<!-- ═══ ONLINE EN (SF TZ) ═══ -->
+<div class="venue-content" id="venue-on_en">
+<div class="info-panel">
+<div class="info-toggle" onclick="toggleInfo(this)">
+<span class="arrow">▶</span>
+      📋 Pre-Event Reference — Online · English Zone (click to expand)
+    </div>
+<div class="info-body">
+<div class="info-group">
+<div class="info-group-title">🌐 Zone Info</div>
+<div class="info-row"><span class="info-label">Reference Timezone</span><div class="info-val" contenteditable="true" placeholder="PT (Pacific Time) — synced with SF"></div></div>
+<div class="info-row"><span class="info-label">Language</span><div class="info-val" contenteditable="true" placeholder="English"></div></div>
+<div class="info-row"><span class="info-label">Platform</span><div class="info-val" contenteditable="true" placeholder="Eazo app + Discord"></div></div>
+<div class="info-row"><span class="info-label">Discord Server / Channel</span><div class="info-val" contenteditable="true" placeholder="discord.gg/8trsw5fQf · #online-en"></div></div>
+<div class="info-row"><span class="info-label">Online Community Lead</span><div class="info-val" contenteditable="true" placeholder="Name + handle"></div></div>
+<div class="info-row"><span class="info-label">Online MC / Host</span><div class="info-val" contenteditable="true" placeholder="Name + handle (hosts Zoom/stream)"></div></div>
+</div>
+<div class="info-group">
+<div class="info-group-title">🔗 Core Links</div>
+<div class="info-row"><span class="info-label">Submission Platform</span><div class="info-val" contenteditable="true" placeholder="https://"></div></div>
+<div class="info-row"><span class="info-label">Voting Page</span><div class="info-val" contenteditable="true" placeholder="https://"></div></div>
+<div class="info-row"><span class="info-label">Global Livestream (to watch SF/SH)</span><div class="info-val" contenteditable="true" placeholder="https://"></div></div>
+<div class="info-row"><span class="info-label">Demo Screenshare Room (Zoom/Meet)</span><div class="info-val" contenteditable="true" placeholder="https://"></div></div>
+<div class="info-row"><span class="info-label">Online Waiting Room (for Demo slot)</span><div class="info-val" contenteditable="true" placeholder="https://"></div></div>
+</div>
+<div class="info-group alert">
+<div class="info-group-title">🚨 Contingency</div>
+<div class="info-row"><span class="info-label">Screenshare drops mid-demo</span><div class="info-val" contenteditable="true" placeholder="30s grace; MC re-invites; time resumes"></div></div>
+<div class="info-row"><span class="info-label">No-show team</span><div class="info-val" contenteditable="true" placeholder="Skip to next; return if rejoins within 15 min"></div></div>
+</div>
+</div>
+<div class="edit-hint">✏️ All fields editable. Changes lost on refresh — screenshot or PDF to save.</div>
+</div>
+<div class="day-tabs">
+<div class="day-tab active" onclick="showDay('on_en','d1')">Day 1 · May 23 (Build Day) · PT</div>
+<div class="day-tab" onclick="showDay('on_en','d2')">Day 2 · May 24 (Demo + Awards) · PT</div>
+</div>
+<!-- ONLINE EN D1 -->
+<div class="day-content active" id="on_en-d1">
+<div class="legend">
+<div class="legend-item"><div class="legend-dot" style="background:#f5f4f0"></div>Prep</div>
+<div class="legend-item"><div class="legend-dot" style="background:#fffbe6"></div>Build</div>
+<div class="legend-item"><div class="legend-dot" style="background:#fef3d8"></div>Break / Share</div>
+<div class="legend-item"><div class="legend-dot" style="background:#fff0f0"></div>Hard Deadline</div>
+</div>
+<div class="table-wrap"><table>
+<thead><tr><th>TIME (PT)</th><th>DUR(min)</th><th>CONTENT &amp; ACTIONS</th><th>LEAD</th><th>CHANNEL</th><th>MEMO / NOTES</th></tr></thead>
+<tbody>
+<tr class="sep green"><td colspan="6">DAY 1 · May 23 (Fri) · Online · English Zone  ·  All times PT (Pacific Time)  ·  Synced with SF</td></tr>
+<tr class="setup"><td class="time" contenteditable="true">09:30–10:00 PT</td><td class="dur" contenteditable="true">30</td>
+<td class="cnt" contenteditable="true"><b>✅ Online Check-in</b><br/>Join Discord #online-en; confirm Eazo account active; select track; bot posts welcome message with track selection form; community lead greets in channel</td>
+<td class="spk" contenteditable="true">Community Lead</td>
+<td class="cnt" contenteditable="true">Discord #online-en<br/>Bot: welcome msg</td>
+<td class="mem" contenteditable="true">Bot fires: "Welcome to Eazo Hackathon! Step 1: pick your track → [form link]. Step 2: head to your track channel."</td></tr>
+<tr class="key"><td class="time" contenteditable="true">10:00–10:30 PT</td><td class="dur" contenteditable="true">30</td>
+<td class="cnt" contenteditable="true"><b>🎙 Global Opening — Watch Live</b><span class="tag tg">Global Sync</span><br/>Watch SF livestream; Founder product launch keynote; track intros; rules walkthrough<br/>Discord: live chat open, community lead hosts reactions</td>
+<td class="spk" contenteditable="true">Community Lead (Discord chat)</td>
+<td class="cnt" contenteditable="true">Discord #online-en<br/>Livestream link pinned</td>
+<td class="mem" contenteditable="true">Pin livestream link 5 min before; community lead posts commentary in chat to keep energy up; answer rule questions in #faq; at 10:30 everyone takes group screenshot together for global photo moment</td></tr>
+<tr class="build"><td class="time" contenteditable="true">10:40–12:30 PT</td><td class="dur" contenteditable="true">110</td>
+<td class="cnt" contenteditable="true"><b>💻 Build Phase · Block 1</b><br/>Build independently on Eazo platform; join track channel for async support; mentors on standby in Discord; submit early for longer voting window</td>
+<td class="spk" contenteditable="true">Mentors (Discord)</td>
+<td class="cnt" contenteditable="true">Discord track channels<br/>#online-en-general</td>
+<td class="mem" contenteditable="true">Bot fires every 45 min: "Still building? Tag your progress 🔨"; mentors rotate check-ins across track channels; pin Eazo support contact</td></tr>
+<tr class="share"><td class="time" contenteditable="true">12:30–13:15 PT</td><td class="dur" contenteditable="true">45</td>
+<td class="cnt" contenteditable="true"><b>🍕 Lunch Break</b><span class="tag ta">📱 Share Push ①</span><br/>Community lead runs a share rally in Discord; post your WIP screenshot + link; Twitter / LinkedIn share template dropped</td>
+<td class="spk" contenteditable="true">Community Lead</td>
+<td class="cnt" contenteditable="true">Discord #online-en<br/>Twitter / LinkedIn</td>
+<td class="mem" contenteditable="true">Template: "I'm building [X] at @EazoHackathon — vote for me later → [link] #EazoHackathon2026"</td></tr>
+<tr class="build"><td class="time" contenteditable="true">13:15–15:30 PT</td><td class="dur" contenteditable="true">135</td>
+<td class="cnt" contenteditable="true"><b>💻 Build Phase · Block 2</b><br/>Continued build; bot posts submission reminder at 15:00; mentors remind: "ship early = longer vote window"</td>
+<td class="spk" contenteditable="true">Mentors (Discord)</td>
+<td class="cnt" contenteditable="true">Discord track channels</td>
+<td class="mem" contenteditable="true">Bot 15:00 PT: "XX teams have submitted — the earlier you submit, the longer your voting window! 🚀"</td></tr>
+<tr class="share"><td class="time" contenteditable="true">15:30–15:45 PT</td><td class="dur" contenteditable="true">15</td>
+<td class="cnt" contenteditable="true"><b>☕ Afternoon Break</b><span class="tag ta">📱 Share Push ②</span><br/>"Show us your progress" thread in Discord; share screenshot; community lead highlights standout WIPs</td>
+<td class="spk" contenteditable="true">Community Lead</td>
+<td class="cnt" contenteditable="true">Discord #online-en</td>
+<td class="mem" contenteditable="true">Template: "Halfway there — here's what I've built so far 🔨 → [screenshot]"</td></tr>
+<tr class="build"><td class="time" contenteditable="true">15:45–19:00 PT</td><td class="dur" contenteditable="true">195</td>
+<td class="cnt" contenteditable="true"><b>💻 Build Phase · Block 3 + Final Push</b><br/>Continued build; bot fires at 17:30 and 18:30 with countdown warnings; mentors encourage final submissions</td>
+<td class="spk" contenteditable="true">Mentors (Discord)</td>
+<td class="cnt" contenteditable="true">Discord track channels</td>
+<td class="mem" contenteditable="true">17:30 bot: "About 1.5 hrs to submission close — almost there!"; 18:30 bot: "30 minutes! If your app runs, SUBMIT NOW — you can iterate later."</td></tr>
+<tr class="share"><td class="time" contenteditable="true">19:00–19:30 PT</td><td class="dur" contenteditable="true">30</td>
+<td class="cnt" contenteditable="true"><b>🍽 Dinner Break</b><span class="tag ta">📱 Share Push ③</span><br/>Leaderboard share moment; community lead drops current vote standings; "help your favorite get votes"</td>
+<td class="spk" contenteditable="true">Community Lead</td>
+<td class="cnt" contenteditable="true">Discord #online-en</td>
+<td class="mem" contenteditable="true">Template: "I've submitted my app! Go vote → [link] and tell me what you think 🙌"</td></tr>
+<tr class="build"><td class="time" contenteditable="true">19:30 PT – next day 09:00 PT</td><td class="dur" contenteditable="true">—</td>
+<td class="cnt" contenteditable="true"><b>🌙 Overnight Build (Optional)</b><br/>Platform stays open; Discord async support continues; bot posts check-in messages overnight</td>
+<td class="spk" contenteditable="true">Duty Community Lead</td>
+<td class="cnt" contenteditable="true">Discord #online-en</td>
+<td class="mem" contenteditable="true">Bot every 2–3 hrs: "Still at it? You've got this 🌙 Submit when ready." Community lead monitors for tech issues</td></tr>
+<tr class="deadline"><td class="time" contenteditable="true">Next day 09:00 PT</td><td class="dur" contenteditable="true">—</td>
+<td class="cnt" contenteditable="true"><b>🔒 Submission Hard Deadline</b><span class="tag tr">HARD STOP</span><br/>Eazo platform submission closes; timestamp = Demo stage order</td>
+<td class="spk" contenteditable="true">Platform / Tech</td>
+<td class="cnt" contenteditable="true">Bot: final warning at 08:30 + 08:50</td>
+<td class="mem" contenteditable="true">08:30 bot: "30 minutes to submission close!"; 08:50 bot: "10 minutes! Last call!"; after close: roster locked; online demo order assigned</td></tr>
+</tbody>
+</table></div>
+</div>
+<!-- ONLINE EN D2 -->
+<div class="day-content" id="on_en-d2">
+<div class="judge-box">
+<div class="jrow">
+<div class="jcol"><span class="jlabel">⚖️ Online Demo Format</span><strong>Screenshare via Zoom/Meet</strong></div>
+<div class="jcol"><span class="jlabel">Demo Slot</span>Online MC calls team → screenshare ≤3 min · join waiting room 5 min early</div>
+<div class="jcol"><span class="jlabel">Scoring</span>Expert judges score online demos same as in-person (40%)</div>
+<div class="jcol"><span class="jlabel">Global Awards</span>Watch SF simulcast for People's Choice + Grand Prize reveal</div>
+</div>
+</div>
+<div class="legend">
+<div class="legend-item"><div class="legend-dot" style="background:#fff8f5"></div>Demo</div>
+<div class="legend-item"><div class="legend-dot" style="background:#f0f8ee"></div>Voting</div>
+<div class="legend-item"><div class="legend-dot" style="background:#f8f0ff"></div>Awards / Party</div>
+<div class="legend-item"><div class="legend-dot" style="background:#fff0f0"></div>Hard Deadline</div>
+</div>
+<div class="table-wrap"><table>
+<thead><tr><th>TIME (PT)</th><th>DUR(min)</th><th>CONTENT &amp; ACTIONS</th><th>LEAD</th><th>CHANNEL</th><th>MEMO / NOTES</th></tr></thead>
+<tbody>
+<tr class="sep amber"><td colspan="6">DAY 2 · May 24 (Sat) · Online EN Demo Day  ·  All times PT  ·  Synced with SF Demo Day</td></tr>
+<tr class="setup"><td class="time" contenteditable="true">09:30–10:00 PT</td><td class="dur" contenteditable="true">30</td>
+<td class="cnt" contenteditable="true"><b>🔄 Online Demo Prep</b><br/>Community lead posts Demo stage order in Discord; teams confirm connection; waiting room open; judges brief on online scoring process; voting link goes live</td>
+<td class="spk" contenteditable="true">Community Lead<br/>Online MC</td>
+<td class="cnt" contenteditable="true">Discord #online-en<br/>Zoom waiting room</td>
+<td class="mem" contenteditable="true">Post stage order in Discord; pin voting link; remind teams: "Join Zoom waiting room 5 min before your slot. Test your screenshare NOW."</td></tr>
+<tr class="key"><td class="time" contenteditable="true">10:00–10:30 PT</td><td class="dur" contenteditable="true">30</td>
+<td class="cnt" contenteditable="true"><b>🎙 Global Opening · Day 2</b><span class="tag tg">🔴 Live</span><br/>Watch SF Day 2 opening livestream; expert panel discussion; Discord chat open</td>
+<td class="spk" contenteditable="true">Community Lead (chat host)</td>
+<td class="cnt" contenteditable="true">Discord #online-en<br/>SF Livestream</td>
+<td class="mem" contenteditable="true">Pin livestream; encourage questions in Discord chat; community lead explains Demo schedule</td></tr>
+<tr class="demo"><td class="time" contenteditable="true">10:30–10:40 PT</td><td class="dur" contenteditable="true">10</td>
+<td class="cnt" contenteditable="true"><b>📋 Online Demo Rules Briefing</b><br/>Online MC explains: ≤3 min per team; screenshare format; stage order = submission timestamp; how judges score; voting open now</td>
+<td class="spk" contenteditable="true">Online MC</td>
+<td class="cnt" contenteditable="true">Zoom main room<br/>Discord announcement</td>
+<td class="mem" contenteditable="true">Bot posts: "Online Demo Day starts NOW — voting is open! Watch teams demo live → [Zoom link]"</td></tr>
+<tr class="demo"><td class="time" contenteditable="true">10:40 PT onward</td><td class="dur" contenteditable="true">≤3min/team</td>
+<td class="cnt" contenteditable="true"><b>📱 Online Project Demos</b> (submission order)<span class="tag tb">≤3 min each</span><br/>Online MC calls each team → team joins from waiting room → screenshares Eazo app<br/>Recommended structure: ① App demo (1.5 min) ② Key differentiator (45s) ③ Target user (45s)<br/><b>Judges score in real-time; community lead keeps Discord chat engaged</b></td>
+<td class="spk" contenteditable="true">Online MC (strict timer)<br/>Teams (in order)<br/>Community Lead (chat)</td>
+<td class="cnt" contenteditable="true">Zoom (screenshare)<br/>Discord #online-en (chat)</td>
+<td class="mem" contenteditable="true">MC cuts off strictly at 3 min; 30s warning given; no-show = skip (can return if rejoins in 15 min); community lead drops voting link after each demo in Discord chat</td></tr>
+<tr class="share"><td class="time" contenteditable="true">Mid-demos</td><td class="dur" contenteditable="true">10</td>
+<td class="cnt" contenteditable="true"><b>☕ Mid-Demo Break</b><span class="tag ta">📱 Share Push</span><br/>Community lead: "Which project just blew your mind? Share the link + your vote now!"</td>
+<td class="spk" contenteditable="true">Community Lead</td>
+<td class="cnt" contenteditable="true">Discord #online-en<br/>Twitter / LinkedIn</td>
+<td class="mem" contenteditable="true">Bot fires: "Demo break! Go vote for your favourite → [link]"</td></tr>
+<tr class="vote"><td class="time" contenteditable="true">Post-demos</td><td class="dur" contenteditable="true">—</td>
+<td class="cnt" contenteditable="true"><b>🗳 Post-Demo Voting Sprint</b><br/>All demos done; community lead drives final votes; Leaderboard shared; 10-min final warning</td>
+<td class="spk" contenteditable="true">Community Lead</td>
+<td class="cnt" contenteditable="true">Discord #online-en</td>
+<td class="mem" contenteditable="true">Bot: "All demos done! Final voting window is OPEN — use your 3 votes now → [link]"; bot fires 10-min warning before close</td></tr>
+<tr class="deadline"><td class="time" contenteditable="true">Voting Close (TBD)</td><td class="dur" contenteditable="true">—</td>
+<td class="cnt" contenteditable="true"><b>🔒 Voting Closes — System Locked</b><span class="tag tr">HARD STOP</span><br/>Synced with SF/SH/NY; weighted calc begins</td>
+<td class="spk" contenteditable="true">Platform / Tech</td>
+<td class="cnt" contenteditable="true">Bot: closure announcement</td>
+<td class="mem" contenteditable="true">Bot: "Voting is CLOSED! Results will be revealed at the SF Grand Finale 🎉 Stay tuned → [livestream link]"</td></tr>
+<tr class="sep purple"><td colspan="6">🏆 ONLINE AWARDS — Regional + Global Simulcast from SF</td></tr>
+<tr class="party"><td class="time" contenteditable="true">Awards window</td><td class="dur" contenteditable="true">20</td>
+<td class="cnt" contenteditable="true"><b>🏅 Achievement Badges — Online EN</b><br/>Community lead reveals badge winners in Discord; badges awarded to online participants</td>
+<td class="spk" contenteditable="true">Community Lead</td>
+<td class="cnt" contenteditable="true">Discord #online-en<br/>Bot: badge announcements</td>
+<td class="mem" contenteditable="true">Post each badge individually for maximum engagement; tag winners</td></tr>
+<tr class="party"><td class="time" contenteditable="true">Awards window</td><td class="dur" contenteditable="true">20</td>
+<td class="cnt" contenteditable="true"><b>🏆 Online Regional Awards Top 3</b><span class="tag tb">$8K · $5K · $3K</span><br/>Community lead announces 3rd → 2nd → 1st via Discord + video congratulations call</td>
+<td class="spk" contenteditable="true">Community Lead<br/>Online MC (video call)</td>
+<td class="cnt" contenteditable="true">Discord + Zoom (winner call)</td>
+<td class="mem" contenteditable="true">Invite top 3 to Zoom for a quick congratulations moment; screenshot for social; coordinate timing with other city awards</td></tr>
+<tr class="party"><td class="time" contenteditable="true">SF 21:00 PT</td><td class="dur" contenteditable="true">60</td>
+<td class="cnt" contenteditable="true"><b>📺 Global Awards Simulcast from SF</b><span class="tag tg">🔴 Live</span><br/>Watch SF livestream for People's Choice $25,000 → Grand Prize $50,000<br/>Community lead hosts live Discord reactions; if online team wins, celebrate in channel</td>
+<td class="spk" contenteditable="true">Community Lead (Discord host)</td>
+<td class="cnt" contenteditable="true">Discord #online-en<br/>SF Livestream pinned</td>
+<td class="mem" contenteditable="true">Pin SF stream link at 20:45; community lead keeps Discord hype up; if online participant wins Grand Prize — special Discord celebration moment</td></tr>
+<tr class="share"><td class="time" contenteditable="true">Post-awards</td><td class="dur" contenteditable="true">—</td>
+<td class="cnt" contenteditable="true"><b>🎊 Celebration + Share Push</b><span class="tag ta">📱 Amplification</span><br/>Community lead drops share templates; official project collection link published; community lead posts recap</td>
+<td class="spk" contenteditable="true">Community Lead</td>
+<td class="cnt" contenteditable="true">Discord #online-en<br/>Twitter / LinkedIn</td>
+<td class="mem" contenteditable="true">Template: "I just competed at #EazoHackathon2026 — built [X] in 24 hrs! Check it out → [link]"</td></tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<!-- ═══ ONLINE CN (SH TZ) ═══ -->
+<div class="venue-content" id="venue-on_cn">
+<div class="info-panel">
+<div class="info-toggle" onclick="toggleInfo(this)">
+<span class="arrow">▶</span>
+      📋 前置信息 — 线上赛区 · 中文区（点击展开）
+    </div>
+<div class="info-body">
+<div class="info-group">
+<div class="info-group-title">🌐 赛区信息</div>
+<div class="info-row"><span class="info-label">参考时区</span><div class="info-val" contenteditable="true" placeholder="CST（北京时间）— 与上海同步"></div></div>
+<div class="info-row"><span class="info-label">语言</span><div class="info-val" contenteditable="true" placeholder="中文"></div></div>
+<div class="info-row"><span class="info-label">主平台</span><div class="info-val" contenteditable="true" placeholder="Eazo App + 微信群 / Discord"></div></div>
+<div class="info-row"><span class="info-label">微信群 / Discord 频道</span><div class="info-val" contenteditable="true" placeholder="群名 + 二维码位置 / #online-cn"></div></div>
+<div class="info-row"><span class="info-label">线上赛区运营负责人</span><div class="info-val" contenteditable="true" placeholder="姓名 + 微信"></div></div>
+<div class="info-row"><span class="info-label">线上 MC / 主持人</span><div class="info-val" contenteditable="true" placeholder="姓名 + 微信（主持腾讯会议/直播）"></div></div>
+</div>
+<div class="info-group">
+<div class="info-group-title">🔗 核心链接</div>
+<div class="info-row"><span class="info-label">报名/提交平台</span><div class="info-val" contenteditable="true" placeholder="https://"></div></div>
+<div class="info-row"><span class="info-label">投票页面</span><div class="info-val" contenteditable="true" placeholder="https://"></div></div>
+<div class="info-row"><span class="info-label">全球直播（观看 SH/SF 现场）</span><div class="info-val" contenteditable="true" placeholder="https://"></div></div>
+<div class="info-row"><span class="info-label">Demo 屏幕分享房间</span><div class="info-val" contenteditable="true" placeholder="腾讯会议/Zoom 链接"></div></div>
+<div class="info-row"><span class="info-label">Demo 等候室链接</span><div class="info-val" contenteditable="true" placeholder="https://"></div></div>
+<div class="info-row"><span class="info-label">小红书话题标签</span><div class="info-val" contenteditable="true" placeholder="#EazoHackathon2026"></div></div>
+</div>
+<div class="info-group alert">
+<div class="info-group-title">🚨 应急预案</div>
+<div class="info-row"><span class="info-label">投屏中断备案</span><div class="info-val" contenteditable="true" placeholder="30秒宽限，MC重新邀请，计时暂停"></div></div>
+<div class="info-row"><span class="info-label">缺席队伍处理</span><div class="info-val" contenteditable="true" placeholder="跳过，如15分钟内重连则补位"></div></div>
+</div>
+</div>
+<div class="edit-hint">✏️ 所有字段可直接点击编辑，刷新后重置，建议截图或导出 PDF 存档。</div>
+</div>
+<div class="day-tabs">
+<div class="day-tab active" onclick="showDay('on_cn','d1')">Day 1 · 5月23日（Build Day）· CST</div>
+<div class="day-tab" onclick="showDay('on_cn','d2')">Day 2 · 5月24日（Demo + 颁奖）· CST</div>
+</div>
+<!-- ONLINE CN D1 -->
+<div class="day-content active" id="on_cn-d1">
+<div class="legend">
+<div class="legend-item"><div class="legend-dot" style="background:#f5f4f0"></div>准备</div>
+<div class="legend-item"><div class="legend-dot" style="background:#fffbe6"></div>构建</div>
+<div class="legend-item"><div class="legend-dot" style="background:#fef3d8"></div>休息/分享节点</div>
+<div class="legend-item"><div class="legend-dot" style="background:#fff0f0"></div>硬截止</div>
+</div>
+<div class="table-wrap"><table>
+<thead><tr><th>TIME (CST)</th><th>时长(min)</th><th>环节内容 &amp; 执行动作</th><th>负责人</th><th>频道</th><th>MEMO / 执行注意</th></tr></thead>
+<tbody>
+<tr class="sep green"><td colspan="6">DAY 1 · 5月23日（周五）· 线上赛区 · 中文区  ·  所有时间以 CST 为准  ·  与上海同步</td></tr>
+<tr class="setup"><td class="time" contenteditable="true">09:30–10:00</td><td class="dur" contenteditable="true">30</td>
+<td class="cnt" contenteditable="true"><b>✅ 线上签到</b><br/>加入微信群/Discord #online-cn；确认 Eazo 账号已激活；选择赛道；Bot 推送欢迎消息+赛道选择表单；运营负责人群内迎新</td>
+<td class="spk" contenteditable="true">运营负责人</td>
+<td class="cnt" contenteditable="true">微信群 / Discord #online-cn<br/>Bot：欢迎消息</td>
+<td class="mem" contenteditable="true">Bot 发送：「欢迎来到 Eazo Hackathon！Step 1：选择赛道 → [表单链接] Step 2：进入对应赛道群」</td></tr>
+<tr class="key"><td class="time" contenteditable="true">10:00–10:30</td><td class="dur" contenteditable="true">30</td>
+<td class="cnt" contenteditable="true"><b>🎙 全球开幕 — 同步观看直播</b><span class="tag tg">全球同步</span><br/>观看上海线下开幕直播；Founder 产品发布演讲；赛道介绍；规则说明<br/>微信群：运营负责人实时互动，解答问题</td>
+<td class="spk" contenteditable="true">运营负责人（群内）</td>
+<td class="cnt" contenteditable="true">微信群 / Discord<br/>直播链接置顶</td>
+<td class="mem" contenteditable="true">提前5分钟置顶直播链接；群内实时解答问题；@所有人告知提交规则</td></tr>
+<tr class="build"><td class="time" contenteditable="true">10:40–12:30</td><td class="dur" contenteditable="true">110</td>
+<td class="cnt" contenteditable="true"><b>💻 构建阶段 · Round 1</b><br/>独立在 Eazo 平台构建；加入赛道分群获取异步支持；导师在线答疑；鼓励尽早提交</td>
+<td class="spk" contenteditable="true">导师（群内）</td>
+<td class="cnt" contenteditable="true">微信赛道分群 / #online-cn</td>
+<td class="mem" contenteditable="true">Bot 每45分钟：「还在构建吗？发个进度截图加油！🔨」；导师轮流巡各赛道群</td></tr>
+<tr class="share"><td class="time" contenteditable="true">12:30–13:15</td><td class="dur" contenteditable="true">45</td>
+<td class="cnt" contenteditable="true"><b>🍱 午餐</b><span class="tag ta">📱 分享节点①</span><br/>运营发起分享接龙；发 WIP 截图+链接；运营提供小红书话术模板</td>
+<td class="spk" contenteditable="true">运营负责人</td>
+<td class="cnt" contenteditable="true">微信群 / 小红书</td>
+<td class="mem" contenteditable="true">话术：「我在 Eazo Hackathon 做了个 App → [链接]，帮我投个票！#EazoHackathon2026」</td></tr>
+<tr class="build"><td class="time" contenteditable="true">13:15–15:30</td><td class="dur" contenteditable="true">135</td>
+<td class="cnt" contenteditable="true"><b>💻 构建阶段 · Round 2</b><br/>持续构建；Bot 在15:00发提交提醒；导师提醒：「能跑就提交，后续可迭代」</td>
+<td class="spk" contenteditable="true">导师（群内）</td>
+<td class="cnt" contenteditable="true">微信赛道分群</td>
+<td class="mem" contenteditable="true">Bot 15:00：「已有 XX 队提交！越早提交投票窗口越长 🚀」</td></tr>
+<tr class="share"><td class="time" contenteditable="true">15:30–15:45</td><td class="dur" contenteditable="true">15</td>
+<td class="cnt" contenteditable="true"><b>☕ 下午茶</b><span class="tag ta">📱 分享节点②</span><br/>「晒进度」话题接龙；运营高亮群内精彩 WIP</td>
+<td class="spk" contenteditable="true">运营负责人</td>
+<td class="cnt" contenteditable="true">微信群 / 小红书</td>
+<td class="mem" contenteditable="true">话术：「做到一半了，来给我加油 → [进度截图]」</td></tr>
+<tr class="build"><td class="time" contenteditable="true">15:45–19:00</td><td class="dur" contenteditable="true">195</td>
+<td class="cnt" contenteditable="true"><b>💻 构建阶段 · Round 3 + 最终冲刺</b><br/>持续构建；Bot 在17:30和18:30发倒计时预警；导师鼓励最终提交</td>
+<td class="spk" contenteditable="true">导师（群内）</td>
+<td class="cnt" contenteditable="true">微信赛道分群</td>
+<td class="mem" contenteditable="true">17:30：「距截止还有约1.5小时——冲刺吧！」；18:30：「30分钟！App 能跑就立刻提交！」</td></tr>
+<tr class="share"><td class="time" contenteditable="true">19:00–19:45</td><td class="dur" contenteditable="true">45</td>
+<td class="cnt" contenteditable="true"><b>🍽 晚餐</b><span class="tag ta">📱 分享节点③</span><br/>运营发当前排行榜快照；「帮你喜欢的产品拉票」</td>
+<td class="spk" contenteditable="true">运营负责人</td>
+<td class="cnt" contenteditable="true">微信群 / 小红书</td>
+<td class="mem" contenteditable="true">话术：「我已经提交了！来帮我投票 → [链接] 🙌」</td></tr>
+<tr class="build"><td class="time" contenteditable="true">19:45–次日09:00</td><td class="dur" contenteditable="true">—</td>
+<td class="cnt" contenteditable="true"><b>🌙 通宵构建（自愿）</b><br/>平台持续开放；群内异步支持；Bot 定时鼓励</td>
+<td class="spk" contenteditable="true">值班运营</td>
+<td class="cnt" contenteditable="true">微信群 / Discord</td>
+<td class="mem" contenteditable="true">Bot 每2–3小时：「还在奋战？加油！🌙 随时可提交。」</td></tr>
+<tr class="deadline"><td class="time" contenteditable="true">次日 09:00</td><td class="dur" contenteditable="true">—</td>
+<td class="cnt" contenteditable="true"><b>🔒 提交硬截止</b><span class="tag tr">HARD STOP</span><br/>Eazo 平台提交系统关闭；时间戳即 Demo 出场顺序</td>
+<td class="spk" contenteditable="true">平台/技术</td>
+<td class="cnt" contenteditable="true">Bot：08:30 + 08:50 预警</td>
+<td class="mem" contenteditable="true">08:30：「距截止30分钟！」；08:50：「最后10分钟！」；截止后名单锁定</td></tr>
+</tbody>
+</table></div>
+</div>
+<!-- ONLINE CN D2 -->
+<div class="day-content" id="on_cn-d2">
+<div class="judge-box">
+<div class="jrow">
+<div class="jcol"><span class="jlabel">⚖️ 线上 Demo 格式</span><strong>腾讯会议/Zoom 投屏</strong></div>
+<div class="jcol"><span class="jlabel">Demo 时长</span>线上 MC 呼叫队伍 → 投屏展示 ≤3 分钟 · 提前5分钟进等候室</div>
+<div class="jcol"><span class="jlabel">评分</span>专家评审与线下同权（40%）</div>
+<div class="jcol"><span class="jlabel">全球奖项</span>观看 SF 直播：People's Choice + Grand Prize 揭晓</div>
+</div>
+</div>
+<div class="legend">
+<div class="legend-item"><div class="legend-dot" style="background:#fff8f5"></div>Demo</div>
+<div class="legend-item"><div class="legend-dot" style="background:#f0f8ee"></div>投票</div>
+<div class="legend-item"><div class="legend-dot" style="background:#f8f0ff"></div>颁奖/庆祝</div>
+<div class="legend-item"><div class="legend-dot" style="background:#fff0f0"></div>硬截止</div>
+</div>
+<div class="table-wrap"><table>
+<thead><tr><th>TIME (CST)</th><th>时长(min)</th><th>环节内容 &amp; 执行动作</th><th>负责人</th><th>频道</th><th>MEMO / 执行注意</th></tr></thead>
+<tbody>
+<tr class="sep amber"><td colspan="6">DAY 2 · 5月24日（周六）· 线上 Demo Day  ·  所有时间以 CST 为准  ·  与上海 Demo Day 同步</td></tr>
+<tr class="setup"><td class="time" contenteditable="true">08:30–10:00</td><td class="dur" contenteditable="true">90</td>
+<td class="cnt" contenteditable="true"><b>🔄 线上 Demo 准备</b><br/>运营发布出场顺序；队伍确认连接；等候室开放；投票链接上线；导师对齐线上评分流程</td>
+<td class="spk" contenteditable="true">运营负责人<br/>线上 MC</td>
+<td class="cnt" contenteditable="true">微信群 / Discord<br/>腾讯会议等候室</td>
+<td class="mem" contenteditable="true">群内置顶出场顺序；置顶投票链接；提醒：「请在自己出场前5分钟进入等候室，提前测试投屏！」</td></tr>
+<tr class="key"><td class="time" contenteditable="true">10:00–10:30</td><td class="dur" contenteditable="true">30</td>
+<td class="cnt" contenteditable="true"><b>🎙 Day 2 全球开幕 · 同步观看</b><span class="tag tg">🔴 直播</span><br/>观看上海线下 Day 2 开幕直播；嘉宾圆桌 Panel；微信群实时互动</td>
+<td class="spk" contenteditable="true">运营负责人（群内）</td>
+<td class="cnt" contenteditable="true">微信群 + 直播</td>
+<td class="mem" contenteditable="true">置顶直播链接；运营主持群内问题讨论</td></tr>
+<tr class="demo"><td class="time" contenteditable="true">10:30–10:40</td><td class="dur" contenteditable="true">10</td>
+<td class="cnt" contenteditable="true"><b>📋 线上 Demo 规则说明</b><br/>线上 MC 说明：每队 ≤3分钟；投屏格式；出场顺序=提交时间戳；评审打分方式；投票通道说明</td>
+<td class="spk" contenteditable="true">线上 MC</td>
+<td class="cnt" contenteditable="true">腾讯会议主房间<br/>微信群公告</td>
+<td class="mem" contenteditable="true">Bot：「线上 Demo Day 正式开始！投票通道已开放 → [链接] 🎉」</td></tr>
+<tr class="demo"><td class="time" contenteditable="true">10:40 起（轮流）</td><td class="dur" contenteditable="true">≤3min/队</td>
+<td class="cnt" contenteditable="true"><b>📱 线上项目 Demo 路演</b>（按提交顺序）<span class="tag tb">每队 ≤3min</span><br/>线上 MC 呼叫 → 队伍进入主房间 → 投屏展示 Eazo App<br/>推荐结构：① App 核心场景（1.5min）② 亮点（45s）③ 目标用户（45s）<br/><b>评审嘉宾实时打分；运营保持微信群互动</b></td>
+<td class="spk" contenteditable="true">线上 MC（严格计时）<br/>参赛队伍<br/>运营（群内）</td>
+<td class="cnt" contenteditable="true">腾讯会议（投屏）<br/>微信群（互动）</td>
+<td class="mem" contenteditable="true">3分钟到时打断；缺席则跳过；运营每队结束后在群内发投票链接；评分维度同线下</td></tr>
+<tr class="share"><td class="time" contenteditable="true">Demo 中场</td><td class="dur" contenteditable="true">10</td>
+<td class="cnt" contenteditable="true"><b>☕ 中场休息</b><span class="tag ta">📱 分享节点</span><br/>运营：「哪个产品让你眼前一亮？发小红书附上链接」</td>
+<td class="spk" contenteditable="true">运营负责人</td>
+<td class="cnt" contenteditable="true">微信群 / 小红书</td>
+<td class="mem" contenteditable="true">Bot：「中场休息！快给你喜欢的产品投一票 → [链接]」</td></tr>
+<tr class="vote"><td class="time" contenteditable="true">Demo 结束后</td><td class="dur" contenteditable="true">—</td>
+<td class="cnt" contenteditable="true"><b>🗳 投票冲刺</b><br/>所有 Demo 完毕；运营推最终投票；排行榜快照分享；10分钟最终预警</td>
+<td class="spk" contenteditable="true">运营负责人</td>
+<td class="cnt" contenteditable="true">微信群 / 小红书</td>
+<td class="mem" contenteditable="true">Bot：「Demo 全部结束！最后投票机会 → 每人最多3票 → [链接]」；截止前10分钟再推一次</td></tr>
+<tr class="deadline"><td class="time" contenteditable="true">投票截止（TBD）</td><td class="dur" contenteditable="true">—</td>
+<td class="cnt" contenteditable="true"><b>🔒 投票截止，系统锁定</b><span class="tag tr">HARD STOP</span><br/>与 SH/SF/NY 同步锁定；加权计算开始</td>
+<td class="spk" contenteditable="true">平台/技术</td>
+<td class="cnt" contenteditable="true">Bot：截止公告</td>
+<td class="mem" contenteditable="true">Bot：「投票已截止！结果将在旧金山颁奖典礼揭晓 🎉 守候直播 → [链接]」</td></tr>
+<tr class="sep purple"><td colspan="6">🏆 线上颁奖 — 区域奖 + 全球奖项同步 SF 直播</td></tr>
+<tr class="party"><td class="time" contenteditable="true">颁奖环节</td><td class="dur" contenteditable="true">20</td>
+<td class="cnt" contenteditable="true"><b>🏅 成就徽章 — 线上中文区</b><br/>运营在微信群逐一宣布徽章得主；@获奖者；截图留档</td>
+<td class="spk" contenteditable="true">运营负责人</td>
+<td class="cnt" contenteditable="true">微信群 / Bot 公告</td>
+<td class="mem" contenteditable="true">每个徽章单独发布增强仪式感；@获奖者并请他们发感想</td></tr>
+<tr class="party"><td class="time" contenteditable="true">颁奖环节</td><td class="dur" contenteditable="true">20</td>
+<td class="cnt" contenteditable="true"><b>🏆 线上区域奖 Top 3</b><span class="tag tb">$8K · $5K · $3K</span><br/>运营群内发布：3名→2名→1名；邀请 Top 3 进腾讯会议做简短庆祝</td>
+<td class="spk" contenteditable="true">运营负责人<br/>线上 MC（视频）</td>
+<td class="cnt" contenteditable="true">微信群 + 腾讯会议</td>
+<td class="mem" contenteditable="true">截图记录；与其他城市颁奖时序对齐；获奖者发朋友圈/小红书推模板</td></tr>
+<tr class="party"><td class="time" contenteditable="true">SF 颁奖时刻<br/><em style="font-size:11px;color:#888">（CST 次日约13:00）</em></td><td class="dur" contenteditable="true">60</td>
+<td class="cnt" contenteditable="true"><b>📺 全球奖项直播 — 来自旧金山 SF</b><span class="tag tg">🔴 同步直播</span><br/>群内推 SF 直播链接；People's Choice $25,000 → Grand Prize $50,000<br/>运营主持群内反应；如线上中文区参赛队获奖，群内同步庆祝</td>
+<td class="spk" contenteditable="true">运营负责人（群内）</td>
+<td class="cnt" contenteditable="true">微信群 + SF 直播</td>
+<td class="mem" contenteditable="true">揭晓前 15 分钟推直播链接；如线上获奖者，即时@并庆祝；截图存档</td></tr>
+<tr class="share"><td class="time" contenteditable="true">颁奖后</td><td class="dur" contenteditable="true">—</td>
+<td class="cnt" contenteditable="true"><b>🎊 庆祝 + 二次传播</b><span class="tag ta">📱 传播</span><br/>运营推发帖话术；发布作品合集链接；运营发活动总结</td>
+<td class="spk" contenteditable="true">运营负责人</td>
+<td class="cnt" contenteditable="true">微信群 / 小红书</td>
+<td class="mem" contenteditable="true">话术：「我参加了 Eazo Global Hackathon！做了个真实的产品 → [链接] 🎉 #EazoHackathon2026」</td></tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<script>
+// ── Role filter ──
+const ROLE_KEYWORDS = {
+  host:   ['主持人', 'MC', 'mc', 'Host', 'host', 'MC ('],
+  vol:    ['志愿者', 'Volunteer', 'volunteer', '签到组', '场务', '接待', 'Registration Team', 'Venue Team', 'Venue Lead', 'Reception', 'Ops Lead', '运营负责人', '运营', 'Ops'],
+  mentor: ['导师', 'Mentor', 'mentor', 'Mentors'],
+  judge:  ['评审', 'Judge', 'judge', 'Judges', '嘉宾', 'judge']
+};
+let currentRole = 'all';
+
+function setRole(role) {
+  currentRole = role;
+  document.querySelectorAll('.rbtn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.role-callout').forEach(c => c.classList.remove('active'));
+  if (role !== 'all') {
+    document.querySelector('.rbtn.r-' + role)?.classList.add('active');
+    document.getElementById('callout-' + role)?.classList.add('active');
+  } else {
+    document.querySelectorAll('.rbtn')[0]?.classList.add('active');
+  }
+  applyRoleFilter();
+}
+
+function applyRoleFilter() {
+  const rows = document.querySelectorAll('tbody tr');
+  rows.forEach(row => {
+    row.classList.remove('role-match', 'role-dimmed', 'r-host', 'r-vol', 'r-mentor', 'r-judge');
+    if (currentRole === 'all' || row.classList.contains('sep')) return;
+    const spkCell = row.querySelector('td.spk');
+    if (!spkCell) return;
+    const txt = spkCell.textContent || '';
+    const keywords = ROLE_KEYWORDS[currentRole] || [];
+    const matches = keywords.some(kw => txt.includes(kw));
+    if (matches) {
+      row.classList.add('role-match', 'r-' + currentRole);
+    } else {
+      row.classList.add('role-dimmed');
+    }
+  });
+}
+
+function showVenue(v) {
+  document.querySelectorAll('.venue-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.venue-content').forEach(c => c.classList.remove('active'));
+  const map = {sh:0, sf:1, ny:2, on_en:3, on_cn:4};
+  document.querySelectorAll('.venue-tab')[map[v]].classList.add('active');
+  document.getElementById('venue-' + v).classList.add('active');
+}
+function showDay(venue, day) {
+  const container = document.getElementById('venue-' + venue);
+  container.querySelectorAll('.day-tab').forEach(t => t.classList.remove('active'));
+  container.querySelectorAll('.day-content').forEach(c => c.classList.remove('active'));
+  const map = {d1:0, d2:1};
+  container.querySelectorAll('.day-tab')[map[day]].classList.add('active');
+  document.getElementById(venue + '-' + day).classList.add('active');
+}
+function toggleInfo(el) {
+  el.classList.toggle('open');
+  el.nextElementSibling.classList.toggle('open');
+}
+</script>
+</body>
+</html>

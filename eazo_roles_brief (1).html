@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Eazo Hackathon 2026 — Roles Brief</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Syne:wght@700;800&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+
+:root {
+  --bg: #f8f7f4;
+  --surface: #ffffff;
+  --border: #e4e2db;
+  --border2: #d0cdc6;
+  --text: #1a1916;
+  --text2: #555350;
+  --text3: #999794;
+
+  --host:   #c0392b;
+  --host-bg: #fff5f5;
+  --host-border: #ffd0cc;
+
+  --vol:   #1d7a5a;
+  --vol-bg: #f0faf6;
+  --vol-border: #b8ebd8;
+
+  --mentor:  #5a2d9a;
+  --mentor-bg: #f8f3ff;
+  --mentor-border: #d8c8f8;
+
+  --judge:  #a07000;
+  --judge-bg: #fffbea;
+  --judge-border: #f5e090;
+
+  --gold: #e8a830;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); font-size: 13px; }
+
+/* ── Header ── */
+.hdr { background: #1a1916; color: #fff; padding: 24px 32px 20px; }
+.hdr h1 { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; letter-spacing: -.01em; }
+.hdr h1 span { color: var(--gold); }
+.hdr .sub { font-size: 12px; color: #aaa; margin-top: 5px; line-height: 1.7; }
+
+/* ── Role selector ── */
+.role-nav { display: flex; background: #111; border-bottom: 2px solid #333; overflow-x: auto; }
+.rnav-btn {
+  padding: 14px 26px; font-size: 13px; font-weight: 700; color: #777;
+  cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px;
+  white-space: nowrap; transition: all .15s; letter-spacing: .02em;
+  font-family: 'DM Sans', sans-serif; border: none; background: none;
+  display: flex; align-items: center; gap: 7px;
+}
+.rnav-btn:hover { color: #ccc; }
+.rnav-btn.r-host.active   { color: #ff7060; border-bottom-color: var(--host); }
+.rnav-btn.r-vol.active    { color: #40d090; border-bottom-color: var(--vol); }
+.rnav-btn.r-mentor.active { color: #b890f8; border-bottom-color: var(--mentor); }
+.rnav-btn.r-judge.active  { color: var(--gold); border-bottom-color: var(--gold); }
+
+/* ── City tabs ── */
+.city-bar { display: flex; gap: 6px; padding: 12px 32px; background: var(--surface); border-bottom: 1px solid var(--border); }
+.cbtn { font-size: 11.5px; font-weight: 700; padding: 5px 14px; border-radius: 20px; border: 1.5px solid var(--border2); background: transparent; color: var(--text3); cursor: pointer; transition: all .15s; font-family: inherit; }
+.cbtn:hover { border-color: #aaa; color: var(--text2); }
+.cbtn.active { background: var(--text); color: #fff; border-color: var(--text); }
+
+/* ── Role content ── */
+.role-content { display: none; }
+.role-content.active { display: block; }
+.city-content { display: none; }
+.city-content.active { display: block; }
+
+/* ── Role intro card ── */
+.role-intro {
+  margin: 20px 32px 0; padding: 18px 20px; border-radius: 12px; border: 1.5px solid;
+  display: flex; gap: 18px; align-items: flex-start;
+}
+.role-intro.r-host   { background: var(--host-bg);   border-color: var(--host-border); }
+.role-intro.r-vol    { background: var(--vol-bg);     border-color: var(--vol-border); }
+.role-intro.r-mentor { background: var(--mentor-bg);  border-color: var(--mentor-border); }
+.role-intro.r-judge  { background: var(--judge-bg);   border-color: var(--judge-border); }
+
+.role-emoji { font-size: 32px; line-height: 1; flex-shrink: 0; }
+.role-intro-body {}
+.role-intro-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; margin-bottom: 5px; }
+.r-host   .role-intro-title { color: var(--host); }
+.r-vol    .role-intro-title { color: var(--vol); }
+.r-mentor .role-intro-title { color: var(--mentor); }
+.r-judge  .role-intro-title { color: var(--judge); }
+.role-intro-desc { font-size: 12.5px; color: var(--text2); line-height: 1.7; }
+.role-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.rpill { font-size: 10.5px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+.r-host   .rpill { background: #ffd8d5; color: var(--host); }
+.r-vol    .rpill { background: #c8f0e0; color: var(--vol); }
+.r-mentor .rpill { background: #e0d0fc; color: var(--mentor); }
+.r-judge  .rpill { background: #f8e080; color: var(--judge); }
+
+/* ── Sub-role tabs (volunteer / mentor tracks) ── */
+.subrole-bar { display: flex; gap: 6px; padding: 14px 32px 0; flex-wrap: wrap; }
+.srbtn { font-size: 11.5px; font-weight: 600; padding: 6px 14px; border-radius: 6px 6px 0 0; border: 1px solid var(--border); background: var(--bg); color: var(--text3); cursor: pointer; font-family: inherit; border-bottom: none; transition: all .15s; }
+.srbtn:hover { color: var(--text2); }
+.srbtn.active { background: var(--surface); color: var(--text); border-color: var(--border2); font-weight: 700; }
+
+.subrole-content { display: none; }
+.subrole-content.active { display: block; }
+
+/* ── Timeline ── */
+.timeline { padding: 16px 32px 32px; }
+.phase-block { margin-bottom: 24px; }
+.phase-title {
+  font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--text3); padding: 6px 0 8px; border-bottom: 1px solid var(--border);
+  margin-bottom: 10px;
+}
+.tl-row {
+  display: grid; grid-template-columns: 130px 1fr; gap: 0;
+  margin-bottom: 2px; border-radius: 8px; overflow: hidden;
+  border: 1px solid var(--border); background: var(--surface);
+}
+.tl-row.important { border-color: var(--border2); }
+.tl-time {
+  padding: 11px 13px; font-family: 'IBM Plex Mono', monospace; font-size: 11.5px;
+  font-weight: 600; color: var(--text2); background: var(--bg);
+  border-right: 1px solid var(--border); display: flex; flex-direction: column;
+  gap: 2px; white-space: nowrap;
+}
+.tl-time .tz { font-size: 9.5px; font-weight: 400; color: var(--text3); }
+.tl-body { padding: 11px 14px; }
+.tl-action { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 3px; line-height: 1.4; }
+.tl-detail { font-size: 12px; color: var(--text2); line-height: 1.65; }
+.tl-detail b { color: var(--text); font-weight: 600; }
+
+/* action type chips */
+.achip { display: inline-block; font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 20px; margin-right: 4px; vertical-align: middle; letter-spacing: .03em; }
+.chip-do     { background: #e0f4ea; color: #1d7a5a; }
+.chip-say    { background: #e8f0fc; color: #2a5fa8; }
+.chip-watch  { background: #f0f0f0; color: #777; }
+.chip-prep   { background: #fff3e0; color: #a07000; }
+.chip-hard   { background: #ffe0de; color: #c0392b; }
+.chip-key    { background: #f5e8ff; color: #5a2d9a; }
+
+/* Checklist items */
+.checklist { list-style: none; margin-top: 6px; }
+.checklist li { display: flex; gap: 8px; align-items: flex-start; padding: 3px 0; font-size: 12px; color: var(--text2); line-height: 1.5; }
+.checklist li::before { content: '☐'; font-size: 13px; flex-shrink: 0; color: var(--border2); margin-top: 1px; }
+
+/* note box */
+.note-box { background: #fffbea; border-left: 3px solid var(--gold); padding: 10px 13px; border-radius: 0 6px 6px 0; font-size: 12px; color: #7a5800; line-height: 1.65; margin-top: 10px; }
+.note-box b { color: #5a4000; }
+
+.section-divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+/* Bring list */
+.bring-box { background: var(--bg); border: 1.5px solid var(--border2); border-radius: 10px; padding: 14px 16px; margin: 16px 32px; }
+.bring-title { font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--text3); margin-bottom: 10px; }
+.bring-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+.bring-item { font-size: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; color: var(--text2); }
+
+/* Print hint */
+.print-hint { text-align: center; padding: 16px; font-size: 11px; color: var(--text3); }
+
+/* edit hint */
+.edit-hint-bar { padding: 7px 32px; background: #fffbea; border-bottom: 1px solid #f0d888; font-size: 11px; color: #7a5800; }
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <h1>⚡ Eazo Global Hackathon 2026 <span>— Roles Brief</span></h1>
+  <div class="sub">角色行动手册 · 按角色 + 城市查看你的具体任务 · 所有内容可直接点击编辑</div>
+</div>
+
+<div class="role-nav">
+  <button class="rnav-btn r-host active" onclick="setRole('host')">🎙 主持人 Host</button>
+  <button class="rnav-btn r-vol"  onclick="setRole('vol')">🙋 Volunteer 志愿者</button>
+  <button class="rnav-btn r-mentor" onclick="setRole('mentor')">🧑‍🏫 Mentor 导师</button>
+  <button class="rnav-btn r-judge" onclick="setRole('judge')">⚖️ Judge / Guest</button>
+</div>
+
+<div class="edit-hint-bar">✏️ 所有字段可直接点击编辑 · 刷新后重置，请截图或打印存档</div>
+
+<!-- ════════════════════════════════════
+     🎙 HOST
+════════════════════════════════════ -->
+<div class="role-content r-host active" id="role-host">
+  <div class="role-intro r-host">
+    <div class="role-emoji">🎙</div>
+    <div class="role-intro-body">
+      <div class="role-intro-title">主持人 Host / MC</div>
+      <div class="role-intro-desc">你是整场活动的节奏守门人。所有环节的时间控制、场景切换、能量调动都依赖你。熟记 Rundown，遇到任何超时情况主动打断，礼貌但坚定。</div>
+      <div class="role-pills">
+        <span class="rpill">开幕串场</span>
+        <span class="rpill">圆桌 Panel 主持</span>
+        <span class="rpill">Demo 计时+呼叫</span>
+        <span class="rpill">投票预警广播</span>
+        <span class="rpill">颁奖全程串场</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="city-bar">
+    <button class="cbtn active" onclick="setCity('host','sh')">🇨🇳 上海 SH</button>
+    <button class="cbtn" onclick="setCity('host','sf')">🇺🇸 旧金山 SF</button>
+    <button class="cbtn" onclick="setCity('host','ny')">🗽 纽约 NY</button>
+  </div>
+
+  <!-- SH HOST -->
+  <div class="city-content active" id="host-sh">
+    <div class="bring-box">
+      <div class="bring-title">📦 带到现场的东西</div>
+      <div class="bring-grid">
+        <span class="bring-item">完整 Rundown 打印版</span>
+        <span class="bring-item">Demo 出场顺序表（09:00 后取）</span>
+        <span class="bring-item">颁奖名单（倒计时截止后取）</span>
+        <span class="bring-item">翻页笔</span>
+        <span class="bring-item">计时器 App（备用）</span>
+        <span class="bring-item">各环节话术提示卡</span>
+      </div>
+    </div>
+    <div class="timeline">
+      <div class="phase-block">
+        <div class="phase-title">Day 1 · 5月23日 Build Day</div>
+
+        <div class="tl-row"><div class="tl-time">09:00<div class="tz">CST</div></div><div class="tl-body"><div class="tl-action"><span class="achip chip-prep">PREP</span>与运营团队对齐 Rundown</div><div class="tl-detail">确认开幕 PPT 就位；测试话筒；与 Founder 确认演讲时长（≤30min）；确认评审联系方式</div></div></div>
+
+        <div class="tl-row important"><div class="tl-time">10:00–10:05<div class="tz">CST</div></div><div class="tl-body"><div class="tl-action"><span class="achip chip-say">ANNOUNCE</span>开场热场 + 欢迎词</div><div class="tl-detail">「欢迎来到 Eazo Global Hackathon 2026！今天全球四个城市同时开打…」→ 介绍活动背景 → 引出 Founder</div></div></div>
+
+        <div class="tl-row important"><div class="tl-time">10:05–10:30<div class="tz">CST</div></div><div class="tl-body"><div class="tl-action"><span class="achip chip-watch">WATCH</span>Founder 产品发布演讲（你在台侧候场）</div><div class="tl-detail">Founder 演讲期间站台侧；演讲结束时上台接过话筒 → 介绍五大赛道 → 宣布规则（提交 / 投票 / 评分权重）→ 引入合影环节</div></div></div>
+
+        <div class="tl-row important"><div class="tl-time">10:30–10:40<div class="tz">CST</div></div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">📸 PHOTO</span>组织大合影</div><div class="tl-detail">「好！产品发布完毕——在 Build 正式开始之前，我们来一张全场合影！所有人起立！」<br>→ 摄影师就位（提前通知，演讲开始前已到位）→ 主持人喊：「三——二——一！」→ 拍完立刻宣布：「合影完毕！<b>现在，Build 正式开始！10:40！</b>」<br><b>控制在10分钟内，不要拖。</b></div></div></div>
+
+        <div class="tl-row"><div class="tl-time">12:30<div class="tz">CST</div></div><div class="tl-body"><div class="tl-action"><span class="achip chip-say">ANNOUNCE</span>午餐 + 分享节点①广播</div><div class="tl-detail">「午饭时间！📱 现在是最佳拉票时机——把你的产品链接发出去！运营小伙伴来教大家怎么发…」→ 交给运营上台示范</div></div></div>
+
+        <div class="tl-row"><div class="tl-time">15:30<div class="tz">CST</div></div><div class="tl-body"><div class="tl-action"><span class="achip chip-say">ANNOUNCE</span>下午茶 + 分享节点②广播</div><div class="tl-detail">简短广播；提醒「提交越早投票窗口越长」</div></div></div>
+
+        <div class="tl-row"><div class="tl-time">17:30<div class="tz">CST</div></div><div class="tl-body"><div class="tl-action"><span class="achip chip-say">ANNOUNCE</span>中场检查广播</div><div class="tl-detail">「评委嘉宾正在巡场体验各位的产品！快把链接发出去！」</div></div></div>
+
+        <div class="tl-row"><div class="tl-time">19:00<div class="tz">CST</div></div><div class="tl-body"><div class="tl-action"><span class="achip chip-say">ANNOUNCE</span>晚餐 + 分享节点③广播</div><div class="tl-detail">公布当前 Leaderboard 前三名；制造追赶感</div></div></div>
+
+        <div class="tl-row"><div class="tl-time">08:30 次日<div class="tz">CST</div></div><div class="tl-body"><div class="tl-action"><span class="achip chip-hard">HARD</span>提交 30分钟预警广播</div><div class="tl-detail">「距离提交截止还有30分钟！09:00 准时关闭！App 能跑就立刻提交！」</div></div></div>
+
+        <div class="tl-row"><div class="tl-time">08:50 次日<div class="tz">CST</div></div><div class="tl-body"><div class="tl-action"><span class="achip chip-hard">HARD</span>提交 10分钟预警广播</div><div class="tl-detail">「最后10分钟！现在还没提交的立刻打开 Eazo！」→ 09:00 宣布截止，开始出场顺序公布</div></div></div>
+      </div>
+
+      <div class="phase-block">
+        <div class="phase-title">Day 2 · 5月24日 Demo Day + 颁奖</div>
+
+        <div class="tl-row"><div class="tl-time">09:00–09:30<div class="tz">CST</div></div><div class="tl-body"><div class="tl-action"><span class="achip chip-prep">PREP</span>后台与评审嘉宾对齐流程</div><div class="tl-detail">向评审介绍 Day 2 流程；确认圆桌 Panel 话题方向；核对 Demo 出场顺序表；确认评分方式（纸质/系统）</div></div></div>
+
+        <div class="tl-row important"><div class="tl-time">10:00–10:30<div class="tz">CST</div></div><div class="tl-body"><div class="tl-action"><span class="achip chip-say">HOST</span>开场热场 + 圆桌 Panel 主持</div><div class="tl-detail"><b>严格30分钟内结束。</b>评审嘉宾上台 → 你引导话题（AI创业趋势 / 评审视角 / 对参赛者的期待）→ 每位评审控制在4–5分钟 → 30:00 主动收场：「感谢各位评审，接下来是最精彩的 Demo 环节！」→ 引导评审离台就座评审席</div></div></div>
+
+        <div class="tl-row important"><div class="tl-time">10:30–10:40<div class="tz">CST</div></div><div class="tl-body"><div class="tl-action"><span class="achip chip-say">ANNOUNCE</span>Demo Day 规则宣讲</div><div class="tl-detail">宣布：出场顺序（提交时间戳）/ 每队 ≤3min / 超时打断 / 线上选手连线方式 / 投票通道开放 / 「谁先提交谁先上台，现在排行榜已经开始计票」</div></div></div>
+
+        <div class="tl-row important"><div class="tl-time">10:40 起<div class="tz">CST</div></div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">MC</span>每队 Demo 主持（≤3min 严格计时）</div><div class="tl-detail">呼叫队伍：「第X位，[队伍名]，请上台！」→ 计时开始 → 2:30 举「1 MIN」提示牌 → 3:00 打断：「感谢！时间到了，非常精彩！」→ 简短过渡 → 呼叫下一队<br>线上队伍：「下一位是来自[城市]的线上参赛者，我们连线一下——」→ 等待屏幕</div></div></div>
+
+        <div class="tl-row"><div class="tl-time">每60分钟<div class="tz">CST</div></div><div class="tl-body"><div class="tl-action"><span class="achip chip-say">ANNOUNCE</span>休息节点广播</div><div class="tl-detail">「休息10分钟！现在是最佳拉票时机——把你最喜欢的产品发出去！」→ 交给运营推社媒</div></div></div>
+
+        <div class="tl-row"><div class="tl-time">Demo 结束后<div class="tz">CST</div></div><div class="tl-body"><div class="tl-action"><span class="achip chip-say">ANNOUNCE</span>Lunch Party + 投票冲刺</div><div class="tl-detail">「所有 Demo 展示完毕！Lunch Party 开始！投票通道持续开放——还有 [X] 小时，快给你最喜欢的产品投票！」</div></div></div>
+
+        <div class="tl-row"><div class="tl-time">截止前60min<div class="tz">CST</div></div><div class="tl-body"><div class="tl-action"><span class="achip chip-hard">WARNING</span>投票最后1小时预警</div><div class="tl-detail">全场广播；配合 Leaderboard 截图；「快截止了！帮你最喜欢的产品最后冲一票！」</div></div></div>
+
+        <div class="tl-row"><div class="tl-time">截止前10min<div class="tz">CST</div></div><div class="tl-body"><div class="tl-action"><span class="achip chip-hard">HARD</span>最终10分钟倒计时广播</div><div class="tl-detail">停止其他活动，聚焦这10分钟；大声广播；配合大屏倒计时</div></div></div>
+
+        <div class="tl-row important"><div class="tl-time">颁奖环节<div class="tz">CST</div></div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">AWARDS</span>颁奖全程串场</div><div class="tl-detail">① 成就徽章（6枚逐一揭晓，配动效）→ ② 上海区域奖 Top 3（3→2→1，每人1分钟致辞）→ ③ 预热全球颁奖直播：「现在，全球目光聚焦旧金山！」→ ④ 接入 SF 直播大屏</div></div></div>
+
+        <div class="tl-row"><div class="tl-time">SF直播时<div class="tz">CST</div></div><div class="tl-body"><div class="tl-action"><span class="achip chip-watch">SIMULCAST</span>主持上海现场反应</div><div class="tl-detail">大屏播放 SF 直播；你主持现场气氛：「紧张吗？！」；如上海队获奖 → 立刻现场庆祝</div></div></div>
+
+        <div class="tl-row"><div class="tl-time">颁奖后<div class="tz">CST</div></div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">CLOSE</span>大合影 + 收场</div><div class="tl-detail">「感谢所有人！全体参赛者+评审嘉宾+工作人员，我们来一张大合影！」→ 宣布作品合集链接 → 正式收场</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SF HOST -->
+  <div class="city-content" id="host-sf">
+    <div class="bring-box">
+      <div class="bring-title">📦 带到现场的东西</div>
+      <div class="bring-grid">
+        <span class="bring-item">完整 Rundown 打印版</span>
+        <span class="bring-item">Demo stage order（09:00后取）</span>
+        <span class="bring-item">Final award results（voting close后取）</span>
+        <span class="bring-item">Presentation remote</span>
+        <span class="bring-item">Backup timer app</span>
+        <span class="bring-item">Grand Prize envelope / prop</span>
+      </div>
+    </div>
+    <div class="timeline">
+      <div class="phase-block">
+        <div class="phase-title">Day 1 · May 23 Build Day (PT)</div>
+        <div class="tl-row"><div class="tl-time">09:00 PT</div><div class="tl-body"><div class="tl-action"><span class="achip chip-prep">PREP</span>Ops sync + AV check</div><div class="tl-detail">Confirm opening PPT loaded; test mic; sync with Founder on keynote length (≤30min); confirm global stream is live</div></div></div>
+        <div class="tl-row important"><div class="tl-time">10:00 PT</div><div class="tl-body"><div class="tl-action"><span class="achip chip-say">OPEN</span>Global opening — you're on the world stage</div><div class="tl-detail">SF is the global hub — your opening is streamed to SH, NY, and Online. Keep energy high. Brief welcome → introduce Founder → step aside</div></div></div>
+        <div class="tl-row important"><div class="tl-time">10:05–10:30 PT</div><div class="tl-body"><div class="tl-action"><span class="achip chip-watch">STANDBY</span>Founder product launch keynote</div><div class="tl-detail">Stand stage-side; after keynote ends → take mic → 5-track intro → rules walkthrough → lead into group photo</div></div></div>
+
+        <div class="tl-row important"><div class="tl-time">10:30–10:40 PT</div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">📸 PHOTO</span>Global group photo — you lead it</div><div class="tl-detail">"Before we build — let's get our global group shot! Everyone on your feet!"<br>→ Photographer already in position (briefed before 10:00) → MC counts down: "Three — two — one!" → shoot → immediately after: "<b>Build starts NOW — 10:40!</b>"<br>SF photo is the global hero shot, streamed to SH, NY, Online. <b>Keep it under 10 minutes.</b></div></div></div>
+        <div class="tl-row"><div class="tl-time">12:30 PT</div><div class="tl-body"><div class="tl-action"><span class="achip chip-say">ANNOUNCE</span>Lunch + Share Push ①</div><div class="tl-detail">"Lunch time! 🍕 This is prime sharing time — post your app link right now. Our ops team will show you exactly how."</div></div></div>
+        <div class="tl-row"><div class="tl-time">08:30 next day PT</div><div class="tl-body"><div class="tl-action"><span class="achip chip-hard">HARD</span>30-min submission warning</div><div class="tl-detail">"30 MINUTES to submission close! If your app runs — submit NOW!" → 08:50: "10 minutes!" → 09:00: announce closure + stage order</div></div></div>
+      </div>
+      <div class="phase-block">
+        <div class="phase-title">Day 2 · May 24 Demo Day + Global Awards (PT)</div>
+        <div class="tl-row"><div class="tl-time">09:00–09:30 PT</div><div class="tl-body"><div class="tl-action"><span class="achip chip-prep">PREP</span>Brief judges backstage</div><div class="tl-detail">Walk judges through Day 2 flow; panel topic alignment; confirm scoring method; check stage order list</div></div></div>
+        <div class="tl-row important"><div class="tl-time">10:00–10:30 PT</div><div class="tl-body"><div class="tl-action"><span class="achip chip-say">HOST</span>Opening + Expert Panel — strict 30 min</div><div class="tl-detail">Judges on stage → you guide discussion: AI entrepreneurship trends / what judges look for / advice to builders → cut at 30:00 regardless → "Thank you — let's Demo!" → Judges to seats</div></div></div>
+        <div class="tl-row important"><div class="tl-time">10:40 onward PT</div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">MC</span>Demo MC — strict 3 min each</div><div class="tl-detail">Call team → start timer → "1 MIN" card at 2:30 → cut at 3:00: "Thank you, time's up!" → next team. For online: "Next up, joining us remotely from [city]…"</div></div></div>
+        <div class="tl-row important"><div class="tl-time">Awards · SF 21:00 PT</div><div class="tl-body"><div class="tl-action"><span class="achip chip-key">GLOBAL</span>SF Grand Finale — the world is watching</div><div class="tl-detail">① Achievement badges → ② SF Regional Top 3 → ③ People's Choice $25K → ④ Grand Prize $50K reveal. Build energy slowly. The $50K moment is your climax — pause for effect, let the room react, invite winner on stage.</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NY HOST -->
+  <div class="city-content" id="host-ny">
+    <div class="bring-box">
+      <div class="bring-title">📦 Bring to venue</div>
+      <div class="bring-grid">
+        <span class="bring-item">Full Rundown printout</span>
+        <span class="bring-item">Demo stage order (16:00 after)</span>
+        <span class="bring-item">Award results (19:00 after)</span>
+        <span class="bring-item">Presentation remote</span>
+        <span class="bring-item">Timer app (backup)</span>
+      </div>
+    </div>
+    <div class="timeline">
+      <div class="phase-block">
+        <div class="phase-title">May 24 — One-Day Format (ET) · Build is the main event</div>
+        <div class="tl-row"><div class="tl-time">09:00 ET</div><div class="tl-body"><div class="tl-action"><span class="achip chip-prep">PREP</span>Ops sync + AV check</div><div class="tl-detail">Extra emphasis: brief the whole team on 1-day compressed format; confirm 16:00 submission hard stop plan</div></div></div>
+        <div class="tl-row important"><div class="tl-time">10:00 ET</div><div class="tl-body"><div class="tl-action"><span class="achip chip-say">OPEN</span>Global opening (watch SF stream) + NYC welcome</div><div class="tl-detail">Watch SF opening stream together → after stream: "Welcome to NYC! Today's format: group photo at 10:30, build 10:40–16:00, demo from 16:30. Let's go!"</div></div></div>
+        <div class="tl-row important"><div class="tl-time">10:30–10:40 ET</div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">📸 PHOTO</span>Group photo — keep it fast</div><div class="tl-detail">"Before we build — group photo, everyone up!" → 3-2-1 → done → "<b>Build starts NOW — 10:40!</b>"<br>NYC build time is precious — don't let this run over 10 min.</div></div></div>
+        <div class="tl-row important"><div class="tl-time">15:30 ET</div><div class="tl-body"><div class="tl-action"><span class="achip chip-hard">WARN</span>Submission 30-min warning</div><div class="tl-detail">"NYC builders — 30 MINUTES to 16:00 submission close! Submit now if your app runs!"</div></div></div>
+        <div class="tl-row important"><div class="tl-time">15:50 ET</div><div class="tl-body"><div class="tl-action"><span class="achip chip-hard">HARD</span>10-min final warning</div><div class="tl-detail">"10 MINUTES! Last call! Do not miss the deadline!"</div></div></div>
+        <div class="tl-row important"><div class="tl-time">16:30–18:30 ET</div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">MC</span>Compressed Demo Day — ≤3 min strict</div><div class="tl-detail">Same flow as SH/SF but 3-min limit, all teams in ~2 hours. Be firm — no extensions. MC energy keeps the room engaged through the end.</div></div></div>
+        <div class="tl-row"><div class="tl-time">19:00 ET</div><div class="tl-body"><div class="tl-action"><span class="achip chip-hard">HARD</span>Voting closes</div><div class="tl-detail">Announce closure → "Results incoming at midnight — party time until then!"</div></div></div>
+        <div class="tl-row important"><div class="tl-time">20:00–20:50 ET</div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">AWARDS</span>NYC Awards — badges + regional top 3</div><div class="tl-detail">Badges → Top 3 regional awards → build hype for midnight simulcast</div></div></div>
+        <div class="tl-row important"><div class="tl-time">00:00 ET</div><div class="tl-body"><div class="tl-action"><span class="achip chip-watch">SIMULCAST</span>SF Global Awards on screen</div><div class="tl-detail">SF stream on main screen; you host NYC crowd energy; if NYC team wins → celebrate immediately in-room</div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+     🙋 VOLUNTEER
+════════════════════════════════════ -->
+<div class="role-content r-vol" id="role-vol">
+  <div class="role-intro r-vol">
+    <div class="role-emoji">🙋</div>
+    <div class="role-intro-body">
+      <div class="role-intro-title">Volunteer 志愿者</div>
+      <div class="role-intro-desc">选择你负责的岗位查看具体任务。所有 Volunteer 通用原则：主动！不要等参赛者来找你。每个分享节点要走到参赛者旁边手把手帮他们发帖，而不是只在台上喊口号。</div>
+      <div class="role-pills">
+        <span class="rpill">签到组</span><span class="rpill">场务组</span><span class="rpill">社媒引导组</span><span class="rpill">舞台/Demo 组</span><span class="rpill">线上对接</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="city-bar">
+    <button class="cbtn active" onclick="setCity('vol','sh')">🇨🇳 上海 SH</button>
+    <button class="cbtn" onclick="setCity('vol','sf')">🇺🇸 旧金山 SF</button>
+    <button class="cbtn" onclick="setCity('vol','ny')">🗽 纽约 NY</button>
+  </div>
+
+  <div class="subrole-bar" id="vol-subrole-bar">
+    <button class="srbtn active" onclick="setSubrole('vol','checkin')">📋 签到组</button>
+    <button class="srbtn" onclick="setSubrole('vol','venue')">🛠 场务组</button>
+    <button class="srbtn" onclick="setSubrole('vol','social')">📱 社媒引导组</button>
+    <button class="srbtn" onclick="setSubrole('vol','stage')">🎤 舞台/Demo组</button>
+    <button class="srbtn" onclick="setSubrole('vol','online')">🌐 线上对接</button>
+  </div>
+
+  <!-- SH VOL -->
+  <div class="city-content active" id="vol-sh">
+    <div class="subrole-content active" id="vol-sh-checkin">
+      <div class="bring-box"><div class="bring-title">📦 签到组 — 带到现场</div><div class="bring-grid"><span class="bring-item">参赛者名单打印版（双份）</span><span class="bring-item">胸牌（分类整理好）</span><span class="bring-item">胸牌绳</span><span class="bring-item">赛道色贴纸（5色）</span><span class="bring-item">签到签字笔（多支）</span><span class="bring-item">空白胸牌备用20%</span></div></div>
+      <div class="timeline"><div class="phase-block"><div class="phase-title">签到组 · 全天任务</div>
+        <div class="tl-row"><div class="tl-time">07:00</div><div class="tl-body"><div class="tl-action"><span class="achip chip-prep">SETUP</span>签到台布置</div><div class="tl-detail">按姓氏首字母或赛道分区摆放胸牌；贴纸分格摆放；签到名单打印并确认；测试签到系统（如有）</div></div></div>
+        <div class="tl-row important"><div class="tl-time">09:30–10:00</div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">CHECK-IN</span>参赛者签到（高峰期）</div><div class="tl-detail"><b>流程：</b>① 确认姓名/队伍 → ② 发胸牌 + 胸牌绳 → ③ 发赛道贴纸（问「你选哪个赛道？」）→ ④ 指引到对应赛道分区就座<br><b>临时到场处理：</b>查邮件确认报名 → 填写临时胸牌 → 分配赛道</div></div></div>
+        <div class="tl-row"><div class="tl-time">10:00起</div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">HANDLE</span>迟到参赛者 & 访客引导</div><div class="tl-detail">签到台保持值守至11:00；迟到者快速签到 → 引导入场；评审嘉宾单独签到通道（Day 2）</div></div></div>
+        <div class="tl-row"><div class="tl-time">Day 2 09:30</div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">DAY 2</span>Day 2 入场 + 评审签到</div><div class="tl-detail">评审嘉宾专属签到；引导至评审席；发评审礼包；参赛者/观众入场引导至观众席</div></div></div>
+      </div></div>
+    </div>
+
+    <div class="subrole-content" id="vol-sh-venue">
+      <div class="bring-box"><div class="bring-title">📦 场务组 — 带到现场</div><div class="bring-grid"><span class="bring-item">工作对讲机（如有）</span><span class="bring-item">场务工具箱（胶带/剪刀/魔术贴）</span><span class="bring-item">场地平面图</span><span class="bring-item">各区域标识清单</span></div></div>
+      <div class="timeline"><div class="phase-block"><div class="phase-title">场务组 · 全天任务</div>
+        <div class="tl-row"><div class="tl-time">07:00–09:30</div><div class="tl-body"><div class="tl-action"><span class="achip chip-prep">SETUP</span>场地全面搭建</div><div class="tl-detail">主舞台搭建 → 桌椅按赛道分区摆放（5区）→ 赛道桌牌摆放 → 导向指示牌上墙/地贴 → 签到台布置 → 零食/饮料摆台 → 投影/音响配合音视频团队调试</div></div></div>
+        <div class="tl-row"><div class="tl-time">12:00</div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">FOOD</span>午餐摆台</div><div class="tl-detail">确认餐食按时到达 → 分区摆放 → 标注食品标签（过敏原）→ 餐后收台清洁</div></div></div>
+        <div class="tl-row"><div class="tl-time">15:15</div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">FOOD</span>下午茶摆台</div><div class="tl-detail">咖啡/茶/零食摆台；通宵零食区持续补货</div></div></div>
+        <div class="tl-row"><div class="tl-time">19:00</div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">FOOD</span>晚餐摆台</div><div class="tl-detail">晚餐摆台；补充通宵零食库存</div></div></div>
+        <div class="tl-row"><div class="tl-time">Day 2 08:00</div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">SETUP</span>Demo Day 场地调整</div><div class="tl-detail">移走一半黑客松桌椅 → 保留观众席 → 评审席布置（前排中央）→ 直播设备配合技术团队 → Lunch Party 区域提前准备</div></div></div>
+      </div></div>
+    </div>
+
+    <div class="subrole-content" id="vol-sh-social">
+      <div class="bring-box"><div class="bring-title">📦 社媒引导组 — 带到现场</div><div class="bring-grid"><span class="bring-item">话术模板截图（手机存好）</span><span class="bring-item">各平台账号已登录</span><span class="bring-item">小红书/微信分享示范账号</span><span class="bring-item">「现在发帖！」提示牌（可选）</span></div></div>
+      <div class="timeline"><div class="phase-block"><div class="phase-title">社媒引导组 · 关键节点</div>
+        <div class="note-box"><b>核心任务：</b>在每个分享节点，主动走到参赛者旁边，帮他们拿出手机，手把手完成发帖。不是喊口号，是实际操作。</div>
+        <div class="tl-row important"><div class="tl-time">10:30–10:40<div class="tz">CST · 大合影</div></div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">📸 SHARE</span>合影即时传播——第一波最重要</div><div class="tl-detail">合影拍完后立刻行动，这是全天第一个也是最自然的传播节点：<br>→ 拿到摄影师的合影照片（提前约好30秒内发来）<br>→ 发官方账号：「Eazo Global Hackathon 2026 正式开始！全球四城同步 🌍」<br>→ 鼓励现场参赛者自拍发帖：「刚才拍了合影的发出去！带上你的产品链接」<br><b>这是全天自然传播势能最高的时刻，不要错过。</b></div></div></div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">SHARE</span>午餐分享示范</div><div class="tl-detail"><b>你做什么：</b>主持人广播后，你们2–3人分散到用餐区 → 走到参赛者旁边：「来我帮你发一条！」→ 帮他截图产品 → 套用模板 → 发小红书/朋友圈<br><b>话术：</b>「我在 Eazo Hackathon 做了个 App → [链接]，帮我投个票！#EazoHackathon2026」<br><b>截图最佳发帖，发至运营群</b></div></div></div>
+        <div class="tl-row important"><div class="tl-time">15:30 下午茶<br>分享节点②</div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">SHARE</span>进度截图接龙</div><div class="tl-detail">「来晒进度！把 Eazo 界面截图发出去」→ 话术：「做到一半了，来给我加油 → [截图]」</div></div></div>
+        <div class="tl-row important"><div class="tl-time">17:30 巡场<br>分享节点③</div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">SHARE</span>嘉宾巡场时的拉票节点</div><div class="tl-detail">「嘉宾正在看你的产品！现在是最佳时机，把链接发出去！」→ 拍摄嘉宾巡场画面（征得同意）发官号</div></div></div>
+        <div class="tl-row important"><div class="tl-time">19:00 晚餐<br>分享节点④</div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">SHARE</span>Leaderboard 拉票</div><div class="tl-detail">公布当前排行榜 → 「帮你最喜欢的产品发出去冲票！」→ 激励落后团队的支持者</div></div></div>
+        <div class="tl-row"><div class="tl-time">Day 2 各节点</div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">SHARE</span>Demo + 投票期间持续引导</div><div class="tl-detail">Demo 间隙：「刚才哪个产品让你眼前一亮？发出去！」→ 截图最佳帖子发运营群 → 官号转发优质内容</div></div></div>
+      </div></div>
+    </div>
+
+    <div class="subrole-content" id="vol-sh-stage">
+      <div class="bring-box"><div class="bring-title">📦 舞台/Demo组 — 带到现场</div><div class="bring-grid"><span class="bring-item">「1 MIN」提示牌</span><span class="bring-item">「TIME'S UP / 时间到」提示牌</span><span class="bring-item">Demo 出场顺序打印版（09:00后取）</span><span class="bring-item">线上连线候场名单</span></div></div>
+      <div class="timeline"><div class="phase-block"><div class="phase-title">舞台/Demo组 · Day 2 核心</div>
+        <div class="tl-row"><div class="tl-time">Day 1 · 10:25<div class="tz">CST</div></div><div class="tl-body"><div class="tl-action"><span class="achip chip-prep">📸 PREP</span>大合影提前就位</div><div class="tl-detail">摄影师在 10:25 前到达舞台正前方最佳机位；确认大屏切换到合影背景 KV；通知主持人「摄影已就位」；合影完成后立刻将照片发给运营群用于即时传播</div></div></div>
+        <div class="tl-row"><div class="tl-time">Day 2 08:00</div><div class="tl-body"><div class="tl-action"><span class="achip chip-prep">PREP</span>舞台区域布置 + 话筒测试</div><div class="tl-detail">确认话筒就位（手持+备用）；台阶安全；HDMI 投屏线就位；线上连线设备测试</div></div></div>
+        <div class="tl-row important"><div class="tl-time">10:40 Demo开始</div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">STAGE</span>每队 Demo 舞台管理</div><div class="tl-detail"><b>你的流程（每队）：</b>① 提前1队提醒下一队准备上台 → ② 话筒递给上台队伍 → ③ 帮助投屏（HDMI/无线） → ④ 计时开始，2:30 举「1 MIN」牌 → ⑤ 3:00 举「TIME'S UP」牌 → ⑥ 收话筒 → ⑦ 更新队列清单</div></div></div>
+        <div class="tl-row important"><div class="tl-time">线上选手上场时</div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">ONLINE</span>线上连线管理</div><div class="tl-detail">提前5分钟通知线上选手进入等候室 → 确认连线稳定 → 告知主持人「线上就绪」→ 连线断开时：给30秒宽限，尝试重连，失败则跳过</div></div></div>
+        <div class="tl-row"><div class="tl-time">颁奖环节</div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">AWARDS</span>颁奖道具准备 + 舞台引导</div><div class="tl-detail">奖状/奖杯提前摆放在舞台侧；引导获奖者上台；颁奖后协助合影摆位；Grand Prize 环节配合彩带道具（SH 区域奖时无需）</div></div></div>
+      </div></div>
+    </div>
+
+    <div class="subrole-content" id="vol-sh-online">
+      <div class="timeline"><div class="phase-block"><div class="phase-title">线上对接 · 负责线上中文区参赛者体验</div>
+        <div class="tl-row"><div class="tl-time">09:30</div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">WELCOME</span>线上中文区群内迎新</div><div class="tl-detail">微信群发欢迎消息 → 引导选手选赛道 → 确认 Eazo 账号激活 → 解答问题</div></div></div>
+        <div class="tl-row"><div class="tl-time">Build 全程</div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">SUPPORT</span>群内异步支持</div><div class="tl-detail">监控群内问题 → 回答平台操作问题（复杂技术问题转技术组）→ 每45分钟发鼓励消息 → 发现进度问题及时告知导师</div></div></div>
+        <div class="tl-row important"><div class="tl-time">Day 2 Demo</div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">DEMO</span>线上 Demo 等候室管理</div><div class="tl-detail">提前发出场顺序 → 提醒每队提前5分钟进等候室 → 调度连线顺序 → 连线断开紧急处理 → 实时告知舞台组状态</div></div></div>
+      </div></div>
+    </div>
+  </div><!-- end vol-sh -->
+
+  <!-- SF VOL (simplified English version) -->
+  <div class="city-content" id="vol-sf">
+    <div class="subrole-content active" id="vol-sf-checkin">
+      <div class="bring-box"><div class="bring-title">📦 Registration Team — Bring</div><div class="bring-grid"><span class="bring-item">Printed participant list (×2)</span><span class="bring-item">Name badges (sorted)</span><span class="bring-item">Lanyards</span><span class="bring-item">Track color stickers (5 colors)</span><span class="bring-item">Backup blank badges (20%)</span><span class="bring-item">Pens</span></div></div>
+      <div class="timeline"><div class="phase-block"><div class="phase-title">Registration Team</div>
+        <div class="tl-row"><div class="tl-time">07:00 PT</div><div class="tl-body"><div class="tl-action"><span class="achip chip-prep">SETUP</span>Set up registration desk</div><div class="tl-detail">Sort badges A–Z or by track; lay out stickers; print checklist; test check-in system</div></div></div>
+        <div class="tl-row important"><div class="tl-time">09:30 PT</div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">CHECK-IN</span>Participant check-in (peak)</div><div class="tl-detail">① Confirm name → ② Hand badge + lanyard → ③ Ask track → give color sticker → ④ Direct to track zone</div></div></div>
+        <div class="tl-row"><div class="tl-time">Day 2 09:30 PT</div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">DAY 2</span>Day 2 doors + judge check-in</div><div class="tl-detail">Separate judge check-in lane; escort to judge row; hand judge kits</div></div></div>
+      </div></div>
+    </div>
+    <div class="subrole-content" id="vol-sf-venue">
+      <div class="timeline"><div class="phase-block"><div class="phase-title">Venue Ops Team</div>
+        <div class="tl-row"><div class="tl-time">07:00 PT</div><div class="tl-body"><div class="tl-action"><span class="achip chip-prep">SETUP</span>Full venue setup</div><div class="tl-detail">Stage → track zone tables (5 tracks) → signage → registration desk → food/snack stations → AV support → overnight snack replenishment</div></div></div>
+        <div class="tl-row"><div class="tl-time">Day 2 08:00 PT</div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">SETUP</span>Demo Day reconfiguration</div><div class="tl-detail">Remove half hacker tables → set audience seating → judge row (front center) → Lunch Party area prep → Grand Prize celebration props ready (confetti cannon etc.)</div></div></div>
+      </div></div>
+    </div>
+    <div class="subrole-content" id="vol-sf-social">
+      <div class="timeline"><div class="phase-block"><div class="phase-title">Social Media Team</div>
+        <div class="note-box"><b>Core job:</b> Walk up to builders at every break. Pick up their phone. Help them post. Don't just announce — physically assist. Screenshot great posts, send to ops group.</div>
+        <div class="tl-row important"><div class="tl-time">10:30–10:40 PT<div class="tz">Group photo</div></div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">📸 SHARE</span>Immediately post the group photo — this is peak 1</div><div class="tl-detail">The moment the photo is taken, this is the day's highest-energy natural share moment:<br>→ Get photo from photographer (pre-agreed: deliver within 30 sec)<br>→ Post on official accounts: "Eazo Global Hackathon 2026 is LIVE — 4 cities, 1 mission 🌍 #EazoHackathon2026"<br>→ Walk around instantly: "You were just in that photo — post it right now with your product link!"<br><b>SF group shot is the global hero image. Get it out immediately.</b></div></div></div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">SHARE</span>Lunch share push ①</div><div class="tl-detail">Template: "Building [X] at @EazoHackathon — vote for me when it's live → [link] #EazoHackathon2026" → help each builder post to Twitter/LinkedIn</div></div></div>
+        <div class="tl-row important"><div class="tl-time">15:30 PT Break</div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">SHARE</span>Progress screenshot thread</div><div class="tl-detail">"Show us what you've built — screenshot right now!" → quote-tweet the best ones from official account</div></div></div>
+        <div class="tl-row important"><div class="tl-time">Demo breaks</div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">SHARE</span>Voting push during Demo</div><div class="tl-detail">"Which demo just wowed you? Share it + vote!" → drop voting link after each demo in Discord</div></div></div>
+      </div></div>
+    </div>
+    <div class="subrole-content" id="vol-sf-stage">
+      <div class="timeline"><div class="phase-block"><div class="phase-title">Stage / Demo Team</div>
+        <div class="tl-row important"><div class="tl-time">Each demo</div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">STAGE</span>Per-team demo flow</div><div class="tl-detail">① Alert next team 1 team early → ② Hand mic → ③ Help screenshare → ④ "1 MIN" card at 2:30 → ⑤ "TIME'S UP" at 3:00 → ⑥ Collect mic → ⑦ Update queue list</div></div></div>
+        <div class="tl-row important"><div class="tl-time">Grand Prize moment (SF 21:00 PT)</div><div class="tl-body"><div class="tl-action"><span class="achip chip-key">CLIMAX</span>Grand Prize celebration props</div><div class="tl-detail">Have confetti/celebration props ready at stage wings → trigger on cue from ops lead → photograph the moment</div></div></div>
+      </div></div>
+    </div>
+    <div class="subrole-content" id="vol-sf-online">
+      <div class="timeline"><div class="phase-block"><div class="phase-title">Online Liaison (EN Zone)</div>
+        <div class="tl-row"><div class="tl-time">All day</div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">SUPPORT</span>Discord #online-en moderation</div><div class="tl-detail">Welcome builders → answer platform questions → escalate tech issues → send encouragement every 45 min → manage demo waiting room Day 2</div></div></div>
+      </div></div>
+    </div>
+  </div><!-- end vol-sf -->
+
+  <!-- NY VOL (brief) -->
+  <div class="city-content" id="vol-ny">
+    <div class="subrole-content active" id="vol-ny-checkin">
+      <div class="timeline"><div class="phase-block"><div class="phase-title">Registration → Same as SF. Extra note: no overnight shift.</div>
+        <div class="tl-row"><div class="tl-time">09:00 ET</div><div class="tl-body"><div class="tl-action"><span class="achip chip-prep">SETUP</span>Arrive + venue setup</div><div class="tl-detail">No Day 1 overnight — everything happens today. Full setup by 09:30.</div></div></div>
+        <div class="tl-row important"><div class="tl-time">15:30–16:00 ET</div><div class="tl-body"><div class="tl-action"><span class="achip chip-hard">KEY</span>Submission close management</div><div class="tl-detail">This is the most critical window for NYC. Roam the room — remind every builder personally: "You have 30 minutes — submit now!" At 15:50: "10 minutes!" At 16:00: announce hard stop.</div></div></div>
+        <div class="tl-row"><div class="tl-time">16:00–16:30 ET</div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">FLIP</span>Venue flip to Demo mode</div><div class="tl-detail">Rearrange to audience seating → judge row → stage setup. 30 min window — must be fast.</div></div></div>
+      </div></div>
+    </div>
+    <div class="subrole-content" id="vol-ny-venue"><div class="timeline"><div class="phase-block"><div class="phase-title">Venue Ops — same as SF but 1-day format. No overnight.</div><div class="tl-row"><div class="tl-time">09:00 ET</div><div class="tl-body"><div class="tl-action"><span class="achip chip-prep">SETUP</span>Full setup by 09:30</div><div class="tl-detail">Ensure midnight simulcast screen (second screen or main screen) is tested for SF stream; party setup pre-staged for quick flip at 19:30</div></div></div></div></div></div>
+    <div class="subrole-content" id="vol-ny-social"><div class="timeline"><div class="phase-block"><div class="phase-title">Social Media Team — same flow as SF</div><div class="note-box">NYC is 1 day — share moments compressed. Extra push during lunch (13:00) and before 16:00 submission close.</div></div></div></div>
+    <div class="subrole-content" id="vol-ny-stage"><div class="timeline"><div class="phase-block"><div class="phase-title">Stage / Demo Team — same as SF, but ≤3 min per team, stricter</div><div class="tl-row important"><div class="tl-time">00:00 ET</div><div class="tl-body"><div class="tl-action"><span class="achip chip-watch">SIMULCAST</span>Midnight SF simulcast setup</div><div class="tl-detail">Confirm SF stream is displaying on main screen at 23:50; AV checks; MC hosts crowd energy during simulcast</div></div></div></div></div></div>
+    <div class="subrole-content" id="vol-ny-online"><div class="timeline"><div class="phase-block"><div class="phase-title">Online Liaison — same as SF</div></div></div></div>
+  </div>
+</div><!-- end vol -->
+
+<!-- ════════════════════════════════════
+     🧑‍🏫 MENTOR
+════════════════════════════════════ -->
+<div class="role-content r-mentor" id="role-mentor">
+  <div class="role-intro r-mentor">
+    <div class="role-emoji">🧑‍🏫</div>
+    <div class="role-intro-body">
+      <div class="role-intro-title">Mentor 导师（按赛道负责）</div>
+      <div class="role-intro-desc">你负责一个赛道的所有参赛队伍。你的工作是主动巡场、了解进展、给产品方向建议。你不评分，不做产品决策，不提供代码帮助。你的核心价值是帮助参赛者想清楚「我在为谁解决什么问题」，并鼓励他们尽早提交。</div>
+      <div class="role-pills">
+        <span class="rpill">赛道①Superparent</span><span class="rpill">赛道②AI Companion</span><span class="rpill">赛道③Life OS</span><span class="rpill">赛道④Body Intelligence</span><span class="rpill">赛道⑤Wildcard</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="city-bar">
+    <button class="cbtn active" onclick="setCity('mentor','sh')">🇨🇳 上海 SH</button>
+    <button class="cbtn" onclick="setCity('mentor','sf')">🇺🇸 旧金山 SF</button>
+    <button class="cbtn" onclick="setCity('mentor','ny')">🗽 纽约 NY</button>
+  </div>
+
+  <div class="city-content active" id="mentor-sh">
+    <div class="bring-box"><div class="bring-title">📦 导师带到现场的东西</div><div class="bring-grid"><span class="bring-item">赛道导师胸牌（显眼标识）</span><span class="bring-item">赛道简介打印版（你负责哪个赛道）</span><span class="bring-item">Eazo 平台快速操作说明</span><span class="bring-item">笔记本 / iPad（记录各队进度）</span></div></div>
+    <div class="timeline">
+      <div class="phase-block"><div class="phase-title">Day 1 · 5月23日（导师主要工作日）</div>
+        <div class="tl-row"><div class="tl-time">09:30–10:40</div><div class="tl-body"><div class="tl-action"><span class="achip chip-prep">PREP</span>签到 + 观看开幕 + 合影 + 了解你的队伍</div><div class="tl-detail">签到领取导师胸牌 → 观看开幕演讲 → 参与大合影（10:30–10:40）→ 记录你负责赛道的参赛队伍名单 → 记住每队1–2个人的名字</div></div></div>
+
+        <div class="tl-row important"><div class="tl-time">10:40起<br>每30–45min</div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">ROAM</span>主动巡场（你负责的赛道区）</div><div class="tl-detail"><b>每轮巡场问每支队伍：</b><br>① 「你们在做什么？一句话说给我听。」<br>② 「你的目标用户是谁？他们为什么需要这个？」<br>③ 「你觉得什么时候能提交？」→ 鼓励早提交<br><br><b>你不做的事：</b>不替他们决定做什么产品；不给代码建议；不说「这个方向不对」（除非严重跑题）</div></div></div>
+
+        <div class="tl-row"><div class="tl-time">17:30–18:00</div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">ROAM</span>嘉宾巡场时陪同（可选）</div><div class="tl-detail">如有评审嘉宾巡场，你可以陪同并简短介绍各队：「这队在做[X]，解决[Y]问题」</div></div></div>
+
+        <div class="tl-row important"><div class="tl-time">全天信号监测</div><div class="tl-body"><div class="tl-action"><span class="achip chip-hard">ALERT</span>发现卡住团队 → 上报</div><div class="tl-detail">如果某队超过1小时没有任何进展，或情绪低落、有放弃迹象：① 先自己尝试帮助 → ② 无效则立即告知运营负责人 → ③ 可协调其他导师或 Eazo 团队介入</div></div></div>
+
+        <div class="tl-row"><div class="tl-time">提交截止前</div><div class="tl-body"><div class="tl-action"><span class="achip chip-say">PUSH</span>最后提交动员</div><div class="tl-detail">在你的赛道区逐队说：「你的 App 已经可以跑了对吗？现在就提交！提交越早投票越长，评审也会看。」</div></div></div>
+      </div>
+
+      <div class="phase-block"><div class="phase-title">Day 2 · 5月24日（导师可选出席）</div>
+        <div class="tl-row"><div class="tl-time">可选参与</div><div class="tl-body"><div class="tl-action"><span class="achip chip-watch">OPTIONAL</span>观看你负责赛道的 Demo</div><div class="tl-detail">如出席：坐在观众席观看 Demo；<b>你不参与评分</b>；可以在 Demo 后找到队伍给鼓励和反馈；无需出席颁奖</div></div></div>
+      </div>
+    </div>
+
+    <div class="note-box"><b>最重要的一件事：</b>在 Build Day 的每次巡场，你的核心问题只有一个——「你的 App 能跑了吗？能跑就立刻提交。」不断重复这句话。</div>
+  </div>
+
+  <div class="city-content" id="mentor-sf">
+    <div class="bring-box"><div class="bring-title">📦 Mentor — Bring</div><div class="bring-grid"><span class="bring-item">Mentor badge (visible)</span><span class="bring-item">Track brief printout</span><span class="bring-item">Eazo platform quick guide</span><span class="bring-item">Notepad (track team progress)</span></div></div>
+    <div class="timeline"><div class="phase-block"><div class="phase-title">Day 1 · May 23 — Primary mentor day (PT)</div>
+      <div class="tl-row important"><div class="tl-time">10:40 onward<br>every 30–45 min</div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">ROAM</span>Proactive track check-ins</div><div class="tl-detail"><b>Ask each team:</b><br>① "What are you building? Tell me in one sentence."<br>② "Who's your user and why do they need this?"<br>③ "When do you think you can submit?" → encourage early<br><br><b>You do NOT:</b> suggest what to build; give code help; say "that idea is wrong"</div></div></div>
+      <div class="tl-row important"><div class="tl-time">Any time</div><div class="tl-body"><div class="tl-action"><span class="achip chip-hard">ALERT</span>Struggling team → escalate</div><div class="tl-detail">If a team is stuck for 1+ hour with no progress, or visibly discouraged → try to help first → if not resolved, immediately tell Ops Lead</div></div></div>
+    </div></div>
+  </div>
+
+  <div class="city-content" id="mentor-ny">
+    <div class="timeline"><div class="phase-block"><div class="phase-title">May 24 — One day, same mentor role but compressed (ET)</div>
+      <div class="tl-row important"><div class="tl-time">10:40–15:30 ET</div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">ROAM</span>Proactive track check-ins (every 30 min)</div><div class="tl-detail">Same questions as SH/SF. Extra emphasis: "You have until 16:00 — what can you actually finish by then?" Help teams scope down to something submittable.</div></div></div>
+      <div class="tl-row important"><div class="tl-time">15:00–16:00 ET</div><div class="tl-body"><div class="tl-action"><span class="achip chip-hard">PUSH</span>Final submission push</div><div class="tl-detail">Walk to each team in your track: "Does your app run right now? Submit it. Go to [link]. Do it now." This hour is critical.</div></div></div>
+    </div></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+     ⚖️ JUDGE
+════════════════════════════════════ -->
+<div class="role-content r-judge" id="role-judge">
+  <div class="role-intro r-judge">
+    <div class="role-emoji">⚖️</div>
+    <div class="role-intro-body">
+      <div class="role-intro-title">Judge / Guest 评审嘉宾</div>
+      <div class="role-intro-desc">你只需要出席 Day 2。Day 1 无需到场。到达后会有专人接待并提供评审礼包。你的评审分数占总分 40%，每队 Demo 结束后尽快提交分数。如需提前离场请提前告知运营负责人。</div>
+      <div class="role-pills">
+        <span class="rpill">仅出席 Day 2</span>
+        <span class="rpill">09:30 到场</span>
+        <span class="rpill">Panel 上台 30min</span>
+        <span class="rpill">全程 Demo 台下打分</span>
+        <span class="rpill">颁奖嘉宾</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="city-bar">
+    <button class="cbtn active" onclick="setCity('judge','sh')">🇨🇳 上海 SH</button>
+    <button class="cbtn" onclick="setCity('judge','sf')">🇺🇸 旧金山 SF</button>
+    <button class="cbtn" onclick="setCity('judge','ny')">🗽 纽约 NY</button>
+  </div>
+
+  <div class="city-content active" id="judge-sh">
+    <div class="bring-box"><div class="bring-title">📦 评审嘉宾 — 我们会为你准备</div><div class="bring-grid"><span class="bring-item">评审礼包（文件夹/评分表/笔）</span><span class="bring-item">评审席座位桌牌</span><span class="bring-item">瓶装水</span><span class="bring-item">Day 2 议程单</span><span class="bring-item">评分系统入口（如数字版）</span></div></div>
+    <div class="timeline">
+      <div class="phase-block"><div class="phase-title">Day 2 · 5月24日（你唯一需要出席的一天）</div>
+        <div class="tl-row important"><div class="tl-time">09:30</div><div class="tl-body"><div class="tl-action"><span class="achip chip-prep">ARRIVE</span>到场 · 评审签到</div><div class="tl-detail">专人迎接 → 签到 → 领取评审礼包 → 引导至评审席 → 与主持人简短对齐 Panel 流程（约10分钟）</div></div></div>
+
+        <div class="tl-row important"><div class="tl-time">10:00–10:30</div><div class="tl-body"><div class="tl-action"><span class="achip chip-say">PANEL</span>上台参与圆桌 Panel（30min 内）</div><div class="tl-detail"><b>你需要准备：</b>1–2 句关于「AI 创业 / 你最看重的产品特质 / 对参赛者的期待」的开场观点<br><b>主持人主导节奏</b>，你顺着话题展开；超时主持人会收场<br>Panel 结束后直接从台上走下，入座评审席（无需离场）</div></div></div>
+
+        <div class="tl-row important"><div class="tl-time">10:40 起</div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">SCORE</span>全程观看 Demo · 现场打分</div><div class="tl-detail"><b>评分维度（建议）：</b><br>• 创新性 — 解决的问题有没有新意<br>• 用户价值 — 真实用户会用吗<br>• 完成度 — App 能实际运行吗<br>• 商业潜力 — 有没有增长空间<br>• 现场表现 — 表达清晰吗<br><br>每队 Demo 结束后及时打分；可做简短口头点评（主持人协调时间）<br><b>你的评审分占综合分 40%</b></div></div></div>
+
+        <div class="tl-row"><div class="tl-time">休息时间</div><div class="tl-body"><div class="tl-action"><span class="achip chip-watch">REST</span>休息 10min · 可短暂离席</div><div class="tl-detail">每60分钟有10分钟休息；饮品在评审席旁；如需提前离场请告知运营负责人</div></div></div>
+
+        <div class="tl-row"><div class="tl-time">Demo 结束后</div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">EXPLORE</span>Lunch Party · 体验产品（可选）</div><div class="tl-detail">可自由体验各队提交的 App；如有未打分的队伍可补充；与参赛者交流</div></div></div>
+
+        <div class="tl-row important"><div class="tl-time">颁奖环节</div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">AWARDS</span>上台颁奖 + 见证徽章揭晓</div><div class="tl-detail">① 成就徽章揭晓：台上见证<br>② 上海区域奖 Top 3：你为获奖队伍颁发奖状/奖杯<br>③ 等待 SF 全球颁奖直播（大屏观看）<br>颁奖后：全体合影</div></div></div>
+      </div>
+    </div>
+    <div class="note-box"><b>温馨提示：</b>如果当天有任何变化（交通延误等），请第一时间联系运营负责人 [联系人姓名 + 手机]，我们会灵活调整流程。</div>
+  </div>
+
+  <div class="city-content" id="judge-sf">
+    <div class="bring-box"><div class="bring-title">📦 We will prepare for you</div><div class="bring-grid"><span class="bring-item">Judge kit (folder + score sheet + pen)</span><span class="bring-item">Reserved judge seat (front row center)</span><span class="bring-item">Water</span><span class="bring-item">Day 2 agenda printout</span><span class="bring-item">Digital scoring portal (if applicable)</span></div></div>
+    <div class="timeline"><div class="phase-block"><div class="phase-title">Day 2 · May 24 — Judge Day · SF = Global Awards Hub (PT)</div>
+      <div class="tl-row important"><div class="tl-time">09:30 PT</div><div class="tl-body"><div class="tl-action"><span class="achip chip-prep">ARRIVE</span>Arrive + check in</div><div class="tl-detail">Greeted on arrival → receive judge kit → escorted to judge row → 10-min flow sync with MC backstage</div></div></div>
+      <div class="tl-row important"><div class="tl-time">10:00–10:30 PT</div><div class="tl-body"><div class="tl-action"><span class="achip chip-say">PANEL</span>Expert Panel on stage (≤30 min)</div><div class="tl-detail">Prepare 1–2 sentences on: AI entrepreneurship trends / what you look for in a product / advice to builders. MC leads the pacing — follow the host's cues. After panel → walk directly to judge seats.</div></div></div>
+      <div class="tl-row important"><div class="tl-time">10:40 PT onward</div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">SCORE</span>Score all demos in real-time</div><div class="tl-detail">Scoring dimensions: Innovation / User value / Completion / Business potential / Presentation quality. Score each team promptly after their demo. Your scores = 40% of composite.</div></div></div>
+      <div class="tl-row important"><div class="tl-time">Awards · SF 21:00 PT</div><div class="tl-body"><div class="tl-action"><span class="achip chip-key">GLOBAL</span>Present global awards on stage</div><div class="tl-detail">① SF Regional Top 3 → you present awards on stage<br>② People's Choice $25K → witness on stage<br>③ Grand Prize $50K → witness, celebrate with winner<br>Group photo after. SF is the global hub — this moment streams worldwide.</div></div></div>
+    </div></div>
+  </div>
+
+  <div class="city-content" id="judge-ny">
+    <div class="timeline"><div class="phase-block"><div class="phase-title">May 24 — One-Day Format · Judge Day (ET)</div>
+      <div class="tl-row important"><div class="tl-time">09:30 ET</div><div class="tl-body"><div class="tl-action"><span class="achip chip-prep">ARRIVE</span>Arrive + check in</div><div class="tl-detail">Same as SH/SF. NYC is compressed — briefer panel, faster demos.</div></div></div>
+      <div class="tl-row important"><div class="tl-time">10:00–10:30 ET</div><div class="tl-body"><div class="tl-action"><span class="achip chip-say">PANEL</span>Expert Panel (≤30 min)</div><div class="tl-detail">Same as SH/SF. Prepare 1–2 sentences.</div></div></div>
+      <div class="tl-row important"><div class="tl-time">16:30–18:30 ET</div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">SCORE</span>Compressed Demo Day — ≤3 min each</div><div class="tl-detail">NYC demos are ≤3 min each. Score in real-time. MC cuts off strictly.</div></div></div>
+      <div class="tl-row important"><div class="tl-time">20:00–20:50 ET</div><div class="tl-body"><div class="tl-action"><span class="achip chip-do">AWARDS</span>Present NYC Regional Awards</div><div class="tl-detail">Badges → NYC Top 3. Then wait for midnight SF simulcast.</div></div></div>
+      <div class="tl-row"><div class="tl-time">00:00 ET</div><div class="tl-body"><div class="tl-action"><span class="achip chip-watch">SIMULCAST</span>SF Global Awards on screen</div><div class="tl-detail">Watch Grand Prize reveal from SF on NYC screen. No action required — just enjoy!</div></div></div>
+    </div></div>
+  </div>
+</div>
+
+<div class="print-hint">— 可直接点击编辑任何文字内容 · 刷新后重置 · 建议打印PDF存档 —</div>
+
+<script>
+function setRole(r) {
+  document.querySelectorAll('.rnav-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.role-content').forEach(c => c.classList.remove('active'));
+  document.querySelector('.rnav-btn.r-' + r).classList.add('active');
+  document.getElementById('role-' + r).classList.add('active');
+  // reset city to first
+  const firstCbtn = document.querySelector('#role-' + r + ' .cbtn');
+  if (firstCbtn) firstCbtn.click();
+}
+
+function setCity(role, city) {
+  const roleEl = document.getElementById('role-' + role);
+  roleEl.querySelectorAll('.cbtn').forEach(b => b.classList.remove('active'));
+  roleEl.querySelectorAll('.city-content').forEach(c => c.classList.remove('active'));
+  // find cbtn
+  const btns = roleEl.querySelectorAll('.cbtn');
+  const cityMap = {sh:0, sf:1, ny:2};
+  if (btns[cityMap[city]]) btns[cityMap[city]].classList.add('active');
+  const cityEl = document.getElementById(role + '-' + city);
+  if (cityEl) cityEl.classList.add('active');
+  // reset subrole
+  const firstSr = cityEl?.querySelector('.subrole-content');
+  if (firstSr) {
+    cityEl.querySelectorAll('.subrole-content').forEach(c => c.classList.remove('active'));
+    firstSr.classList.add('active');
+    cityEl.querySelectorAll('.srbtn').forEach(b => b.classList.remove('active'));
+    cityEl.querySelectorAll('.srbtn')[0]?.classList.add('active');
+  }
+}
+
+function setSubrole(role, sr) {
+  const roleEl = document.getElementById('role-' + role);
+  const activeCity = roleEl.querySelector('.city-content.active');
+  if (!activeCity) return;
+  activeCity.querySelectorAll('.srbtn').forEach(b => b.classList.remove('active'));
+  activeCity.querySelectorAll('.subrole-content').forEach(c => c.classList.remove('active'));
+  event.target.classList.add('active');
+  const cityId = activeCity.id; // e.g. vol-sh
+  const target = document.getElementById(cityId + '-' + sr);
+  if (target) target.classList.add('active');
+}
+
+// Make all text content editable
+document.addEventListener('DOMContentLoaded', () => {
+  const editable = ['.tl-action', '.tl-detail', '.tl-time', '.role-intro-desc', '.note-box', '.bring-item', '.rc-items'];
+  editable.forEach(sel => {
+    document.querySelectorAll(sel).forEach(el => {
+      el.setAttribute('contenteditable', 'true');
+    });
+  });
+});
+</script>
+</body>
+</html>

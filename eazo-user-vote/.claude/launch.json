@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "vote-page",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", "-p", "3401", "."],
+      "port": 3401
+    }
+  ]
+}

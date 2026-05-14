@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -c ' *)",
+      "WebFetch(domain:eazo.ai)",
+      "mcp__Claude_Preview__preview_start"
+    ]
+  }
+}

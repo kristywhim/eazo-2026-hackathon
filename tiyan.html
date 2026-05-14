@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Eazo Hackathon — 选手参赛体验链路 v5</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#F9F8F5;color:#1A1916;padding:24px 16px 72px;min-height:100vh}
+.wrap{max-width:680px;margin:0 auto}
+.pg-header{margin-bottom:24px}
+.pg-header .eye{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:#888780;margin-bottom:6px}
+.pg-header h1{font-size:20px;font-weight:600;color:#1A1916}
+.pg-header .sub{font-size:13px;color:#888780;margin-top:4px}
+.pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:22px}
+.pill{padding:4px 11px;border-radius:20px;font-size:11.5px;font-weight:500;border:0.5px solid}
+.day-sep{display:flex;align-items:center;gap:12px;margin:26px 0 14px}
+.day-sep .ln{flex:1;height:1px;background:#D3D1C7}
+.day-sep .lb{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#888780;padding:4px 12px;border:0.5px solid #D3D1C7;border-radius:20px;white-space:nowrap}
+.phase{border:0.5px solid #D3D1C7;border-radius:10px;background:#fff;margin-bottom:8px;overflow:hidden}
+.phase.open{box-shadow:0 0 0 1.5px #B0ADAA}
+.ph{display:flex;align-items:center;gap:12px;padding:13px 16px;cursor:pointer;user-select:none}
+.ph:hover{background:#F7F6F2}
+.badge{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.ph-info{flex:1;min-width:0}
+.ph-lbl{font-size:10px;color:#888780;letter-spacing:.07em;text-transform:uppercase;margin-bottom:2px}
+.ph-name{font-size:14px;font-weight:500;color:#1A1916}
+.ph-meta{font-size:11px;color:#888780;text-align:right;flex-shrink:0}
+.chev{font-size:18px;color:#B0ADAA;transition:transform .2s;flex-shrink:0;line-height:1}
+.body{display:none;padding:0 16px 16px;border-top:0.5px solid #EAE8E2}
+.body.open{display:block}
+.sec{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#888780;margin:14px 0 8px}
+.steps{display:flex;flex-direction:column;gap:7px}
+.step{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:#1A1916;line-height:1.55}
+.dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px}
+/* timeline */
+.tl{margin-top:4px}
+.tl-row{display:flex;align-items:stretch;font-size:12.5px;gap:0}
+.tl-left{display:flex;flex-direction:column;align-items:flex-end;width:86px;flex-shrink:0;padding-right:12px}
+.tl-time{font-size:10.5px;font-family:'SF Mono',Menlo,monospace;color:#888780;padding-top:3px;white-space:nowrap}
+.tl-mid{display:flex;flex-direction:column;align-items:center;width:14px;flex-shrink:0}
+.tl-node{width:8px;height:8px;border-radius:50%;border:1.5px solid #D3D1C7;margin-top:4px;flex-shrink:0}
+.tl-bar{width:1px;background:#E5E3DC;flex:1;margin-top:2px}
+.tl-right{flex:1;padding:2px 0 12px 10px}
+.tl-ev{color:#1A1916;line-height:1.5}
+.tl-ev b{font-weight:600}
+.tl-ev .sub{font-size:11.5px;color:#888780;display:block;margin-top:1px}
+.tl-row:last-child .tl-bar{display:none}
+/* break row */
+.tl-break{background:#FAEEDA;border-radius:6px;margin:2px 0 6px;padding:6px 10px;font-size:12px;color:#854F0B;display:flex;align-items:center;gap:6px}
+.tl-break .bi{font-size:13px}
+/* inline badge */
+.ib{display:inline-block;font-size:10px;font-weight:600;padding:1px 7px;border-radius:3px;margin-left:5px;vertical-align:middle}
+/* boxes */
+.hbox{border-radius:8px;padding:10px 14px;margin-top:8px;font-size:12.5px;line-height:1.65}
+.hb-a{background:#FAEEDA;border-left:3px solid #BA7517}
+.hb-g{background:#EAF3DE;border-left:3px solid #5A9E25}
+.hb-p{background:#EEEDFE;border-left:3px solid #534AB7}
+.hb-b{background:#E6F1FB;border-left:3px solid #185FA5}
+/* share box */
+.share-box{background:#F1EFE8;border-radius:8px;padding:11px 14px;margin-top:10px}
+.sh-title{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#888780;margin-bottom:8px}
+.sp{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;color:#1A1916;line-height:1.5;margin-bottom:6px}
+.sp:last-child{margin-bottom:0}
+.sp-ic{font-size:14px;flex-shrink:0;margin-top:1px}
+/* score grid */
+.scores{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.sc{background:#F1EFE8;border-radius:8px;padding:10px;text-align:center}
+.sc .pct{font-size:20px;font-weight:700}
+.sc .desc{font-size:11px;color:#888780;margin-top:2px;white-space:pre-line;line-height:1.4}
+/* tz */
+.tz{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}
+.tz-c{background:#F1EFE8;border-radius:8px;padding:8px 6px;text-align:center}
+.tz-c .city{font-size:11.5px;font-weight:500}
+.tz-c .time{font-size:10.5px;color:#888780;margin-top:2px;white-space:pre-line;line-height:1.4}
+/* awards */
+.awards{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.aw{display:flex;gap:10px;padding:9px 12px;border-radius:8px;font-size:13px;align-items:flex-start}
+.aw .ico{font-size:16px;flex-shrink:0;margin-top:1px}
+.aw .an{font-weight:600}
+.aw .ad{font-size:11.5px;color:#888780;margin-top:2px}
+.aw-a{background:#FAEEDA}
+.aw-b{background:#E6F1FB}
+/* connector */
+.connector{width:1px;height:8px;background:#D3D1C7;margin-left:27px}
+/* tracks */
+.tracks{display:flex;flex-direction:column;gap:7px;margin-top:8px}
+.track{display:flex;gap:10px;align-items:flex-start;padding:9px 12px;border-radius:8px;border:0.5px solid #D3D1C7;font-size:13px}
+.track-num{font-size:10px;font-weight:700;color:#888780;font-family:'SF Mono',monospace;flex-shrink:0;width:18px;margin-top:1px}
+.track-body{flex:1}
+.track-name{font-weight:600;color:#1A1916;margin-bottom:2px}
+.track-en{font-size:11px;color:#888780;font-weight:400}
+.track-desc{font-size:11.5px;color:#888780;line-height:1.5;margin-top:2px}
+.t1{background:#FFF3E5;border-color:#FABB7A}.t2{background:#F0EEFF;border-color:#B4AAEE}
+.t3{background:#E5F5EE;border-color:#7DCFAA}.t4{background:#E8F4FF;border-color:#7BBCE8}
+.t5{background:#F1EFE8;border-color:#D3D1C7}
+/* award new styles */
+.award-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.astat{background:#F1EFE8;border-radius:8px;padding:10px;text-align:center}
+.astat .av{font-size:18px;font-weight:700;color:#1A1916;line-height:1.2}
+.astat .al{font-size:11px;color:#888780;margin-top:3px}
+.award-section{margin-top:12px}
+.award-section-title{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#888780;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.award-section-title::after{content:'';flex:1;height:1px;background:#E5E3DC}
+.award-row{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:7px;font-size:13px;margin-bottom:5px}
+.award-row:last-child{margin-bottom:0}
+.award-rank{font-size:16px;flex-shrink:0;width:26px;text-align:center}
+.award-name{flex:1;font-weight:500;color:#1A1916}
+.award-sub{font-size:11.5px;color:#888780;font-weight:400}
+.award-prize{font-size:13px;font-weight:700;white-space:nowrap}
+.aw-global{background:#FAE6C2}
+.aw-region{background:#E6F1FB}
+.aw-badge-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:8px}
+.aw-badge{background:#F1EFE8;border-radius:8px;padding:9px 10px;text-align:center}
+.aw-badge .bi{font-size:18px;margin-bottom:4px}
+.aw-badge .bn{font-size:12px;font-weight:600;color:#1A1916}
+.aw-badge .bd{font-size:11px;color:#888780;margin-top:2px;line-height:1.4}
+.region-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:8px 0}
+.rg-card{background:#F1EFE8;border-radius:8px;padding:8px;text-align:center}
+.rg-card .rc{font-size:18px}
+.rg-card .rn{font-size:11.5px;font-weight:600;color:#1A1916;margin-top:3px}
+.rg-card .ra{font-size:11px;color:#888780;margin-top:2px}
+/* badge colors */
+.bg-gray{background:#E5E3DC;color:#5F5E5A}
+.bg-teal{background:#CCF0E3;color:#0D6B50}
+.bg-purple{background:#E5E3FD;color:#3C3489}
+.bg-amber{background:#FAE6C2;color:#854F0B}
+.bg-blue{background:#D4E8FA;color:#185FA5}
+.bg-coral{background:#FAE0D8;color:#993C1D}
+.bg-green{background:#D8EFC4;color:#3B6D11}
+.d-gray{background:#B0ADAA}.d-teal{background:#1D9E75}.d-purple{background:#534AB7}
+.d-amber{background:#BA7517}.d-blue{background:#378ADD}.d-coral{background:#D85A30}
+.d-green{background:#5A9E25}
+.ib-p{background:#EEEDFE;color:#534AB7}
+.ib-t{background:#CCF0E3;color:#0D6B50}
+.ib-a{background:#FAE6C2;color:#854F0B}
+.ib-r{background:#FAE0D8;color:#993C1D}
+.ib-b{background:#E6F1FB;color:#185FA5}
+.ib-g{background:#D8EFC4;color:#3B6D11}
+.pill-t{background:#CCF0E3;color:#0D6B50;border-color:#8DD9BC}
+.pill-a{background:#FAE6C2;color:#854F0B;border-color:#FAC775}
+.pill-r{background:#FAE0D8;color:#993C1D;border-color:#F0997B}
+.pill-b{background:#D4E8FA;color:#185FA5;border-color:#85B7EB}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="pg-header">
+  <div class="eye">Eazo Global Hackathon 2026 · 2-Day Format</div>
+  <h1>选手完整参赛体验链路</h1>
+  <div class="sub">上海 · 旧金山 · 纽约 · 线上全球 &nbsp;|&nbsp; 点击各阶段展开</div>
+</div>
+<div class="pills">
+  <span class="pill pill-t">⚡ 提交即开启投票</span>
+  <span class="pill pill-a">🕕 投票截止 18:00</span>
+  <span class="pill pill-b">🏆 结果公布 21:00</span>
+  <span class="pill pill-r">⏱ Demo ≤3 分钟/队</span>
+  <span class="pill" style="background:#EEEDFE;color:#534AB7;border-color:#AFA9EC">👥 组队 1–3 人</span>
+  <span class="pill" style="background:#D8EFC4;color:#3B6D11;border-color:#8DC45A">🔴 Demo Day 全程直播</span>
+</div>
+<div id="track"></div>
+</div>
+
+<script>
+const phases = [
+// ── PRE ──
+{id:'reg', day:null, bg:'bg-gray', dot:'d-gray', num:'00', lbl:'签到', name:'签到 & 选择赛道', meta:'进场即选', sections:[
+  {t:'签到流程', steps:[
+    '到达现场，签到台确认姓名 & 队伍，领取胸牌',
+    '<b>进场即选赛道</b>——每队签到时选定一个赛道，全程不变',
+    '组队 1–3 人，确认队名，登记在运营系统',
+    '线上参赛者：报名时已选好赛道，开赛前确认即可',
+  ]},
+  {t:'五大赛道（签到时选定）', tracks:true},
+]},
+
+// ── DAY 1 ──
+{id:'d1open', day:'DAY 1 — Build Day', bg:'bg-teal', dot:'d-teal', num:'01', lbl:'第一天上午', name:'开幕 & 黑客松启动', meta:'10:00 各时区同步开幕', sections:[
+  {t:'四赛场同步时区', tz:[
+    {city:'🇨🇳 上海', time:'10:00 CST'},
+    {city:'🌐 线上', time:'10:00 各时区\n本地时间'},
+    {city:'🇺🇸 纽约', time:'10:00 ET'},
+    {city:'🇺🇸 旧金山', time:'10:00 PT'},
+  ]},
+  {t:'上午日程', tl:[
+    {time:'07:00', ev:'布置进场，音视频 & KV 安装', col:'d-gray'},
+    {time:'09:00', ev:'签到 & 选择赛道', col:'d-teal'},
+    {time:'10:00', ev:'开场主旨演讲 + 赛道介绍 <span class="sub">各时区同步，以本地 10:00 为准</span><span class="ib ib-p">Build 开始</span>', col:'d-purple'},
+  ]},
+]},
+
+{id:'d1build', day:null, bg:'bg-purple', dot:'d-purple', num:'02', lbl:'第一天全天', name:'黑客松构建阶段', meta:'10:30 → Hackathon 结束', sections:[
+  {t:'Eazo Creator 三步流程', steps:[
+    '<b>Step 1 — Build：</b>自然语言描述产品想法，Eazo 自动生成前后端 + 数据库',
+    '<b>Step 2 — Deploy：</b>零配置全栈部署，HTTPS + 域名，无需 DevOps',
+    '<b>Step 3 — Publish：</b>发布至 Eazo 社区，即时面向真实用户',
+  ]},
+  {t:'第一天时间线（含分享节点）', tl:[
+    {time:'10:30', ev:'开始构建', col:'d-purple'},
+    {time:'12:30', ev:'午餐<span class="ib ib-a">📱 分享时间</span>', col:'d-amber', break_text:'午餐 30 分钟 · 运营教大家怎么分享产品、发社媒，手把手示范发帖'},
+    {time:'14:00', ev:'继续构建', col:'d-purple'},
+    {time:'15:30', ev:'下午茶休息<span class="ib ib-a">📱 分享时间</span>', col:'d-amber', break_text:'15 分钟休息 · 运营推分享模板，鼓励选手把进度截图发到社媒'},
+    {time:'16:00', ev:'继续构建', col:'d-purple'},
+    {time:'17:30', ev:'中场检查<span class="ib ib-a">📱 分享时间</span>', col:'d-amber', break_text:'嘉宾巡场体验产品，运营引导「把你的产品链接发到群里」'},
+    {time:'19:00', ev:'晚餐<span class="ib ib-a">📱 分享时间</span>', col:'d-amber', break_text:'晚餐 45 分钟 · 运营带全场分享复盘：谁的产品链接传播最广？'},
+    {time:'20:30', ev:'继续构建，鼓励通宵冲刺', col:'d-purple'},
+    {time:'次日 09:00', ev:'<b>提交截止</b>，Demo Day 开始前<span class="ib ib-r">硬截止</span>', col:'d-coral'},
+  ]},
+  {t:'提交要求', steps:[
+    '直接将 <b>Eazo App 提交至 Eazo 平台</b>，可访问即可',
+    '<b>提交时间戳 = Demo Day 出场顺序</b>（先提交先上台）',
+    '线上选手同等标准，不以出席现场为前提',
+  ]},
+  {hbox:'a', text:'<b>提交越早，投票窗口越长。</b>App 能跑起来就提交，后续可继续迭代——不要等到"完美"再提交。'},
+  {t:'提交后立即做', share:[
+    {ic:'📱', text:'把 Eazo App 链接发到微信群 / 朋友圈 / Twitter / LinkedIn'},
+    {ic:'🗣', text:'话术：「我做了个 App，30 秒可以体验，帮我投个票」+ 链接'},
+    {ic:'🗳', text:'提交即投票开启，现在开始拉票每一票都算'},
+  ]},
+]},
+
+// ── DAY 2 ──
+{id:'d2demo', day:'DAY 2 — Demo Day + Launch Party', bg:'bg-amber', dot:'d-amber', num:'03', lbl:'第二天', name:'Demo Day · 全程直播', meta:'09:00 – 全部展示完毕（18:00 前）', sections:[
+  {t:'Demo Day 规则', steps:[
+    '出场顺序按<b>提交时间戳</b>先后排列',
+    '每队 <b>≤3 分钟</b>：演示 App 功能 + 简短说明，超时主持人打断',
+    '<b>演示 App 为主</b>，可简短说明技术实现与商业化方向',
+    '支持<b>线上选手实时视频接入投屏</b>，与线下同等对待',
+    '全场 <b>🔴 全程直播</b>，线上观众同步观看并参与投票',
+    '40% 专家评审贯穿全天，投票截止 18:00 前均可打分',
+  ]},
+  {t:'Demo Day 时间线', tl:[
+    {time:'09:00', ev:'Demo Day 开幕，主持人说明规则，直播正式开始<span class="ib ib-g">🔴 直播</span>', col:'d-amber'},
+    {time:'09:10', ev:'按提交顺序依次上台，每队 ≤3 分钟<span class="sub">线上选手远程投屏接入</span>', col:'d-amber'},
+    {time:'每60分钟', ev:'10 分钟休息<span class="ib ib-a">📱 分享时间</span>', col:'d-amber', break_text:'休息时运营教现场分享：「刚才哪个产品你觉得不错？发到你的朋友圈」'},
+    {time:'展示完毕后', ev:'午餐 + 自由体验各产品，<b>直播继续开着</b><span class="ib ib-a">📱 分享时间</span>', col:'d-amber', break_text:'运营引导全场：把你最喜欢的产品链接发出去，体验后去投票'},
+  ]},
+  {t:'线上选手投屏说明', steps:[
+    '提前准备好 Eazo App 演示页面，确认网络和声音',
+    '主持人会在对应出场顺序时呼叫线上选手连线',
+    '建议提前 5 分钟在等候室准备，避免连线延迟',
+    '演示时共享屏幕即可，直播画面会切换至线上选手投屏',
+  ]},
+  {hbox:'a', text:'演示结构建议（3分钟内）：<b>① 打开 App 演示核心场景（1.5min）② 简述技术实现亮点（30s）③ 商业化方向或潜在用户群（30s）</b>。不需要 PPT，直接开 App。'},
+]},
+
+{id:'d2vote', day:null, bg:'bg-green', dot:'d-green', num:'04', lbl:'第二天', name:'投票 & Demo 持续 → 截止 18:00', meta:'Demo 展示完 → 18:00 截止', sections:[
+  {t:'评分权重', scores:[
+    {pct:'50%', desc:'用户投票\n真实用户 + 社区'},
+    {pct:'40%', desc:'专家评审\n全天持续打分'},
+    {pct:'10%', desc:'选手互评\n跨赛区 ≥3票'},
+  ]},
+  {t:'投票期时间线', tl:[
+    {time:'Demo 结束后', ev:'投票通道全面开放，实时 Leaderboard 上线<span class="ib ib-t">冲刺开始</span>', col:'d-green'},
+    {time:'每次休息', ev:'运营穿插分享 Push，换话术持续进行<span class="ib ib-a">📱 分享</span>', col:'d-amber', break_text:'与上午节奏一致：有休息就有分享引导，手把手帮选手发社媒，每轮换新话术'},
+    {time:'中段', ev:'Leaderboard 快照公布，制造悬念和追赶感', col:'d-green'},
+    {time:'17:00', ev:'最后 1 小时预警，全平台推送', col:'d-coral'},
+    {time:'17:50', ev:'10 分钟倒计时最终提醒', col:'d-coral'},
+    {time:'18:00', ev:'<b>投票截止，系统锁定</b><span class="ib ib-r">硬截止</span>', col:'d-coral'},
+    {time:'18:00–21:00', ev:'综合加权分计算，结果保密至颁奖', col:'d-gray'},
+  ]},
+  {t:'分享话术（穿插在每次休息中，每轮换新）', share:[
+    {ic:'📝', text:'「刚才看到一个很棒的产品，你们也去体验一下 → [链接]，帮他们投一票」'},
+    {ic:'📝', text:'「我在 Eazo Hackathon 做了个 App → [你的链接]，体验后帮我投票，谢谢」'},
+    {ic:'📝', text:'「快截止了，这个产品真的很有用 → [链接] [投票链接]」'},
+    {ic:'📝', text:'「最后冲一票 → [投票链接]」'},
+  ]},
+  {t:'用户投票规则', steps:[
+    '须为 <b>Eazo 注册用户</b>方可投票（邮箱验证）',
+    '每人最多投 <b>3 票</b>，可分配给不同作品',
+    '实时 Leaderboard 公开可见 → eazo.ai/leaderboard',
+  ]},
+  {t:'选手互评规则', steps:[
+    '现场为你喜欢的其他作品<b>贴贴纸</b>——每位选手有 3 张贴纸',
+    '运营团队现场统计各作品获得的贴纸数，上传至后台',
+    '贴纸统计结果即为 <b>Builder&#39;s Choice</b> 评选依据，同时计入 10% 互评评分权重',
+  ]},
+]},
+
+{id:'d2party', day:null, bg:'bg-coral', dot:'d-coral', num:'05', lbl:'第二天晚间', name:'Launch Party + 颁奖典礼', meta:'19:00 – 结束', sections:[
+  {t:'颁奖流程', tl:[
+    {time:'19:00', ev:'Launch Party 开幕，酒水 & 社交', col:'d-coral'},
+    {time:'19:30', ev:'主持人回顾两天精彩时刻（照片 & 视频集锦）', col:'d-coral'},
+    {time:'20:00', ev:'颁奖环节启动', col:'d-coral'},
+    {time:'20:00–20:20', ev:'成就徽章公布<span class="ib ib-p">里程碑解锁</span>', col:'d-purple'},
+    {time:'20:20–20:40', ev:'The Outlier 特别奖 + 区域奖 Top 3 × 4 赛场<span class="ib ib-t">4 赛场</span>', col:'d-teal'},
+    {time:"20:40–21:00", ev:"People&#39;s Choice $25,000 揭晓<span class='ib ib-b'>公众票第一</span>", col:"d-blue"},
+    {time:'21:00–21:30', ev:'<b>🏆 Grand Prize $50,000 压轴揭晓</b><span class="ib ib-a">全场综合分最高</span>', col:'d-amber'},
+    {time:'21:30+', ev:'庆祝 & 自由交流，继续 Party<span class="ib ib-a">📱 分享时间</span>', col:'d-coral', break_text:'获奖后立刻发社媒：「我参加了 Eazo Hackathon，我的产品 → [链接]」'},
+  ]},
+  {awardFull: true},
+  {t:'颁奖后二次传播 Push', share:[
+    {ic:'🎊', text:'获奖队伍立刻发朋友圈 / Twitter，附产品链接和获奖信息，@EazoOfficial'},
+    {ic:'📣', text:'运营发通用模板：「我参加了 Eazo Global Hackathon，这是我的产品 → [链接]」'},
+    {ic:'🔗', text:'官方发布「所有参赛作品合集」页面，延续产品长尾曝光'},
+  ]},
+  {t:'赛后产品去向', steps:[
+    '所有作品在 Eazo 社区<b>持续可访问、可 Remix</b>，不因比赛结束下线',
+    'Skills 类作品接入 <b>Eazo Skills 市场</b>，按使用量获得持续收入分成',
+    '<b>Launch Party 是上线第一天，不是终点</b>',
+  ]},
+]},
+];
+
+const dotColorMap = {
+  'd-gray':'#B0ADAA','d-teal':'#1D9E75','d-purple':'#534AB7',
+  'd-amber':'#BA7517','d-blue':'#378ADD','d-coral':'#D85A30','d-green':'#5A9E25'
+};
+
+function buildTl(rows) {
+  let html = '<div class="tl">';
+  rows.forEach((r, i) => {
+    const isLast = i === rows.length - 1;
+    const nodeColor = dotColorMap[r.col] || '#D3D1C7';
+    html += `<div class="tl-row">
+      <div class="tl-left"><span class="tl-time">${r.time}</span></div>
+      <div class="tl-mid">
+        <div class="tl-node" style="border-color:${nodeColor}"></div>
+        ${!isLast ? '<div class="tl-bar"></div>' : ''}
+      </div>
+      <div class="tl-right"><div class="tl-ev">${r.ev}</div></div>
+    </div>`;
+    if(r.break_text){
+      html += `<div class="tl-break" style="margin-left:100px"><span class="bi">💬</span>${r.break_text}</div>`;
+    }
+  });
+  html += '</div>';
+  return html;
+}
+
+function buildTracks(){
+  const tracks=[
+    {n:'01',name:'Superparent','en':'超级家长',cls:'t1',desc:'现代家庭的协调、记忆、决策与自动化。帮父母更轻松地管理家庭生活——日程、分工、亲子沟通、家庭记忆留存等。'},
+    {n:'02',name:'AI Companion','en':'AI 陪伴',cls:'t2',desc:'日常 AI 陪伴与专注工具。面向普通用户的情感陪伴，或专为 ADHD / ASD 群体设计的专注、提醒、情绪调节类工具。'},
+    {n:'03',name:'Life OS','en':'人生操作系统',cls:'t3',desc:'个人生产力与执行力。第二大脑、任务管理、目标追踪、习惯养成——帮助一个人真正把事情做成。'},
+    {n:'04',name:'Body Intelligence','en':'身体智能',cls:'t4',desc:'身体与健康。健康追踪、健身计划、身体感知、康复辅助——让人更了解和掌控自己的身体状态。'},
+    {n:'05',name:'Wildcard','en':'自由创意',cls:'t5',desc:'不属于以上任何方向，但你认为有真实价值的创意。完全开放——唯一标准是它能解决真实问题。'},
+  ];
+  let h='<div class="tracks">';
+  tracks.forEach(t=>{
+    h+=`<div class="track ${t.cls}">
+      <span class="track-num">${t.n}</span>
+      <div class="track-body">
+        <div class="track-name">${t.name} <span class="track-en">${t.en}</span></div>
+        <div class="track-desc">${t.desc}</div>
+      </div>
+    </div>`;
+  });
+  h+='</div>';
+  return h;
+}
+
+function buildAwards(){
+  return `
+  <div class="award-stats">
+    <div class="astat"><div class="av">$300K</div><div class="al">总奖池</div></div>
+    <div class="astat"><div class="av">240队</div><div class="al">现金获奖</div></div>
+    <div class="astat"><div class="av">30%</div><div class="al">现金获奖比</div></div>
+  </div>
+
+  <div class="award-section">
+    <div class="award-section-title">🌍 全球总奖 · $90,000 &nbsp;<span style="font-size:10px;font-weight:400;color:#888780;text-transform:none;letter-spacing:0">颁奖以旧金山 SF 时间为准</span></div>
+    <div class="award-row aw-global">
+      <span class="award-rank">🏆</span>
+      <div class="award-name">Grand Prize <span class="award-sub">全场综合分最高，不限区域</span></div>
+      <span class="award-prize" style="color:#854F0B">$50,000</span>
+    </div>
+    <div class="award-row aw-global">
+      <span class="award-rank">🗳️</span>
+      <div class="award-name">People&#39;s Choice <span class="award-sub">全球公众票第一</span></div>
+      <span class="award-prize" style="color:#854F0B">$25,000</span>
+    </div>
+    <div class="award-row aw-global">
+      <span class="award-rank">🤝</span>
+      <div class="award-name">Builder&#39;s Choice <span class="award-sub">所有参赛选手互投，同行最欣赏的作品</span></div>
+      <span class="award-prize" style="color:#854F0B">$15,000</span>
+    </div>
+  </div>
+
+  <div class="award-section">
+    <div class="award-section-title">📍 区域奖 · 四区域完全对等，各 $52,500</div>
+    <div class="region-grid">
+      <div class="rg-card"><div class="rc">🇺🇸</div><div class="rn">旧金山 SF</div><div class="ra">各 $52,500</div></div>
+      <div class="rg-card"><div class="rc">🗽</div><div class="rn">纽约 NYC</div><div class="ra">各 $52,500</div></div>
+      <div class="rg-card"><div class="rc">🇨🇳</div><div class="rn">上海 SH</div><div class="ra">各 $52,500</div></div>
+      <div class="rg-card"><div class="rc">🌐</div><div class="rn">线上 Online</div><div class="ra">各 $52,500</div></div>
+    </div>
+    <div class="award-row aw-region"><span class="award-rank">🥇</span><div class="award-name">第 1 名</div><span class="award-prize" style="color:#185FA5">$8,000</span></div>
+    <div class="award-row aw-region"><span class="award-rank">🥈</span><div class="award-name">第 2 名</div><span class="award-prize" style="color:#185FA5">$5,000</span></div>
+    <div class="award-row aw-region"><span class="award-rank">🥉</span><div class="award-name">第 3 名</div><span class="award-prize" style="color:#185FA5">$3,000</span></div>
+    <div class="award-row" style="background:#EEF6FE"><span class="award-rank" style="font-size:13px;color:#888780">4–10</span><div class="award-name">第 4–10 名 <span class="award-sub">7 队</span></div><span class="award-prize" style="color:#185FA5">$1,200 / 队</span></div>
+    <div class="award-row" style="background:#EEF6FE"><span class="award-rank" style="font-size:13px;color:#888780">11–30</span><div class="award-name">第 11–30 名 <span class="award-sub">20 队</span></div><span class="award-prize" style="color:#185FA5">$700 / 队</span></div>
+    <div class="award-row" style="background:#EEF6FE"><span class="award-rank" style="font-size:13px;color:#888780">31–60</span><div class="award-name">第 31–60 名 <span class="award-sub">30 队</span></div><span class="award-prize" style="color:#185FA5">$470 / 队</span></div>
+    <div style="font-size:11.5px;color:#888780;margin-top:8px;padding:8px 10px;background:#F1EFE8;border-radius:6px;">每区域前 60 队均获现金，四区域共 240 队。<b style="color:#1A1916">可与全球奖叠加。</b></div>
+  </div>
+
+  <div class="award-section">
+    <div class="award-section-title">🏅 成就徽章 · 四区域各自独立评选，官方认证</div>
+    <div class="aw-badge-grid">
+      <div class="aw-badge"><div class="bi">🚀</div><div class="bn">先行者</div><div class="bd">前 150 名完成发布</div></div>
+      <div class="aw-badge"><div class="bi">💯</div><div class="bn">破百俱乐部</div><div class="bd">真实用户突破 100</div></div>
+      <div class="aw-badge"><div class="bi">🐎</div><div class="bn">千里马</div><div class="bd">真实用户突破 1,000</div></div>
+      <div class="aw-badge"><div class="bi">⚡</div><div class="bn">光速上线</div><div class="bd">开赛 3 小时内完成发布</div></div>
+      <div class="aw-badge"><div class="bi">🌊</div><div class="bn">破圈</div><div class="bd">社区外用户占比最高</div></div>
+      <div class="aw-badge"><div class="bi">📣</div><div class="bn">社媒之选</div><div class="bd">社媒转发 + 评论数最高</div></div>
+    </div>
+  </div>
+  `;
+}
+
+function render(){
+  const track = document.getElementById('track');
+  let lastDay = null;
+  phases.forEach((p, i) => {
+    if(p.day && p.day !== lastDay){
+      const dl = document.createElement('div');
+      dl.className = 'day-sep';
+      dl.innerHTML = `<div class="ln"></div><div class="lb">${p.day}</div><div class="ln"></div>`;
+      track.appendChild(dl);
+      lastDay = p.day;
+    }
+    const el = document.createElement('div');
+    el.className = 'phase';
+    el.id = 'phase-' + p.id;
+    let html = `<div class="ph" onclick="tog('${p.id}')">
+      <div class="badge ${p.bg}">${p.num}</div>
+      <div class="ph-info">
+        <div class="ph-lbl">${p.lbl}</div>
+        <div class="ph-name">${p.name}</div>
+      </div>
+      <div class="ph-meta">${p.meta}</div>
+      <div class="chev" id="chev-${p.id}">›</div>
+    </div>
+    <div class="body" id="body-${p.id}">`;
+
+    p.sections.forEach(s => {
+      if(s.t) html += `<div class="sec">${s.t}</div>`;
+      if(s.steps){
+        html += '<div class="steps">';
+        s.steps.forEach(st => { html += `<div class="step"><span class="dot ${p.dot}"></span><span>${st}</span></div>`; });
+        html += '</div>';
+      }
+      if(s.tl) html += buildTl(s.tl);
+      if(s.tz){
+        html += '<div class="tz">';
+        s.tz.forEach(z => { html += `<div class="tz-c"><div class="city">${z.city}</div><div class="time">${z.time}</div></div>`; });
+        html += '</div>';
+      }
+      if(s.scores){
+        html += '<div class="scores">';
+        s.scores.forEach(sc => { html += `<div class="sc"><div class="pct">${sc.pct}</div><div class="desc">${sc.desc}</div></div>`; });
+        html += '</div>';
+      }
+      if(s.hbox){
+        const cls = {a:'hb-a',g:'hb-g',p:'hb-p',b:'hb-b'}[s.hbox]||'hb-a';
+        html += `<div class="hbox ${cls}">${s.text}</div>`;
+      }
+      if(s.share){
+        html += '<div class="share-box"><div class="sh-title">📱 Push 清单</div>';
+        s.share.forEach(sh => { html += `<div class="sp"><span class="sp-ic">${sh.ic}</span><span>${sh.text}</span></div>`; });
+        html += '</div>';
+      }
+      if(s.awardFull){
+        html += buildAwards();
+      }
+      if(s.tracks){
+        html += buildTracks();
+      }
+      if(s.awards){
+        html += '<div class="awards">';
+        s.awards.forEach(a => {
+          html += `<div class="aw ${a.cls}"><span class="ico">${a.ico}</span><div><div class="an">${a.name}</div><div class="ad">${a.desc}</div></div></div>`;
+        });
+        html += '</div>';
+      }
+    });
+
+    html += '</div>';
+    el.innerHTML = html;
+    track.appendChild(el);
+    if(i < phases.length - 1 && !phases[i+1].day){
+      const c = document.createElement('div');
+      c.className = 'connector';
+      track.appendChild(c);
+    }
+  });
+}
+
+function tog(id){
+  const body = document.getElementById('body-' + id);
+  const phase = document.getElementById('phase-' + id);
+  const chev = document.getElementById('chev-' + id);
+  const open = body.classList.toggle('open');
+  phase.classList.toggle('open', open);
+  chev.style.transform = open ? 'rotate(90deg)' : '';
+}
+
+render();
+tog('d1build');
+tog('d2demo');
+tog('d2vote');
+</script>
+</body>
+</html>
