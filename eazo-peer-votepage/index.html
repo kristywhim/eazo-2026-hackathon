@@ -721,6 +721,31 @@
     }
 
     .card-select-flash { animation: card-select-flash 0.55s ease-out; }
+
+    /* ── Responsive: tablet (≥640px) ── */
+    @media (min-width: 640px) {
+      .app-wrap   { max-width: 900px; }
+      .header     { padding: 18px 28px 0; }
+      .search-wrap                  { padding: 12px 28px 0; }
+      .content    { padding: 14px 28px 140px; }
+      /* 2-column card grid */
+      .card-list  { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      /* confirm bar */
+      .confirm-bar { max-width: 900px; left: 50%; transform: translateX(-50%); }
+    }
+
+    /* ── Responsive: desktop (≥1024px) ── */
+    @media (min-width: 1024px) {
+      .app-wrap   { max-width: 1200px; }
+      .header     { padding: 20px 48px 0; }
+      .search-wrap                  { padding: 14px 48px 0; }
+      .content    { padding: 18px 48px 140px; }
+      /* 3-column card grid */
+      .card-list  { grid-template-columns: repeat(3, 1fr); }
+      .confirm-bar { max-width: 1200px; }
+      /* Hover states */
+      .card:not(.selected):hover { border-color: var(--border2); box-shadow: 0 3px 12px rgba(0,0,0,0.07); }
+    }
   </style>
 </head>
 <body>
@@ -1205,7 +1230,7 @@
     } else {
       const trackNote = trackFilter !== 'all' ? ` · ${TRACK_LABEL[trackFilter]}` : '';
       html += `<div class="stats-line"><strong>${list.length}</strong> team${list.length !== 1 ? 's' : ''}${trackNote} — select up to 3 to vote</div>`;
-      html += list.map(renderCard).join('');
+      html += `<div class="card-list">${list.map(renderCard).join('')}</div>`;
     }
 
     content.innerHTML = html;
