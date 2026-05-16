@@ -26,16 +26,25 @@ module.exports = async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
 
   const hub = req.query.hub;
+  const q   = (req.query.q || '').trim().toLowerCase(); // optional search query
   if (!validHub(hub)) return res.status(400).json({ error: 'Invalid hub' });
 
   const supabase = getClient();
 
   // ── Fetch teams for hub ──────────────────────────────────────────
-  const { data: teams, error } = await supabase
+  const { data: allTeams, error } = await supabase
     .from('teams')
     .select('id, eazo_team_id, name, project_name, project_desc, hub, track, icon_emoji, icon_bg, thumb_url, submitted_at')
     .eq('hub', hub)
     .order('submitted_at', { ascending: false });
+
+  // ── Apply search filter (team name OR project name) ──────────────
+  const teams = q
+    ? (allTeams || []).filter(t =>
+        t.name?.toLowerCase().includes(q) ||
+        t.project_name?.toLowerCase().includes(q)
+      )
+    : (allTeams || []);
 
   if (error) {
     console.error('[projects] teams fetch error:', error);

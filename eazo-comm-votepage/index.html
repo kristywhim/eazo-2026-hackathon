@@ -859,6 +859,89 @@
       flex-shrink: 0;
     }
 
+    /* ── Search bar ── */
+    .search-wrap {
+      position: relative;
+      padding: 10px 16px 0;
+    }
+    .search-input-row {
+      display: flex;
+      align-items: center;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 0 12px;
+      gap: 8px;
+      transition: border-color 0.15s;
+    }
+    .search-input-row:focus-within {
+      border-color: var(--text);
+    }
+    .search-icon { font-size: 14px; color: var(--text3); flex-shrink: 0; }
+    .search-input {
+      flex: 1;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 13.5px;
+      color: var(--text);
+      font-family: inherit;
+      padding: 10px 0;
+    }
+    .search-input::placeholder { color: var(--text3); }
+    .search-clear {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text3);
+      font-size: 16px;
+      padding: 4px;
+      line-height: 1;
+      display: none;
+    }
+    .search-clear.visible { display: block; }
+
+    /* Autocomplete dropdown */
+    .search-dropdown {
+      position: absolute;
+      top: calc(100% + 2px);
+      left: 16px; right: 16px;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      z-index: 200;
+      overflow: hidden;
+      display: none;
+    }
+    .search-dropdown.open { display: block; }
+    .search-dd-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.1s;
+    }
+    .search-dd-item:last-child { border-bottom: none; }
+    .search-dd-item:hover, .search-dd-item.active { background: var(--surface2); }
+    .search-dd-icon {
+      width: 30px; height: 30px; border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; flex-shrink: 0;
+    }
+    .search-dd-main { font-size: 13px; font-weight: 700; color: var(--text); }
+    .search-dd-sub  { font-size: 11px; color: var(--text3); margin-top: 1px; }
+    .search-dd-no-result { padding: 14px 16px; font-size: 13px; color: var(--text3); }
+    .search-active-badge {
+      display: none;
+      font-size: 11px; color: var(--text2);
+      padding: 4px 0 6px;
+      text-align: center;
+    }
+    .search-active-badge.visible { display: block; }
+
     /* ── Animations ── */
     @keyframes number-pop {
       0%   { transform: scale(1); }
@@ -921,6 +1004,24 @@
 
   <!-- ── FILTER BAR ── -->
   <div class="filter-bar">
+    <div class="search-wrap" id="searchWrap">
+      <div class="search-input-row">
+        <span class="search-icon">🔍</span>
+        <input
+          class="search-input"
+          id="searchInput"
+          type="search"
+          placeholder="Search teams or projects…"
+          autocomplete="off"
+          oninput="onSearchInput()"
+          onkeydown="onSearchKeydown(event)"
+          onfocus="onSearchFocus()"
+        >
+        <button class="search-clear" id="searchClear" onclick="clearSearch()" aria-label="Clear">✕</button>
+      </div>
+      <div class="search-dropdown" id="searchDropdown"></div>
+      <div class="search-active-badge" id="searchBadge"></div>
+    </div>
     <!-- Track filter tabs (scrollable) -->
     <div class="track-tabs" id="trackTabs">
       <button class="track-tab active" data-track="all"         onclick="setTrack('all',this)">All</button>
@@ -1198,6 +1299,7 @@
     // TODO: Re-fetch projects for the new hub
     // fetchProjects(hub).then(data => { HUB_PROJECTS[hub] = data.projects; renderAll(); });
 
+    clearSearch();
     updateRemainingUI();
     renderAll();
     tickCountdown();
@@ -1221,6 +1323,7 @@
 
   function filteredProjects() {
     let list = [...activeProjects()];
+    if (searchQuery) list = list.filter(p => matchesSearch(p, searchQuery));
     if (trackFilter !== 'all') list = list.filter(p => p.track === trackFilter);
     return sortMode === 'votes'
       ? list.sort((a, b) => b.votes - a.votes)
@@ -1478,6 +1581,109 @@
     const p = projects[Math.floor(Math.random() * projects.length)];
     updateVoteCount(p.id, p.votes + Math.floor(Math.random() * 4) + 1);
   }
+
+  // ── SEARCH ────────────────────────────────────────────────────────────────
+  let searchQuery = '';
+  let ddFocusIdx  = -1;
+
+  function matchesSearch(p, q) {
+    if (!q) return true;
+    const lower = q.toLowerCase();
+    return p.name.toLowerCase().includes(lower) || p.team.toLowerCase().includes(lower);
+  }
+
+  function onSearchInput() {
+    const input = document.getElementById('searchInput');
+    searchQuery = input.value.trim();
+    document.getElementById('searchClear').classList.toggle('visible', searchQuery.length > 0);
+    ddFocusIdx = -1;
+    renderDropdown();
+    renderAll(); // re-filter card grid
+  }
+
+  function onSearchFocus() {
+    if (searchQuery) renderDropdown();
+  }
+
+  function clearSearch() {
+    searchQuery = '';
+    document.getElementById('searchInput').value = '';
+    document.getElementById('searchClear').classList.remove('visible');
+    document.getElementById('searchDropdown').classList.remove('open');
+    document.getElementById('searchBadge').classList.remove('visible');
+    ddFocusIdx = -1;
+    renderAll();
+  }
+
+  function renderDropdown() {
+    const dd = document.getElementById('searchDropdown');
+    if (!searchQuery) { dd.classList.remove('open'); return; }
+
+    const matches = activeProjects()
+      .filter(p => matchesSearch(p, searchQuery))
+      .slice(0, 5);
+
+    if (matches.length === 0) {
+      dd.innerHTML = `<div class="search-dd-no-result">No results for "${searchQuery}"</div>`;
+    } else {
+      dd.innerHTML = matches.map((p, i) => `
+        <div class="search-dd-item${i === ddFocusIdx ? ' active' : ''}"
+             onclick="selectSearchResult('${p.id}')"
+             data-idx="${i}">
+          <div class="search-dd-icon" style="background:${p.iconBg}">${p.iconEmoji}</div>
+          <div>
+            <div class="search-dd-main">${p.name}</div>
+            <div class="search-dd-sub">by ${p.team}</div>
+          </div>
+        </div>`).join('');
+    }
+    dd.classList.add('open');
+  }
+
+  function selectSearchResult(id) {
+    const p = activeProjects().find(x => x.id === id);
+    if (!p) return;
+    document.getElementById('searchInput').value = p.name;
+    searchQuery = p.name;
+    document.getElementById('searchDropdown').classList.remove('open');
+    document.getElementById('searchClear').classList.add('visible');
+    renderAll();
+    // Scroll to the card
+    requestAnimationFrame(() => {
+      const card = document.getElementById(`card-${id}`);
+      if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  }
+
+  function onSearchKeydown(e) {
+    const dd = document.getElementById('searchDropdown');
+    const items = dd.querySelectorAll('.search-dd-item');
+    if (!dd.classList.contains('open') || !items.length) return;
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      ddFocusIdx = Math.min(ddFocusIdx + 1, items.length - 1);
+      items.forEach((el, i) => el.classList.toggle('active', i === ddFocusIdx));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      ddFocusIdx = Math.max(ddFocusIdx - 1, 0);
+      items.forEach((el, i) => el.classList.toggle('active', i === ddFocusIdx));
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (ddFocusIdx >= 0 && items[ddFocusIdx]) items[ddFocusIdx].click();
+      else dd.classList.remove('open');
+    } else if (e.key === 'Escape') {
+      dd.classList.remove('open');
+    }
+  }
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', e => {
+    const wrap = document.getElementById('searchWrap');
+    if (wrap && !wrap.contains(e.target)) {
+      document.getElementById('searchDropdown').classList.remove('open');
+    }
+  });
 
   // ── INIT ──────────────────────────────────────────────────────────────────
   // Exposed for native WebView bridge:

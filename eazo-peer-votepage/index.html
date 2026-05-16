@@ -670,6 +670,49 @@
 
     .empty-desc { font-size: 13px; color: var(--text3); line-height: 1.6; }
 
+    /* ── Search ── */
+    .search-wrap { position: relative; padding: 10px 16px 0; }
+    .search-input-row {
+      display: flex; align-items: center;
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: 10px; padding: 0 12px; gap: 8px;
+      transition: border-color 0.15s;
+    }
+    .search-input-row:focus-within { border-color: var(--text); }
+    .search-icon { font-size: 14px; color: var(--text3); flex-shrink: 0; }
+    .search-input {
+      flex: 1; border: none; outline: none; background: transparent;
+      font-size: 13.5px; color: var(--text); font-family: inherit; padding: 10px 0;
+    }
+    .search-input::placeholder { color: var(--text3); }
+    .search-clear {
+      background: none; border: none; cursor: pointer;
+      color: var(--text3); font-size: 16px; padding: 4px; line-height: 1; display: none;
+    }
+    .search-clear.visible { display: block; }
+    .search-dropdown {
+      position: absolute; top: calc(100% + 2px); left: 16px; right: 16px;
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      z-index: 200; overflow: hidden; display: none;
+    }
+    .search-dropdown.open { display: block; }
+    .search-dd-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px; cursor: pointer;
+      border-bottom: 1px solid var(--border); transition: background 0.1s;
+    }
+    .search-dd-item:last-child { border-bottom: none; }
+    .search-dd-item:hover, .search-dd-item.active { background: var(--surface2); }
+    .search-dd-icon {
+      width: 30px; height: 30px; border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; flex-shrink: 0;
+    }
+    .search-dd-main { font-size: 13px; font-weight: 700; color: var(--text); }
+    .search-dd-sub  { font-size: 11px; color: var(--text3); margin-top: 1px; }
+    .search-dd-no-result { padding: 14px 16px; font-size: 13px; color: var(--text3); }
+
     /* ── Animations ── */
     @keyframes card-select-flash {
       0%   { box-shadow: 0 0 0 0 rgba(29, 158, 117, 0); }
@@ -744,6 +787,18 @@
       </div>
     </div>
 
+    <!-- Search bar -->
+    <div class="search-wrap" id="searchWrap">
+      <div class="search-input-row">
+        <span class="search-icon">🔍</span>
+        <input class="search-input" id="searchInput" type="search"
+          placeholder="Search teams or projects…" autocomplete="off"
+          oninput="onSearchInput()" onkeydown="onSearchKeydown(event)" onfocus="onSearchFocus()">
+        <button class="search-clear" id="searchClear" onclick="clearSearch()">✕</button>
+      </div>
+      <div class="search-dropdown" id="searchDropdown"></div>
+    </div>
+
     <!-- Cards list -->
     <div class="content" id="content"></div>
 
@@ -807,6 +862,22 @@
     ao: 'Asia Online',
   };
 
+  const TRACK_BG = {
+    superparent: '#FAE6C2',
+    companion:   '#EEEDFE',
+    lifeos:      '#CCF0E3',
+    body:        '#D4E8FA',
+    wildcard:    '#E5E3DC',
+  };
+
+  const TRACK_EMOJI = {
+    superparent: '👨‍👩‍👧',
+    companion:   '🧠',
+    lifeos:      '⚡',
+    body:        '💓',
+    wildcard:    '🌙',
+  };
+
   const TRACK_LABEL = {
     all:         'All Tracks',
     superparent: 'Superparent',
@@ -838,6 +909,8 @@
   let hasVoted    = false;
   let votedForIds = [];
   let allTeams    = [];     // teams for this hub (own excluded)
+  let searchQuery = '';
+  let ddFocusIdx  = -1;
 
   // ── IDENTITY BOOTSTRAP ────────────────────────────────────────────────────
   function bootstrap() {
@@ -935,6 +1008,12 @@
 
   function filteredTeams() {
     let list = [...allTeams];
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      list = list.filter(t =>
+        t.project.toLowerCase().includes(q) || t.team.toLowerCase().includes(q)
+      );
+    }
     if (trackFilter !== 'all') list = list.filter(t => t.track === trackFilter);
     return list;
   }
@@ -1132,6 +1211,92 @@
     content.innerHTML = html;
     updateSelectionUI();
   }
+
+  // ── SEARCH ──────────────────────────────────────────────────────────────────
+  function onSearchInput() {
+    searchQuery = document.getElementById('searchInput').value.trim();
+    document.getElementById('searchClear').classList.toggle('visible', searchQuery.length > 0);
+    ddFocusIdx = -1;
+    renderDropdown();
+    renderAll();
+  }
+
+  function onSearchFocus() {
+    if (searchQuery) renderDropdown();
+  }
+
+  function clearSearch() {
+    searchQuery = '';
+    document.getElementById('searchInput').value = '';
+    document.getElementById('searchClear').classList.remove('visible');
+    document.getElementById('searchDropdown').classList.remove('open');
+    ddFocusIdx = -1;
+    renderAll();
+  }
+
+  function renderDropdown() {
+    const dd = document.getElementById('searchDropdown');
+    if (!searchQuery) { dd.classList.remove('open'); return; }
+    const q = searchQuery.toLowerCase();
+    const matches = MOCK_TEAMS
+      .filter(t => t.id !== myTeamId &&
+        (t.project.toLowerCase().includes(q) || t.team.toLowerCase().includes(q)))
+      .slice(0, 5);
+
+    if (!matches.length) {
+      dd.innerHTML = `<div class="search-dd-no-result">No results for "${escHtml(searchQuery)}"</div>`;
+    } else {
+      dd.innerHTML = matches.map((t, i) => `
+        <div class="search-dd-item${i === ddFocusIdx ? ' active' : ''}" onclick="selectResult('${t.id}')">
+          <div class="search-dd-icon" style="background:${TRACK_BG[t.track]||'#eee'}">${TRACK_EMOJI[t.track]||'🚀'}</div>
+          <div>
+            <div class="search-dd-main">${escHtml(t.project)}</div>
+            <div class="search-dd-sub">by ${escHtml(t.team)}</div>
+          </div>
+        </div>`).join('');
+    }
+    dd.classList.add('open');
+  }
+
+  function selectResult(id) {
+    const t = MOCK_TEAMS.find(x => x.id === id);
+    if (!t) return;
+    document.getElementById('searchInput').value = t.project;
+    searchQuery = t.project;
+    document.getElementById('searchDropdown').classList.remove('open');
+    document.getElementById('searchClear').classList.add('visible');
+    renderAll();
+    requestAnimationFrame(() => {
+      const card = document.getElementById(`card-${id}`);
+      if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  }
+
+  function onSearchKeydown(e) {
+    const dd = document.getElementById('searchDropdown');
+    const items = dd.querySelectorAll('.search-dd-item');
+    if (!dd.classList.contains('open') || !items.length) return;
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      ddFocusIdx = Math.min(ddFocusIdx + 1, items.length - 1);
+      items.forEach((el, i) => el.classList.toggle('active', i === ddFocusIdx));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      ddFocusIdx = Math.max(ddFocusIdx - 1, 0);
+      items.forEach((el, i) => el.classList.toggle('active', i === ddFocusIdx));
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (ddFocusIdx >= 0 && items[ddFocusIdx]) items[ddFocusIdx].click();
+      else dd.classList.remove('open');
+    } else if (e.key === 'Escape') {
+      dd.classList.remove('open');
+    }
+  }
+
+  document.addEventListener('click', e => {
+    const wrap = document.getElementById('searchWrap');
+    if (wrap && !wrap.contains(e.target)) document.getElementById('searchDropdown')?.classList.remove('open');
+  });
 
   // ── WebView bridge hooks (app can call these) ─────────────────────────────
   // window.EAZO_TEAM = { teamId, teamName, hub } — set before page load
