@@ -450,6 +450,107 @@ html,body{width:100%;height:100%;overflow:hidden;
 .tr3{background:var(--tr3bg);color:var(--tr3);}
 .tr4{background:var(--tr4bg);color:var(--tr4);}
 .tr5{background:var(--tr5bg);color:var(--tr5);}
+
+/* ═══ RESPONSIVE: MOBILE (< 768px) ═══ */
+@media (max-width: 767px) {
+  /* Allow scrolling on mobile — live board was designed for big screen,
+     but on mobile we need to be able to read the content */
+  html, body { overflow: auto; height: auto; min-height: 100vh; }
+  .root { height: auto; min-height: 100vh; }
+  .main { flex-direction: column; height: auto; min-height: 0; }
+
+  /* Header tighten */
+  .hdr { padding: 0 14px; gap: 8px; height: 50px; }
+  .logo-name { font-size: 14px; }
+  .hdr-event { font-size: 11px; }
+  .hdr-event strong { font-size: 11px; }
+  /* Hide less important header items on very small phones */
+  .phase-pill { font-size: 9px; padding: 4px 10px; }
+
+  /* Leaderboard panel: full width, natural height */
+  .lb-panel {
+    flex: none;
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--bdr);
+  }
+
+  /* Hub filter: horizontal scroll */
+  .hub-filter {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+    padding: 8px 14px;
+    gap: 5px;
+  }
+  .hub-filter::-webkit-scrollbar { display: none; }
+  .hub-filter-tab { padding: 4px 12px; font-size: 10.5px; white-space: nowrap; }
+  .hub-ip-note { display: none; }
+
+  /* Track filter: already has overflow-x: auto, just tighten */
+  .track-filter { padding: 6px 14px; }
+  .track-filter-tab { padding: 3px 10px; font-size: 10px; }
+
+  /* Podium: reduce height for mobile */
+  .podium-wrap { padding: 10px 12px 0; }
+  .podium-row { height: 160px; gap: 8px; }
+  .pod { padding: 12px 8px; border-radius: 14px; }
+  .pod1 .pod-team { font-size: 13px; }
+  .pod1 .pod-votes { font-size: 22px; }
+  .pod1 .pod-medal { font-size: 28px; }
+  .pod2 .pod-medal { font-size: 22px; }
+  .pod3 .pod-medal { font-size: 18px; }
+  .pod-team { font-size: 12px; }
+  .pod-project { font-size: 10px; }
+  .pod-votes { font-size: 18px; }
+
+  /* Column headers */
+  .lb-list-hdr { padding: 6px 14px; }
+
+  /* Scrolling list: on mobile, don't auto-scroll; just show naturally */
+  .lb-outer {
+    overflow-y: visible;
+    max-height: none;
+    height: auto;
+  }
+  .lb-row { margin: 3px 6px; padding: 10px 12px; }
+  .lb-team { font-size: 14px; }
+  .lb-project { font-size: 11px; }
+  .lb-score-num { font-size: 17px; }
+  .lb-rank { font-size: 14px; }
+
+  /* Sidebar: full width below leaderboard */
+  .sidebar { flex: none; width: 100%; background: var(--bg); }
+
+  /* Countdown widget */
+  .cdw { padding: 12px 14px 10px; }
+  .cdw-time { font-size: 28px; }
+  .cdw-sub { font-size: 10px; }
+
+  /* Stats */
+  .stats { padding: 12px 14px; }
+  .stat-val { font-size: 22px; }
+
+  /* Feed: limit height on mobile */
+  .feed { max-height: 320px; }
+  .feed-body { overflow-y: auto; }
+
+  /* Ticker still shows at bottom */
+  .ticker { height: 28px; }
+  .ticker-item { font-size: 10px; padding: 0 18px; }
+}
+
+/* ═══ RESPONSIVE: TABLET (768px – 1100px) ═══ */
+@media (min-width: 768px) and (max-width: 1099px) {
+  .lb-panel { flex: 0 0 65%; }
+  .hdr { padding: 0 16px; }
+  .hub-filter { padding: 8px 16px; }
+  .hub-filter-tab { padding: 4px 12px; font-size: 11px; }
+  .lb-list-hdr { padding: 6px 16px; }
+  .lb-row { margin: 3px 8px; padding: 11px 16px; }
+  .podium-row { height: 210px; }
+  .lb-topbar { padding: 0 16px; }
+}
 </style>
 </head>
 <body>
@@ -929,6 +1030,8 @@ function stopAutoScroll() {
 }
 
 function startAutoScroll() {
+  // Skip auto-scroll on mobile — list expands naturally
+  if(window.innerWidth < 768) return;
   if(phaseTimer) clearTimeout(phaseTimer);
   scrollPhase = 'pause-top';
   lbOuter.scrollTop = 0;

@@ -453,6 +453,76 @@
       text-align: right;
       margin-bottom: 8px;
     }
+
+    /* ── Table scroll wrapper (used on mobile) ── */
+    .table-scroll-wrap {
+      width: 100%;
+    }
+
+    /* Scroll hint: desktop hidden, mobile visible */
+    .table-scroll-hint {
+      display: none;
+    }
+
+    /* ── Responsive: mobile (< 768px) ── */
+    @media (max-width: 767px) {
+      /* Auth card */
+      .auth-card { padding: 28px 18px; }
+      .hub-select-group { gap: 6px; }
+      .hub-pill { padding: 7px 11px; font-size: 13px; }
+
+      /* Header */
+      .header-inner { padding: 0 14px; gap: 8px; height: 56px; }
+      .header-title { font-size: 14px; }
+      /* Hide lesser elements on small screens */
+      .header-inner > span[style*="color:var(--t3)"] { display: none; }
+      .judge-badge { font-size: 11px; padding: 3px 8px; }
+
+      /* Main padding */
+      main { padding: 16px 12px 90px; }
+      .instruction-bar { font-size: 13px; padding: 11px 13px; margin-bottom: 18px; }
+      .scroll-hint { display: none; }
+
+      /* Scroll hint for table */
+      .table-scroll-hint {
+        font-size: 11px;
+        color: var(--t3);
+        text-align: right;
+        margin-bottom: 6px;
+      }
+
+      /* Table scrolls horizontally */
+      .table-scroll-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        border-radius: 12px;
+      }
+      .criteria-header,
+      .team-card {
+        min-width: 680px;
+      }
+
+      /* Save bar: stack vertically */
+      .save-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        padding: 12px 14px;
+      }
+      .save-bar-info { text-align: center; }
+      .btn-save { justify-content: center; }
+    }
+
+    /* ── Responsive: tablet (768px – 1024px) ── */
+    @media (min-width: 768px) and (max-width: 1023px) {
+      .header-inner { padding: 0 18px; }
+      main { padding: 24px 18px 100px; }
+      .criteria-header,
+      .team-card {
+        grid-template-columns: 40px 160px 1fr 120px 120px 120px 70px;
+        gap: 10px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -499,19 +569,21 @@
       When you're done, click <strong>Save All Scores</strong>.
     </div>
 
-    <div class="scroll-hint">Scroll to view all teams ↓</div>
+    <div class="table-scroll-hint">← Scroll right to see all criteria →</div>
 
-    <div class="criteria-header">
-      <span>#</span>
-      <span>Team</span>
-      <span>Badges</span>
-      <span class="crit-label">Criterion 1 (TBD)</span>
-      <span class="crit-label">Criterion 2 (TBD)</span>
-      <span class="crit-label">Criterion 3 (TBD)</span>
-      <span class="crit-label">Total</span>
+    <div class="table-scroll-wrap">
+      <div class="criteria-header">
+        <span>#</span>
+        <span>Team</span>
+        <span>Badges</span>
+        <span class="crit-label">Criterion 1 (TBD)</span>
+        <span class="crit-label">Criterion 2 (TBD)</span>
+        <span class="crit-label">Criterion 3 (TBD)</span>
+        <span class="crit-label">Total</span>
+      </div>
+
+      <div id="finalists-list"></div>
     </div>
-
-    <div id="finalists-list"></div>
   </main>
 
   <div class="save-bar">

@@ -319,6 +319,77 @@
 
     #unknown-screen h2 { font-size: 28px; font-weight: 700; }
     #unknown-screen p  { font-size: 16px; color: var(--t2); }
+
+    /* ── Responsive: mobile (< 640px) ── */
+    @media (max-width: 639px) {
+      /* Header: tighten padding, hide secondary info */
+      .header-inner  { padding: 0 16px; gap: 10px; height: 56px; }
+      .header-title  { font-size: 15px; }
+      .header-divider { display: none; }
+      .refresh-label  { display: none; }
+      .calc-timestamp { display: none; }
+      .live-dot-wrap  { font-size: 11px; }
+
+      /* Waiting screen */
+      #waiting-screen { padding: 28px 16px; min-height: calc(100vh - 56px); }
+      .waiting-icon   { font-size: 48px; }
+      .waiting-title  { font-size: 22px; }
+      .waiting-sub    { font-size: 15px; margin-bottom: 28px; }
+
+      /* Countdown box: shrink numbers */
+      .countdown-box  { padding: 24px 18px; gap: 14px; border-radius: 12px; }
+      .countdown-num  { font-size: 40px; min-width: 52px; }
+      .countdown-sep  { font-size: 34px; }
+      .countdown-label { font-size: 10px; }
+
+      /* Finalist header */
+      .finalist-header { padding: 20px 16px 10px; gap: 8px; flex-wrap: wrap; }
+      .finalist-header h2 { font-size: 20px; }
+      .finalist-count { font-size: 13px; }
+
+      /* Finalist list */
+      .finalist-list { padding: 0 16px 60px; }
+
+      /* Finalist rows: 2-col on mobile (rank + info), badges below */
+      .finalist-row {
+        grid-template-columns: 52px 1fr;
+        grid-template-rows: auto auto;
+        gap: 6px 12px;
+        padding: 16px 16px;
+        margin-bottom: 8px;
+        border-radius: 10px;
+      }
+      .finalist-rank   { font-size: 28px; grid-column: 1; grid-row: 1; align-self: start; padding-top: 2px; }
+      .finalist-info   { grid-column: 2;  grid-row: 1; }
+      .finalist-team   { font-size: 17px; }
+      .finalist-project { font-size: 13px; }
+      .finalist-badges {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 6px;
+      }
+
+      /* Group divider */
+      .group-divider { margin: 20px 0 10px; }
+      .group-divider-label { font-size: 11px; }
+
+      /* Unknown screen */
+      #unknown-screen { min-height: calc(100vh - 56px); }
+      #unknown-screen h2 { font-size: 22px; }
+      #unknown-screen p  { font-size: 14px; }
+    }
+
+    /* ── Responsive: tablet (640px – 1023px) ── */
+    @media (min-width: 640px) and (max-width: 1023px) {
+      .header-inner { padding: 0 24px; }
+      .finalist-header { padding: 24px 24px 14px; }
+      .finalist-list   { padding: 0 24px 80px; }
+      .finalist-team   { font-size: 20px; }
+      .finalist-rank   { font-size: 32px; }
+    }
   </style>
 </head>
 <body>
