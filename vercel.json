@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "name": "eazo-hackathon-2026",
+  "builds": [
+    { "src": "api/*.js", "use": "@vercel/node" }
+  ],
+  "routes": [
+    { "src": "/api/(.*)", "dest": "/api/$1.js" },
+
+    { "src": "/vote",       "dest": "/eazo-comm-votepage/index.html" },
+    { "src": "/peer-vote",  "dest": "/eazo-peer-votepage/index.html" },
+    { "src": "/onair",      "dest": "/eazo-onair/live-board-v0.html" },
+    { "src": "/judge/(sf|ny|sh)", "dest": "/eazo-judgescorer/index.html" },
+    { "src": "/finalist/(sf|ny|sh)", "dest": "/eazo-finalist/index.html" },
+    { "src": "/finalist",   "dest": "/eazo-finalist/index.html" },
+
+    { "src": "/(.*)", "dest": "/$1" }
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
+}

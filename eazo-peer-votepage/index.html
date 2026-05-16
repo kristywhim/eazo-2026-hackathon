@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Eazo Hackathon 2026 — Peer Vote</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    :root {
+      --bg: #F9F8F5;
+      --surface: #FFFFFF;
+      --surface2: #F1EFE8;
+      --border: #D3D1C7;
+      --border2: #B0ADAA;
+      --text: #1A1916;
+      --text2: #555350;
+      --text3: #888780;
+      --voted: #1D9E75;
+      --urgent: #D85A30;
+    }
+
+    html, body { height: 100%; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      overscroll-behavior-y: none;
+    }
+
+    .app-wrap {
+      max-width: 400px;
+      margin: 0 auto;
+      min-height: 100vh;
+      background: var(--bg);
+    }
+
+    /* ── Screens ── */
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ── AUTH SCREEN ── */
+    .auth-screen {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 28px;
+      gap: 0;
+    }
+
+    .auth-logo {
+      font-size: 42px;
+      margin-bottom: 20px;
+    }
+
+    .auth-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.02em;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .auth-sub {
+      font-size: 13.5px;
+      color: var(--text3);
+      text-align: center;
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+
+    .auth-notice {
+      background: var(--surface2);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 12.5px;
+      color: var(--text2);
+      line-height: 1.65;
+      margin-bottom: 28px;
+      width: 100%;
+    }
+
+    .auth-notice strong { color: var(--text); font-weight: 700; }
+
+    .auth-form { width: 100%; display: flex; flex-direction: column; gap: 12px; }
+
+    .auth-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 5px;
+      display: block;
+    }
+
+    .auth-input {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 11px;
+      background: var(--surface);
+      color: var(--text);
+      font-size: 15px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .auth-input:focus { border-color: var(--border2); }
+    .auth-input::placeholder { color: var(--text3); }
+
+    .auth-btn {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      background: var(--text);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: opacity 0.15s;
+      margin-top: 4px;
+    }
+
+    .auth-btn:active { opacity: 0.82; }
+
+    .auth-error {
+      font-size: 12px;
+      color: var(--urgent);
+      text-align: center;
+      min-height: 18px;
+    }
+
+    /* ── STICKY HEADER ── */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 16px 0;
+    }
+
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .event-eyebrow {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 1px;
+    }
+
+    .event-name {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+
+    .sel-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface2);
+      border: 1.5px solid var(--border);
+      color: var(--text2);
+      padding: 6px 12px;
+      border-radius: 22px;
+      font-size: 13px;
+      font-weight: 700;
+      transition: all 0.25s;
+      white-space: nowrap;
+    }
+
+    .sel-pill.has-selection {
+      background: var(--voted);
+      border-color: var(--voted);
+      color: #fff;
+    }
+
+    .sel-pill-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--border2);
+      flex-shrink: 0;
+      transition: background 0.25s;
+    }
+
+    .sel-pill.has-selection .sel-pill-dot { background: rgba(255,255,255,0.7); }
+
+    /* ── Filter bar ── */
+    .filter-bar {
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .track-tabs {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 9px 16px 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .track-tabs::-webkit-scrollbar { display: none; }
+
+    .track-tab {
+      padding: 5px 13px;
+      border-radius: 20px;
+      font-size: 11.5px;
+      font-weight: 600;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      color: var(--text2);
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s;
+      font-family: inherit;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .track-tab:active { transform: scale(0.94); }
+    .track-tab.active { background: var(--text); color: #fff; border-color: var(--text); }
+
+    /* ── Content ── */
+    .content {
+      padding: 12px 14px 140px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .stats-line {
+      font-size: 11.5px;
+      color: var(--text3);
+      text-align: center;
+      padding: 2px 0;
+    }
+
+    .stats-line strong { color: var(--text2); font-weight: 600; }
+
+    /* ── Team Card ── */
+    .card {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-left: 4px solid transparent;
+      border-radius: 13px;
+      overflow: hidden;
+      position: relative;
+      transition: border-color 0.22s, box-shadow 0.22s;
+    }
+
+    .card.selected {
+      border-left-color: var(--voted);
+      border-color: var(--voted);
+      border-left-color: var(--voted);
+      box-shadow: 0 2px 12px rgba(29,158,117,0.13);
+    }
+
+    .card-body {
+      padding: 14px 14px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .card-info { flex: 1; min-width: 0; }
+
+    .card-team-name {
+      font-size: 13.5px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.01em;
+      margin-bottom: 1px;
+    }
+
+    .card.selected .card-team-name { color: var(--voted); }
+
+    .card-project-name {
+      font-size: 12.5px;
+      font-style: italic;
+      color: var(--text2);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .track-badge {
+      display: inline-block;
+      font-size: 9.5px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 5px;
+      letter-spacing: 0.02em;
+      margin-top: 5px;
+      white-space: nowrap;
+    }
+
+    .badge-superparent { background: #FAE6C2; color: #854F0B; }
+    .badge-companion   { background: #EEEDFE; color: #3C3489; }
+    .badge-lifeos      { background: #CCF0E3; color: #0D6B50; }
+    .badge-body        { background: #D4E8FA; color: #185FA5; }
+    .badge-wildcard    { background: #E5E3DC; color: #5F5E5A; }
+
+    .select-btn {
+      flex-shrink: 0;
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: 1.5px solid var(--border2);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.18s;
+      font-family: inherit;
+      user-select: none;
+      white-space: nowrap;
+      align-self: flex-start;
+    }
+
+    .select-btn:active { transform: scale(0.90); }
+
+    .select-btn.selected {
+      background: var(--voted);
+      border-color: var(--voted);
+      color: #fff;
+    }
+
+    .select-btn.limit-reached {
+      opacity: 0.32;
+      cursor: not-allowed;
+    }
+
+    .card-desc {
+      font-size: 11.5px;
+      color: var(--text2);
+      line-height: 1.6;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* ── Sticky confirm area ── */
+    .confirm-bar {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 400px;
+      padding: 12px 16px 28px;
+      background: linear-gradient(to top, var(--bg) 72%, transparent);
+      z-index: 90;
+      display: none;
+    }
+
+    .confirm-bar.visible { display: block; }
+
+    .confirm-btn {
+      width: 100%;
+      padding: 15px;
+      border-radius: 14px;
+      border: none;
+      background: var(--text);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: opacity 0.15s, transform 0.15s;
+      box-shadow: 0 4px 18px rgba(26,25,22,0.22);
+    }
+
+    .confirm-btn:active { opacity: 0.85; transform: scale(0.98); }
+    .confirm-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    /* ── Overlay + Bottom Sheet ── */
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 200;
+      backdrop-filter: blur(2px);
+    }
+    .overlay.visible { display: block; }
+
+    .sheet {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%) translateY(100%);
+      width: 100%;
+      max-width: 400px;
+      background: var(--surface);
+      border-radius: 20px 20px 0 0;
+      z-index: 201;
+      padding: 16px 22px 40px;
+      transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+    }
+
+    .sheet.open { transform: translateX(-50%) translateY(0); }
+
+    .sheet-handle {
+      width: 36px;
+      height: 4px;
+      background: var(--border2);
+      border-radius: 2px;
+      margin: 0 auto 20px;
+    }
+
+    .sheet-eyebrow {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 16px;
+    }
+
+    .sheet-selected-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .sheet-team-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface2);
+      border-radius: 10px;
+      padding: 10px 13px;
+    }
+
+    .sheet-check {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--voted);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .sheet-team-info { flex: 1; min-width: 0; }
+
+    .sheet-team-name {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .sheet-project-name {
+      font-size: 11.5px;
+      color: var(--text3);
+      font-style: italic;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sheet-notice {
+      background: var(--surface2);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 12.5px;
+      color: var(--text2);
+      line-height: 1.6;
+      margin-bottom: 18px;
+    }
+
+    .sheet-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-cancel {
+      flex: 1;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      color: var(--text2);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+    .btn-cancel:active { background: var(--surface2); }
+
+    .btn-cast {
+      flex: 2.5;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      background: var(--voted);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+    .btn-cast:active { opacity: 0.85; transform: scale(0.98); }
+
+    /* ── Done screen ── */
+    .done-screen {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 28px;
+      text-align: center;
+    }
+
+    .done-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: #EDFAF4;
+      border: 2px solid var(--voted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 34px;
+      margin-bottom: 22px;
+      animation: pop-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+
+    @keyframes pop-in {
+      0% { transform: scale(0.5); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .done-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+
+    .done-sub {
+      font-size: 13.5px;
+      color: var(--text3);
+      line-height: 1.65;
+      margin-bottom: 30px;
+    }
+
+    .done-voted-list {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 28px;
+    }
+
+    .done-team-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface);
+      border: 1.5px solid var(--voted);
+      border-radius: 10px;
+      padding: 10px 14px;
+    }
+
+    .done-check {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--voted);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .done-team-info { flex: 1; text-align: left; min-width: 0; }
+
+    .done-team-name {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--voted);
+    }
+
+    .done-project-name {
+      font-size: 11.5px;
+      color: var(--text3);
+      font-style: italic;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .done-note {
+      font-size: 12px;
+      color: var(--text3);
+      line-height: 1.6;
+    }
+
+    /* ── Closed banner ── */
+    .closed-banner {
+      background: var(--surface2);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .closed-banner strong { font-size: 13.5px; color: var(--text); }
+    .closed-banner span   { font-size: 12px;   color: var(--text3); }
+
+    /* ── Empty state ── */
+    .empty-state {
+      padding: 48px 24px;
+      text-align: center;
+    }
+
+    .empty-icon { font-size: 40px; margin-bottom: 12px; }
+
+    .empty-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .empty-desc { font-size: 13px; color: var(--text3); line-height: 1.6; }
+
+    /* ── Animations ── */
+    @keyframes card-select-flash {
+      0%   { box-shadow: 0 0 0 0 rgba(29, 158, 117, 0); }
+      35%  { box-shadow: 0 0 0 5px rgba(29, 158, 117, 0.22); }
+      100% { box-shadow: 0 0 0 0 rgba(29, 158, 117, 0); }
+    }
+
+    .card-select-flash { animation: card-select-flash 0.55s ease-out; }
+  </style>
+</head>
+<body>
+<div class="app-wrap">
+
+  <!-- ── AUTH SCREEN ── -->
+  <div id="authScreen" class="screen active">
+    <div class="auth-screen">
+      <div class="auth-logo">🗳️</div>
+      <div class="auth-title">Peer Vote</div>
+      <div class="auth-sub">Vote for your fellow teams' projects.<br>Each team gets 3 votes to give.</div>
+
+      <div class="auth-notice">
+        <strong>Peer voting opens after submission deadline.</strong> If you're here before it opens, check back once your hub's submission window has closed. Your team code is shown in the Eazo app under your hackathon registration.
+      </div>
+
+      <div class="auth-form">
+        <div>
+          <label class="auth-label" for="teamCodeInput">Team Code</label>
+          <input id="teamCodeInput" class="auth-input" type="text" placeholder="e.g. team_abc123" autocomplete="off" autocapitalize="none" spellcheck="false">
+        </div>
+        <div>
+          <label class="auth-label" for="hubInput">Hub</label>
+          <select id="hubInput" class="auth-input" style="appearance:none;-webkit-appearance:none;cursor:pointer;">
+            <option value="sf">SF · Bay Area</option>
+            <option value="ny">NY · New York</option>
+            <option value="sh">SH · Shanghai</option>
+            <option value="go">Global Online</option>
+            <option value="ao">Asia Online</option>
+          </select>
+        </div>
+        <div class="auth-error" id="authError"></div>
+        <button class="auth-btn" onclick="handleAuthSubmit()">Enter Peer Vote</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── VOTING SCREEN ── -->
+  <div id="voteScreen" class="screen">
+
+    <!-- Sticky header -->
+    <div class="header">
+      <div class="header-row">
+        <div>
+          <div class="event-eyebrow" id="headerEyebrow">Eazo Hackathon 2026 · SF</div>
+          <div class="event-name">Peer Vote</div>
+        </div>
+        <div class="sel-pill" id="selPill">
+          <div class="sel-pill-dot"></div>
+          <span id="selPillText">0 / 3 selected</span>
+        </div>
+      </div>
+
+      <!-- Track filter tabs -->
+      <div class="filter-bar">
+        <div class="track-tabs" id="trackTabs">
+          <button class="track-tab active" data-track="all"         onclick="setTrack('all',this)">All</button>
+          <button class="track-tab"        data-track="superparent" onclick="setTrack('superparent',this)">Superparent</button>
+          <button class="track-tab"        data-track="companion"   onclick="setTrack('companion',this)">AI Companion</button>
+          <button class="track-tab"        data-track="lifeos"      onclick="setTrack('lifeos',this)">Life OS</button>
+          <button class="track-tab"        data-track="body"        onclick="setTrack('body',this)">Body Intel</button>
+          <button class="track-tab"        data-track="wildcard"    onclick="setTrack('wildcard',this)">Wildcard</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cards list -->
+    <div class="content" id="content"></div>
+
+  </div>
+
+  <!-- ── DONE SCREEN ── -->
+  <div id="doneScreen" class="screen">
+    <div class="done-screen">
+      <div class="done-icon">✓</div>
+      <div class="done-title">Votes Cast!</div>
+      <div class="done-sub">Your peer votes have been submitted.<br>Results will be announced at the ceremony.</div>
+      <div class="done-voted-list" id="doneVotedList"></div>
+      <div class="done-note">Votes are final and cannot be changed.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── Sticky confirm bar ── -->
+<div class="confirm-bar" id="confirmBar">
+  <button class="confirm-btn" id="confirmBtn" onclick="openConfirmSheet()">Review &amp; Submit Votes</button>
+</div>
+
+<!-- ── Overlay ── -->
+<div class="overlay" id="overlay" onclick="closeSheet()"></div>
+
+<!-- ── Confirm sheet ── -->
+<div class="sheet" id="sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-eyebrow">Confirm Your Votes</div>
+
+  <div class="sheet-selected-list" id="sheetSelectedList"></div>
+
+  <div class="sheet-notice">
+    <strong>Votes are final.</strong> Once cast they cannot be changed or undone. You have 3 votes total — use them wisely.
+  </div>
+
+  <div class="sheet-actions">
+    <button class="btn-cancel" onclick="closeSheet()">Cancel</button>
+    <button class="btn-cast"   onclick="castVotes()" id="btnCast">Cast Votes</button>
+  </div>
+</div>
+
+<script>
+  // ── CONFIG ─────────────────────────────────────────────────────────────────
+  const MAX_SELECTIONS = 3;
+
+  const DEADLINES = {
+    sf: new Date('2026-05-24T17:00:00Z'), // May 24 10:00 AM PDT
+    go: new Date('2026-05-24T17:00:00Z'), // same as SF
+    ny: new Date('2026-05-25T01:00:00Z'), // May 24 9:00 PM EDT
+    sh: new Date('2026-05-24T11:00:00Z'), // May 24 7:00 PM CST
+    ao: new Date('2026-05-24T11:00:00Z'), // same as SH
+  };
+
+  const HUB_LABELS = {
+    sf: 'SF · Bay Area',
+    ny: 'NY · New York',
+    sh: 'SH · Shanghai',
+    go: 'Global Online',
+    ao: 'Asia Online',
+  };
+
+  const TRACK_LABEL = {
+    all:         'All Tracks',
+    superparent: 'Superparent',
+    companion:   'AI Companion',
+    lifeos:      'Life OS',
+    body:        'Body Intel',
+    wildcard:    'Wildcard',
+  };
+
+  // ── MOCK DATA ──────────────────────────────────────────────────────────────
+  // TODO: GET /api/${hub}/peer-projects?excludeTeamId=${myTeamId}  → { teams: Team[] }
+  const MOCK_TEAMS = [
+    { id:'sf_t01', team:'Team Harmony',   project:'FamilySync AI',  track:'superparent', desc:'Smart family scheduler that syncs everyone\'s calendar, automates reminders, and fairly distributes household tasks.' },
+    { id:'sf_t02', team:'Calm Stack',     project:'MindBuddy',      track:'companion',   desc:'Daily emotional check-ins with mood tracking and AI-powered coping suggestions.' },
+    { id:'sf_t03', team:'Builders Inc',   project:'GoalForge',      track:'lifeos',      desc:'AI second brain that breaks your goals into weekly micro-tasks.' },
+    { id:'sf_t04', team:'HealthLab',      project:'PulseCoach',     track:'body',        desc:'Personalized recovery plans built from HRV, sleep quality, and activity patterns.' },
+    { id:'sf_t05', team:'Solo Founders',  project:'NightWatch',     track:'wildcard',    desc:'AI-powered security camera analyzer that only alerts you when something truly matters.' },
+    { id:'sf_t06', team:'FamTech',        project:'ChoreCoins',     track:'superparent', desc:'Gamified chore tracker for kids with reward points and parent-approved prizes.' },
+    { id:'sf_t07', team:'Deep Work Co',   project:'FocusFlow',      track:'lifeos',      desc:'Pomodoro-style focus timer with binaural beats and session analytics.' },
+    { id:'sf_t08', team:'Night Owls',     project:'DreamBox',       track:'wildcard',    desc:'AI dream journal that interprets recurring themes and connects them to waking-life goals.' },
+  ];
+
+  // ── STATE ──────────────────────────────────────────────────────────────────
+  let myTeamId   = '';
+  let myTeamName = '';
+  let myHub      = 'sf';
+  let trackFilter = 'all';
+  let selectedIds = new Set();
+  let hasVoted    = false;
+  let votedForIds = [];
+  let allTeams    = [];     // teams for this hub (own excluded)
+
+  // ── IDENTITY BOOTSTRAP ────────────────────────────────────────────────────
+  function bootstrap() {
+    // 1. WebView bridge: app injects window.EAZO_TEAM before page loads
+    if (window.EAZO_TEAM && window.EAZO_TEAM.teamId) {
+      const t = window.EAZO_TEAM;
+      myTeamId   = t.teamId;
+      myTeamName = t.teamName || '';
+      myHub      = (t.hub || 'sf').toLowerCase();
+      enterVoteScreen();
+      return;
+    }
+
+    // 2. URL params fallback (testing/dev)
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('team')) {
+      myTeamId   = params.get('team');
+      myTeamName = params.get('name') || myTeamId;
+      myHub      = (params.get('hub') || 'sf').toLowerCase();
+      enterVoteScreen();
+      return;
+    }
+
+    // 3. Show auth screen
+    showScreen('authScreen');
+  }
+
+  function handleAuthSubmit() {
+    const code = document.getElementById('teamCodeInput').value.trim();
+    const hub  = document.getElementById('hubInput').value;
+    const errEl = document.getElementById('authError');
+
+    if (!code) {
+      errEl.textContent = 'Please enter your team code.';
+      return;
+    }
+    errEl.textContent = '';
+
+    // TODO: POST /api/${hub}/peer-vote-status?teamId=${code} to validate
+    myTeamId   = code;
+    myTeamName = code;
+    myHub      = hub;
+    enterVoteScreen();
+  }
+
+  // ── SCREEN MANAGEMENT ─────────────────────────────────────────────────────
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  function enterVoteScreen() {
+    // TODO: GET /api/${myHub}/peer-vote-status?teamId=${myTeamId} → { hasVoted, votedFor }
+    // For now simulate no prior votes
+    hasVoted    = false;
+    votedForIds = [];
+
+    // TODO: GET /api/${myHub}/peer-projects?excludeTeamId=${myTeamId}
+    allTeams = MOCK_TEAMS.filter(t => t.id !== myTeamId);
+
+    if (hasVoted) {
+      showDoneScreen(votedForIds);
+      return;
+    }
+
+    document.getElementById('headerEyebrow').textContent = `Eazo Hackathon 2026 · ${myHub.toUpperCase()}`;
+
+    showScreen('voteScreen');
+    renderAll();
+  }
+
+  function showDoneScreen(votedIds) {
+    const teams = votedIds.map(id => allTeams.find(t => t.id === id)).filter(Boolean);
+    const listEl = document.getElementById('doneVotedList');
+    listEl.innerHTML = teams.map(t => `
+      <div class="done-team-row">
+        <div class="done-check">✓</div>
+        <div class="done-team-info">
+          <div class="done-team-name">${escHtml(t.team)}</div>
+          <div class="done-project-name">${escHtml(t.project)}</div>
+        </div>
+      </div>`).join('');
+    showScreen('doneScreen');
+    document.getElementById('confirmBar').classList.remove('visible');
+  }
+
+  // ── HELPERS ───────────────────────────────────────────────────────────────
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function isVotingOpen() {
+    return Date.now() < (DEADLINES[myHub] || DEADLINES.sf).getTime();
+  }
+
+  function filteredTeams() {
+    let list = [...allTeams];
+    if (trackFilter !== 'all') list = list.filter(t => t.track === trackFilter);
+    return list;
+  }
+
+  // ── TRACK FILTER ──────────────────────────────────────────────────────────
+  function setTrack(track, el) {
+    trackFilter = track;
+    document.querySelectorAll('.track-tab').forEach(t => t.classList.remove('active'));
+    if (el) el.classList.add('active');
+    renderAll();
+  }
+
+  // ── SELECTION ─────────────────────────────────────────────────────────────
+  function toggleSelect(id) {
+    if (!isVotingOpen()) return;
+
+    if (selectedIds.has(id)) {
+      selectedIds.delete(id);
+    } else {
+      if (selectedIds.size >= MAX_SELECTIONS) return; // limit reached, button disabled
+      selectedIds.add(id);
+    }
+
+    updateSelectionUI();
+    updateCardState(id);
+  }
+
+  function updateSelectionUI() {
+    const n    = selectedIds.size;
+    const pill = document.getElementById('selPill');
+    const txt  = document.getElementById('selPillText');
+
+    txt.textContent = `${n} / ${MAX_SELECTIONS} selected`;
+    pill.classList.toggle('has-selection', n > 0);
+
+    // Confirm bar
+    const bar = document.getElementById('confirmBar');
+    bar.classList.toggle('visible', n > 0);
+
+    // Update confirm button label
+    const btn = document.getElementById('confirmBtn');
+    if (n === 0) {
+      btn.textContent = 'Review & Submit Votes';
+    } else {
+      btn.textContent = `Review ${n} Vote${n !== 1 ? 's' : ''} →`;
+    }
+
+    // Re-evaluate limit-reached state on all un-selected cards
+    const limitReached = n >= MAX_SELECTIONS;
+    document.querySelectorAll('.select-btn:not(.selected)').forEach(b => {
+      b.classList.toggle('limit-reached', limitReached);
+    });
+  }
+
+  function updateCardState(id) {
+    const card = document.getElementById(`card-${id}`);
+    const btn  = document.getElementById(`selbtn-${id}`);
+    if (!card || !btn) return;
+
+    const sel = selectedIds.has(id);
+    card.classList.toggle('selected', sel);
+    btn.classList.toggle('selected', sel);
+    btn.textContent = sel ? '✓ Selected' : 'Select';
+
+    if (sel) {
+      card.classList.add('card-select-flash');
+      setTimeout(() => card.classList.remove('card-select-flash'), 580);
+    }
+  }
+
+  // ── CONFIRM SHEET ─────────────────────────────────────────────────────────
+  function openConfirmSheet() {
+    if (selectedIds.size === 0) return;
+
+    const listEl = document.getElementById('sheetSelectedList');
+    const teams  = [...selectedIds].map(id => allTeams.find(t => t.id === id)).filter(Boolean);
+
+    listEl.innerHTML = teams.map(t => `
+      <div class="sheet-team-row">
+        <div class="sheet-check">✓</div>
+        <div class="sheet-team-info">
+          <div class="sheet-team-name">${escHtml(t.team)}</div>
+          <div class="sheet-project-name">${escHtml(t.project)}</div>
+        </div>
+        <span class="track-badge badge-${t.track}">${TRACK_LABEL[t.track]}</span>
+      </div>`).join('');
+
+    const castBtn = document.getElementById('btnCast');
+    castBtn.textContent = `Cast ${selectedIds.size} Vote${selectedIds.size !== 1 ? 's' : ''}`;
+
+    document.getElementById('overlay').classList.add('visible');
+    document.getElementById('sheet').classList.add('open');
+  }
+
+  function closeSheet() {
+    document.getElementById('overlay').classList.remove('visible');
+    document.getElementById('sheet').classList.remove('open');
+  }
+
+  function castVotes() {
+    if (selectedIds.size === 0) return;
+
+    const votedIds = [...selectedIds];
+
+    // TODO: POST /api/${myHub}/peer-vote  body: { voterTeamId: myTeamId, votedTeamIds: votedIds }
+    // On success → show done screen
+    // On error → show toast, keep sheet open
+
+    hasVoted    = true;
+    votedForIds = votedIds;
+
+    closeSheet();
+    showDoneScreen(votedIds);
+  }
+
+  // ── RENDER CARD ───────────────────────────────────────────────────────────
+  function renderCard(t) {
+    const sel         = selectedIds.has(t.id);
+    const open        = isVotingOpen();
+    const limitReached = selectedIds.size >= MAX_SELECTIONS && !sel;
+
+    let btnClass = 'select-btn';
+    let btnLabel = 'Select';
+    let btnDisabled = '';
+
+    if (!open) {
+      btnDisabled = 'disabled';
+      btnLabel = 'Closed';
+      btnClass += ' limit-reached';
+    } else if (sel) {
+      btnClass += ' selected';
+      btnLabel  = '✓ Selected';
+    } else if (limitReached) {
+      btnClass += ' limit-reached';
+      btnLabel  = 'Select';
+      btnDisabled = 'disabled';
+    }
+
+    return `
+      <div class="card${sel ? ' selected' : ''}" id="card-${t.id}">
+        <div class="card-body">
+          <div class="card-top">
+            <div class="card-info">
+              <div class="card-team-name">${escHtml(t.team)}</div>
+              <div class="card-project-name">${escHtml(t.project)}</div>
+              <span class="track-badge badge-${t.track}">${TRACK_LABEL[t.track]}</span>
+            </div>
+            <button
+              class="${btnClass}"
+              id="selbtn-${t.id}"
+              ${btnDisabled}
+              onclick="toggleSelect('${t.id}')"
+            >${btnLabel}</button>
+          </div>
+          <div class="card-desc">${escHtml(t.desc)}</div>
+        </div>
+      </div>`;
+  }
+
+  // ── FULL RENDER ───────────────────────────────────────────────────────────
+  function renderAll() {
+    const content = document.getElementById('content');
+    const open    = isVotingOpen();
+    const list    = filteredTeams();
+    let   html    = '';
+
+    if (!open) {
+      html += `
+        <div class="closed-banner">
+          <strong>Voting has closed</strong>
+          <span>Thank you for participating! Results will be announced at the awards ceremony.</span>
+        </div>`;
+    }
+
+    if (allTeams.length === 0) {
+      html += `
+        <div class="empty-state">
+          <div class="empty-icon">📭</div>
+          <div class="empty-title">No teams to vote for</div>
+          <div class="empty-desc">Other teams' submissions will appear here once the submission window closes.</div>
+        </div>`;
+    } else if (list.length === 0) {
+      html += `
+        <div class="empty-state">
+          <div class="empty-icon">🔍</div>
+          <div class="empty-title">No projects in this track</div>
+          <div class="empty-desc">No ${TRACK_LABEL[trackFilter]} submissions in your hub yet.</div>
+        </div>`;
+    } else {
+      const trackNote = trackFilter !== 'all' ? ` · ${TRACK_LABEL[trackFilter]}` : '';
+      html += `<div class="stats-line"><strong>${list.length}</strong> team${list.length !== 1 ? 's' : ''}${trackNote} — select up to 3 to vote</div>`;
+      html += list.map(renderCard).join('');
+    }
+
+    content.innerHTML = html;
+    updateSelectionUI();
+  }
+
+  // ── WebView bridge hooks (app can call these) ─────────────────────────────
+  // window.EAZO_TEAM = { teamId, teamName, hub } — set before page load
+  // window.eazoReady = () => bootstrap();          — explicit trigger hook
+
+  // ── INIT ──────────────────────────────────────────────────────────────────
+  bootstrap();
+</script>
+</body>
+</html>

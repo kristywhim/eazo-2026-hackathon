@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Eazo Hackathon 2026 — Judge Scorer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:   #060D18;
+      --s1:   #0C1525;
+      --s2:   #112034;
+      --s3:   #182A44;
+      --bdr:  #253D5C;
+      --bdr2: #2E4D72;
+      --t1:   #EEF3FF;
+      --t2:   #8A9CC0;
+      --t3:   #4A607E;
+      --orange: #FF6B20;
+      --gold:   #F5B030;
+      --up:     #22C97A;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--t1);
+      min-height: 100vh;
+    }
+
+    /* ── Auth Screen ── */
+    #auth-screen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    .auth-card {
+      background: var(--s1);
+      border: 1px solid var(--bdr);
+      border-radius: 16px;
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+    }
+
+    .auth-logo {
+      font-size: 40px;
+      margin-bottom: 8px;
+    }
+
+    .auth-card h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--t1);
+      margin-bottom: 4px;
+    }
+
+    .auth-card p {
+      font-size: 14px;
+      color: var(--t2);
+      margin-bottom: 32px;
+    }
+
+    .auth-card label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--t2);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      text-align: left;
+      margin-bottom: 8px;
+    }
+
+    .auth-card input[type="text"],
+    .auth-card input[type="password"] {
+      width: 100%;
+      background: var(--s2);
+      border: 1px solid var(--bdr);
+      border-radius: 8px;
+      color: var(--t1);
+      font-family: inherit;
+      font-size: 16px;
+      padding: 12px 14px;
+      outline: none;
+      transition: border-color 0.15s;
+      margin-bottom: 16px;
+      letter-spacing: 0.12em;
+    }
+
+    .auth-card input:focus {
+      border-color: var(--bdr2);
+    }
+
+    .auth-error {
+      font-size: 13px;
+      color: #FF5A5A;
+      margin-bottom: 14px;
+      display: none;
+    }
+
+    .btn-primary {
+      width: 100%;
+      background: var(--orange);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 600;
+      padding: 13px;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .btn-primary:hover { opacity: 0.88; }
+
+    /* ── App Shell ── */
+    #app-screen { display: none; flex-direction: column; min-height: 100vh; }
+
+    /* ── Header ── */
+    header {
+      background: var(--s1);
+      border-bottom: 1px solid var(--bdr);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .logo-mark {
+      font-size: 26px;
+      line-height: 1;
+      color: var(--orange);
+      font-weight: 700;
+    }
+
+    .header-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--t1);
+    }
+
+    .header-hub {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--t2);
+      background: var(--s3);
+      border: 1px solid var(--bdr);
+      border-radius: 6px;
+      padding: 3px 10px;
+    }
+
+    .header-sep { flex: 1; }
+
+    .judge-badge {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--gold);
+      background: rgba(245,176,48,0.12);
+      border: 1px solid rgba(245,176,48,0.3);
+      border-radius: 20px;
+      padding: 4px 12px;
+      letter-spacing: 0.04em;
+    }
+
+    /* ── Main Content ── */
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 24px 120px;
+      flex: 1;
+    }
+
+    .instruction-bar {
+      background: var(--s2);
+      border: 1px solid var(--bdr);
+      border-radius: 10px;
+      padding: 14px 18px;
+      font-size: 14px;
+      color: var(--t2);
+      margin-bottom: 28px;
+      line-height: 1.5;
+    }
+
+    .instruction-bar strong { color: var(--t1); }
+
+    /* ── Criteria Header ── */
+    .criteria-header {
+      display: grid;
+      grid-template-columns: 48px 220px 1fr 140px 140px 140px 80px;
+      gap: 12px;
+      align-items: center;
+      padding: 0 16px 10px;
+      border-bottom: 1px solid var(--bdr);
+      margin-bottom: 8px;
+    }
+
+    .criteria-header span {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--t3);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .criteria-header .crit-label {
+      text-align: center;
+    }
+
+    /* ── Team Card ── */
+    .team-card {
+      background: var(--s1);
+      border: 1px solid var(--bdr);
+      border-radius: 12px;
+      margin-bottom: 8px;
+      padding: 16px;
+      display: grid;
+      grid-template-columns: 48px 220px 1fr 140px 140px 140px 80px;
+      gap: 12px;
+      align-items: center;
+      transition: border-color 0.15s;
+    }
+
+    .team-card:hover { border-color: var(--bdr2); }
+
+    .team-rank {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--t3);
+      text-align: center;
+    }
+
+    .team-info {}
+
+    .team-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--t1);
+      margin-bottom: 2px;
+    }
+
+    .team-project {
+      font-size: 12px;
+      color: var(--t2);
+      font-style: italic;
+    }
+
+    .team-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .badge {
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 20px;
+      padding: 3px 9px;
+      letter-spacing: 0.03em;
+      white-space: nowrap;
+    }
+
+    /* Track badges */
+    .badge-superparent { background: rgba(245,176,48,0.15); color: #F5B030; border: 1px solid rgba(245,176,48,0.3); }
+    .badge-companion   { background: rgba(144,128,232,0.15); color: #9080E8; border: 1px solid rgba(144,128,232,0.3); }
+    .badge-lifeos      { background: rgba(34,201,122,0.15);  color: #22C97A; border: 1px solid rgba(34,201,122,0.3); }
+    .badge-body        { background: rgba(88,152,232,0.15);  color: #5898E8; border: 1px solid rgba(88,152,232,0.3); }
+    .badge-wildcard    { background: rgba(74,96,126,0.2);    color: #8A9CC0; border: 1px solid rgba(74,96,126,0.4); }
+
+    /* Method badges */
+    .badge-referral { background: rgba(255,107,32,0.15); color: #FF6B20; border: 1px solid rgba(255,107,32,0.3); }
+    .badge-peer     { background: rgba(144,128,232,0.15); color: #9080E8; border: 1px solid rgba(144,128,232,0.3); }
+    .badge-online   { background: rgba(88,152,232,0.15);  color: #5898E8; border: 1px solid rgba(88,152,232,0.3); }
+
+    /* ── Score Input ── */
+    .score-field {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .score-field-label {
+      font-size: 10px;
+      color: var(--t3);
+      font-weight: 500;
+      text-align: center;
+    }
+
+    .score-controls {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .score-btn {
+      width: 28px;
+      height: 28px;
+      background: var(--s3);
+      border: 1px solid var(--bdr);
+      border-radius: 6px;
+      color: var(--t2);
+      font-size: 16px;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.1s, color 0.1s;
+      flex-shrink: 0;
+    }
+
+    .score-btn:hover { background: var(--bdr2); color: var(--t1); }
+
+    .score-input {
+      width: 44px;
+      background: var(--s2);
+      border: 1px solid var(--bdr);
+      border-radius: 6px;
+      color: var(--t1);
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 600;
+      text-align: center;
+      padding: 4px 2px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .score-input:focus { border-color: var(--orange); }
+
+    .team-total {
+      text-align: center;
+    }
+
+    .total-label {
+      font-size: 10px;
+      color: var(--t3);
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .total-value {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--gold);
+    }
+
+    /* ── Sticky Save Bar ── */
+    .save-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--s1);
+      border-top: 1px solid var(--bdr);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 200;
+    }
+
+    .save-bar-info {
+      font-size: 13px;
+      color: var(--t2);
+    }
+
+    .save-bar-info strong { color: var(--t1); }
+
+    .btn-save {
+      background: var(--orange);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 600;
+      padding: 12px 28px;
+      cursor: pointer;
+      transition: opacity 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-save:hover { opacity: 0.88; }
+
+    .btn-save.submitted {
+      background: var(--up);
+      cursor: default;
+    }
+
+    .btn-save.submitted:hover { opacity: 1; }
+
+    /* ── Hub Pills selector (when no hub in URL) ── */
+    .hub-select-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .hub-pill {
+      background: var(--s2);
+      border: 1px solid var(--bdr);
+      border-radius: 8px;
+      color: var(--t2);
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 8px 18px;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+    }
+
+    .hub-pill:hover, .hub-pill.active {
+      border-color: var(--orange);
+      color: var(--t1);
+    }
+
+    /* ── Section divider ── */
+    .section-divider {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--t3);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 18px 16px 10px;
+    }
+
+    /* Scrollable area note */
+    .scroll-hint {
+      font-size: 12px;
+      color: var(--t3);
+      text-align: right;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Auth Screen ── -->
+<div id="auth-screen">
+  <div class="auth-card">
+    <div class="auth-logo">✳</div>
+    <h1>Eazo Hackathon 2026</h1>
+    <p>Judge Scoring Portal — Enter your access code to continue</p>
+
+    <form id="auth-form" onsubmit="handleAuth(event)">
+      <label for="hub-select-input">Hub</label>
+      <div style="display:flex;gap:8px;margin-bottom:16px;">
+        <button type="button" class="hub-pill" data-hub="sf" onclick="selectHub(this)">🇺🇸 SF · Bay Area</button>
+        <button type="button" class="hub-pill" data-hub="ny" onclick="selectHub(this)">🗽 NY · New York</button>
+        <button type="button" class="hub-pill" data-hub="sh" onclick="selectHub(this)">🇨🇳 SH · Shanghai</button>
+      </div>
+      <label for="code-input">Judge Code</label>
+      <input type="password" id="code-input" placeholder="Enter judge code" autocomplete="off" />
+      <div id="auth-error" class="auth-error">Invalid code. Please try again.</div>
+      <button type="submit" class="btn-primary">Access Scoring Portal →</button>
+    </form>
+  </div>
+</div>
+
+<!-- ── App Screen ── -->
+<div id="app-screen">
+  <header>
+    <div class="header-inner">
+      <div class="logo-mark">✳</div>
+      <div class="header-title">Eazo Hackathon 2026</div>
+      <div class="header-hub" id="header-hub-label"></div>
+      <span style="font-size:13px;color:var(--t3);font-weight:500;">Judge Scorer</span>
+      <div class="header-sep"></div>
+      <div class="judge-badge" id="judge-badge-label"></div>
+    </div>
+  </header>
+
+  <main>
+    <div class="instruction-bar">
+      <strong>Instructions:</strong> Score each finalist team on the three criteria below (0–10 each).
+      Use the +/− buttons or type directly. Scores are tallied automatically.
+      When you're done, click <strong>Save All Scores</strong>.
+    </div>
+
+    <div class="scroll-hint">Scroll to view all teams ↓</div>
+
+    <div class="criteria-header">
+      <span>#</span>
+      <span>Team</span>
+      <span>Badges</span>
+      <span class="crit-label">Criterion 1 (TBD)</span>
+      <span class="crit-label">Criterion 2 (TBD)</span>
+      <span class="crit-label">Criterion 3 (TBD)</span>
+      <span class="crit-label">Total</span>
+    </div>
+
+    <div id="finalists-list"></div>
+  </main>
+
+  <div class="save-bar">
+    <div class="save-bar-info">
+      <strong id="save-count">0</strong> teams scored
+      <span id="save-hub-label" style="margin-left:8px;"></span>
+    </div>
+    <button class="btn-save" id="save-btn" onclick="saveAllScores()">Save All Scores</button>
+  </div>
+</div>
+
+<script>
+// ── Config ──────────────────────────────────────────────────────────────────
+const VALID_CODE = 'JUDGE2026';
+
+const HUB_LABELS = {
+  sf: '🇺🇸 SF · Bay Area',
+  ny: '🗽 NY · New York',
+  sh: '🇨🇳 SH · Shanghai',
+};
+
+const TRACK_LABELS = {
+  superparent: 'SuperParent',
+  companion:   'Companion',
+  lifeos:      'LifeOS',
+  body:        'Body',
+  wildcard:    'Wildcard',
+};
+
+const METHOD_LABELS = {
+  referral: 'Referral',
+  peer:     'Peer Vote',
+  online:   'Online',
+};
+
+// TODO: GET /api/${hub}/finalists?code=${judgeCode}  → { finalists: Finalist[] }
+// TODO: POST /api/${hub}/judge-scores  body: { judgeCode, scores: [{teamId, c1, c2, c3}] }
+
+const MOCK_FINALISTS = {
+  sf: [
+    { id:'sf_t01', rank:1,  team:'Team Meridian',   project:'Atlas',       track:'lifeos',      method:'referral' },
+    { id:'sf_t02', rank:2,  team:'Team Wavelength', project:'SolaceAI',    track:'companion',   method:'referral' },
+    { id:'sf_t03', rank:3,  team:'Team Pulse',      project:'BodySync',    track:'body',        method:'peer' },
+    { id:'sf_t04', rank:4,  team:'Team Nested',     project:'FamilyFlow',  track:'superparent', method:'peer' },
+    { id:'sf_t05', rank:5,  team:'Team Epoch',      project:'DayZero',     track:'lifeos',      method:'referral' },
+    { id:'sf_t06', rank:6,  team:'Remote Minds',    project:'AutoPilot',   track:'lifeos',      method:'online' },
+    { id:'sf_t07', rank:7,  team:'FamCloud',        project:'KidCast',     track:'superparent', method:'online' },
+    { id:'sf_t08', rank:8,  team:'FeelFirst',       project:'MoodSync',    track:'companion',   method:'peer' },
+    { id:'sf_t09', rank:9,  team:'Team Kinetic',    project:'RecoverAI',   track:'body',        method:'referral' },
+    { id:'sf_t10', rank:10, team:'Team Drift',      project:'FocusBuddy',  track:'companion',   method:'peer' },
+  ],
+  ny: [
+    { id:'ny_t01', rank:1, team:'Team Fulton',    project:'FinCoach',    track:'lifeos',      method:'referral' },
+    { id:'ny_t02', rank:2, team:'Team Brooklyn',  project:'MindMap',     track:'companion',   method:'peer' },
+    { id:'ny_t03', rank:3, team:'Team Harlem',    project:'StreetSense', track:'wildcard',    method:'referral' },
+    { id:'ny_t04', rank:4, team:'Team Tribeca',   project:'DadBot',      track:'superparent', method:'peer' },
+    { id:'ny_t05', rank:5, team:'Team Chelsea',   project:'HabitNest',   track:'lifeos',      method:'referral' },
+  ],
+  sh: [
+    { id:'sh_t01', rank:1, team:'队伍 · 晨曦', project:'DawnMind',   track:'lifeos',      method:'referral' },
+    { id:'sh_t02', rank:2, team:'队伍 · 织梦', project:'DreamWeave', track:'companion',   method:'peer' },
+    { id:'sh_t03', rank:3, team:'家家互联',      project:'亲子云',      track:'superparent', method:'online' },
+    { id:'sh_t04', rank:4, team:'队伍 · 脉动', project:'PulseLife',  track:'body',        method:'referral' },
+    { id:'sh_t05', rank:5, team:'意向科技',      project:'思伴',        track:'companion',   method:'online' },
+  ],
+};
+
+// ── State ───────────────────────────────────────────────────────────────────
+let currentHub = '';
+let judgeCode  = '';
+let scores     = {};  // { teamId: { c1, c2, c3 } }
+let selectedAuthHub = '';
+
+// ── Init ────────────────────────────────────────────────────────────────────
+(function init() {
+  const params = new URLSearchParams(window.location.search);
+  const hubParam  = (params.get('hub')  || '').toLowerCase();
+  const codeParam = (params.get('code') || '').toUpperCase();
+
+  if (hubParam && HUB_LABELS[hubParam] && codeParam === VALID_CODE) {
+    // Auto-authenticate from URL params
+    currentHub = hubParam;
+    judgeCode  = codeParam;
+    showApp();
+  } else {
+    // Pre-select hub if in URL
+    if (hubParam && HUB_LABELS[hubParam]) {
+      selectedAuthHub = hubParam;
+      const pill = document.querySelector(`.hub-pill[data-hub="${hubParam}"]`);
+      if (pill) pill.classList.add('active');
+    }
+    document.getElementById('auth-screen').style.display = 'flex';
+  }
+})();
+
+// ── Auth ────────────────────────────────────────────────────────────────────
+function selectHub(btn) {
+  document.querySelectorAll('.hub-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  selectedAuthHub = btn.dataset.hub;
+}
+
+function handleAuth(e) {
+  e.preventDefault();
+  const code = document.getElementById('code-input').value.trim().toUpperCase();
+  const errorEl = document.getElementById('auth-error');
+
+  if (!selectedAuthHub) {
+    errorEl.textContent = 'Please select a hub first.';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  if (code !== VALID_CODE) {
+    errorEl.textContent = 'Invalid code. Please try again.';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  errorEl.style.display = 'none';
+  currentHub = selectedAuthHub;
+  judgeCode  = code;
+  showApp();
+}
+
+// ── App ──────────────────────────────────────────────────────────────────────
+function showApp() {
+  document.getElementById('auth-screen').style.display = 'none';
+  const appEl = document.getElementById('app-screen');
+  appEl.style.display = 'flex';
+
+  document.getElementById('header-hub-label').textContent = HUB_LABELS[currentHub] || currentHub.toUpperCase();
+  document.getElementById('judge-badge-label').textContent = `Code: ${judgeCode}`;
+  document.getElementById('save-hub-label').textContent = `· ${HUB_LABELS[currentHub] || ''}`;
+
+  renderFinalists();
+}
+
+function renderFinalists() {
+  const finalists = MOCK_FINALISTS[currentHub] || [];
+  const container = document.getElementById('finalists-list');
+  container.innerHTML = '';
+
+  finalists.forEach(team => {
+    scores[team.id] = { c1: 0, c2: 0, c3: 0 };
+
+    const card = document.createElement('div');
+    card.className = 'team-card';
+    card.innerHTML = `
+      <div class="team-rank">${team.rank}</div>
+      <div class="team-info">
+        <div class="team-name">${esc(team.team)}</div>
+        <div class="team-project">${esc(team.project)}</div>
+      </div>
+      <div class="team-badges">
+        <span class="badge badge-${team.track}">${TRACK_LABELS[team.track] || team.track}</span>
+        <span class="badge badge-${team.method}">${METHOD_LABELS[team.method] || team.method}</span>
+      </div>
+      ${scoreField(team.id, 'c1', 'Criterion 1 (TBD)')}
+      ${scoreField(team.id, 'c2', 'Criterion 2 (TBD)')}
+      ${scoreField(team.id, 'c3', 'Criterion 3 (TBD)')}
+      <div class="team-total">
+        <div class="total-label">Total</div>
+        <div class="total-value" id="total-${team.id}">0</div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+
+  updateSaveCount();
+}
+
+function scoreField(teamId, crit, label) {
+  return `
+    <div class="score-field">
+      <div class="score-field-label">${label}</div>
+      <div class="score-controls">
+        <button class="score-btn" onclick="adjustScore('${teamId}','${crit}',-1)">−</button>
+        <input
+          class="score-input"
+          type="number"
+          id="score-${teamId}-${crit}"
+          value="0"
+          min="0"
+          max="10"
+          oninput="onScoreInput('${teamId}','${crit}',this)"
+        />
+        <button class="score-btn" onclick="adjustScore('${teamId}','${crit}',1)">+</button>
+      </div>
+    </div>
+  `;
+}
+
+function adjustScore(teamId, crit, delta) {
+  const input = document.getElementById(`score-${teamId}-${crit}`);
+  let val = parseInt(input.value) || 0;
+  val = Math.max(0, Math.min(10, val + delta));
+  input.value = val;
+  scores[teamId][crit] = val;
+  updateTotal(teamId);
+  updateSaveCount();
+  resetSaveBtn();
+}
+
+function onScoreInput(teamId, crit, input) {
+  let val = parseInt(input.value);
+  if (isNaN(val)) val = 0;
+  val = Math.max(0, Math.min(10, val));
+  input.value = val;
+  scores[teamId][crit] = val;
+  updateTotal(teamId);
+  updateSaveCount();
+  resetSaveBtn();
+}
+
+function updateTotal(teamId) {
+  const s = scores[teamId];
+  const total = (s.c1 || 0) + (s.c2 || 0) + (s.c3 || 0);
+  document.getElementById(`total-${teamId}`).textContent = total;
+}
+
+function updateSaveCount() {
+  const scored = Object.values(scores).filter(s => (s.c1 + s.c2 + s.c3) > 0).length;
+  document.getElementById('save-count').textContent = scored;
+}
+
+function resetSaveBtn() {
+  const btn = document.getElementById('save-btn');
+  btn.className = 'btn-save';
+  btn.innerHTML = 'Save All Scores';
+}
+
+function saveAllScores() {
+  // TODO: POST /api/${currentHub}/judge-scores  body: { judgeCode, scores: Object.entries(scores).map(([teamId,s]) => ({teamId,...s})) }
+  console.log('Saving scores for hub:', currentHub, scores);
+
+  const btn = document.getElementById('save-btn');
+  btn.className = 'btn-save submitted';
+  btn.innerHTML = 'Submitted ✓';
+}
+
+function esc(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+</script>
+</body>
+</html>

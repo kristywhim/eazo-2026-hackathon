@@ -1,0 +1,19 @@
+{
+  "name": "eazo-hackathon-2026",
+  "version": "1.0.0",
+  "description": "Eazo Global Hackathon 2026 — voting, live board, judge scorer, finalist system",
+  "private": true,
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0"
+  },
+  "devDependencies": {
+    "vercel": "^37.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

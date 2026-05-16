@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Eazo Hackathon 2026 — Finalist Announcement</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:   #060D18;
+      --s1:   #0C1525;
+      --s2:   #112034;
+      --s3:   #182A44;
+      --bdr:  #253D5C;
+      --bdr2: #2E4D72;
+      --t1:   #EEF3FF;
+      --t2:   #8A9CC0;
+      --t3:   #4A607E;
+      --orange: #FF6B20;
+      --gold:   #F5B030;
+      --up:     #22C97A;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--t1);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--s1);
+      border-bottom: 1px solid var(--bdr);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 40px;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .logo-mark {
+      font-size: 34px;
+      color: var(--orange);
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .header-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--t1);
+    }
+
+    .header-divider {
+      width: 1px;
+      height: 28px;
+      background: var(--bdr);
+    }
+
+    .header-hub {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--t2);
+    }
+
+    .header-sep { flex: 1; }
+
+    .live-dot-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--up);
+    }
+
+    .live-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--up);
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.4; transform: scale(0.75); }
+    }
+
+    .refresh-label {
+      font-size: 12px;
+      color: var(--t3);
+    }
+
+    .calc-timestamp {
+      font-size: 12px;
+      color: var(--t3);
+      margin-left: 16px;
+    }
+
+    /* ── Waiting Screen ── */
+    #waiting-screen {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      min-height: calc(100vh - 72px);
+      text-align: center;
+      padding: 40px;
+    }
+
+    .waiting-icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+      opacity: 0.5;
+    }
+
+    .waiting-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--t1);
+      margin-bottom: 10px;
+    }
+
+    .waiting-sub {
+      font-size: 18px;
+      color: var(--t2);
+      margin-bottom: 40px;
+    }
+
+    .countdown-box {
+      background: var(--s1);
+      border: 1px solid var(--bdr);
+      border-radius: 16px;
+      padding: 36px 48px;
+      display: inline-flex;
+      gap: 32px;
+    }
+
+    .countdown-segment {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .countdown-num {
+      font-size: 56px;
+      font-weight: 800;
+      color: var(--t1);
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+      min-width: 72px;
+      text-align: center;
+    }
+
+    .countdown-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--t3);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .countdown-sep {
+      font-size: 48px;
+      font-weight: 800;
+      color: var(--t3);
+      line-height: 1;
+      align-self: center;
+      margin-top: -8px;
+    }
+
+    /* ── Finalist List ── */
+    #finalist-screen {
+      display: none;
+    }
+
+    .finalist-header {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 36px 40px 24px;
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+    }
+
+    .finalist-header h2 {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--t1);
+    }
+
+    .finalist-count {
+      font-size: 15px;
+      color: var(--t2);
+    }
+
+    .finalist-list {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 40px 80px;
+    }
+
+    .finalist-row {
+      display: grid;
+      grid-template-columns: 80px 1fr auto auto;
+      gap: 20px;
+      align-items: center;
+      background: var(--s1);
+      border: 1px solid var(--bdr);
+      border-radius: 14px;
+      padding: 24px 32px;
+      margin-bottom: 12px;
+      transition: border-color 0.15s;
+    }
+
+    .finalist-row:hover { border-color: var(--bdr2); }
+
+    .finalist-rank {
+      font-size: 40px;
+      font-weight: 800;
+      color: var(--t3);
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .finalist-rank.top3 { color: var(--gold); }
+
+    .finalist-info {}
+
+    .finalist-team {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--t1);
+      margin-bottom: 4px;
+    }
+
+    .finalist-project {
+      font-size: 16px;
+      color: var(--t2);
+      font-style: italic;
+    }
+
+    .finalist-badges {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: flex-end;
+    }
+
+    .badge {
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 20px;
+      padding: 4px 12px;
+      letter-spacing: 0.03em;
+      white-space: nowrap;
+    }
+
+    /* Track badges */
+    .badge-superparent { background: rgba(245,176,48,0.15);  color: #F5B030; border: 1px solid rgba(245,176,48,0.3); }
+    .badge-companion   { background: rgba(144,128,232,0.15); color: #9080E8; border: 1px solid rgba(144,128,232,0.3); }
+    .badge-lifeos      { background: rgba(34,201,122,0.15);  color: #22C97A; border: 1px solid rgba(34,201,122,0.3); }
+    .badge-body        { background: rgba(88,152,232,0.15);  color: #5898E8; border: 1px solid rgba(88,152,232,0.3); }
+    .badge-wildcard    { background: rgba(74,96,126,0.2);    color: #8A9CC0; border: 1px solid rgba(74,96,126,0.4); }
+
+    /* Method badges */
+    .badge-referral { background: rgba(255,107,32,0.15); color: #FF6B20; border: 1px solid rgba(255,107,32,0.3); }
+    .badge-peer     { background: rgba(144,128,232,0.15); color: #9080E8; border: 1px solid rgba(144,128,232,0.3); }
+    .badge-online   { background: rgba(88,152,232,0.15);  color: #5898E8; border: 1px solid rgba(88,152,232,0.3); }
+
+    /* ── Online group divider ── */
+    .group-divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 28px 0 14px;
+    }
+
+    .group-divider-line {
+      flex: 1;
+      height: 1px;
+      background: var(--bdr);
+    }
+
+    .group-divider-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--t3);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      white-space: nowrap;
+    }
+
+    /* ── Error / Unknown hub ── */
+    #unknown-screen {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      min-height: calc(100vh - 72px);
+      text-align: center;
+      gap: 16px;
+    }
+
+    #unknown-screen h2 { font-size: 28px; font-weight: 700; }
+    #unknown-screen p  { font-size: 16px; color: var(--t2); }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header>
+  <div class="header-inner">
+    <div class="logo-mark">✳</div>
+    <div class="header-title">Eazo Hackathon 2026</div>
+    <div class="header-divider"></div>
+    <div class="header-hub" id="header-hub"></div>
+    <div class="header-sep"></div>
+    <span class="refresh-label">Auto-refresh every 30s</span>
+    <div class="live-dot-wrap">
+      <div class="live-dot"></div>
+      LIVE
+    </div>
+    <div class="calc-timestamp" id="calc-timestamp"></div>
+  </div>
+</header>
+
+<!-- ── Unknown Hub ── -->
+<div id="unknown-screen" style="display:flex;">
+  <h2>Unknown Hub</h2>
+  <p>Please add <code>?hub=sf</code>, <code>?hub=ny</code>, or <code>?hub=sh</code> to the URL.</p>
+</div>
+
+<!-- ── Waiting Screen ── -->
+<div id="waiting-screen">
+  <div class="waiting-icon">⏳</div>
+  <div class="waiting-title">Calculating Finalists…</div>
+  <div class="waiting-sub">Voting closes in</div>
+  <div class="countdown-box">
+    <div class="countdown-segment">
+      <div class="countdown-num" id="cd-h">00</div>
+      <div class="countdown-label">Hours</div>
+    </div>
+    <div class="countdown-sep">:</div>
+    <div class="countdown-segment">
+      <div class="countdown-num" id="cd-m">00</div>
+      <div class="countdown-label">Minutes</div>
+    </div>
+    <div class="countdown-sep">:</div>
+    <div class="countdown-segment">
+      <div class="countdown-num" id="cd-s">00</div>
+      <div class="countdown-label">Seconds</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Finalist Screen ── -->
+<div id="finalist-screen">
+  <div class="finalist-header">
+    <h2>Finalist Announcement</h2>
+    <span class="finalist-count" id="finalist-count"></span>
+  </div>
+  <div class="finalist-list" id="finalist-list"></div>
+</div>
+
+<script>
+// ── Config ──────────────────────────────────────────────────────────────────
+const HUB_LABELS = {
+  sf: '🇺🇸 SF · Bay Area',
+  ny: '🗽 NY · New York',
+  sh: '🇨🇳 SH · Shanghai',
+};
+
+// Voting deadlines (UTC)
+const DEADLINES = {
+  sf: new Date('2026-05-24T17:00:00Z'),
+  ny: new Date('2026-05-25T01:00:00Z'),
+  sh: new Date('2026-05-24T11:00:00Z'),
+};
+
+const TRACK_LABELS = {
+  superparent: 'SuperParent',
+  companion:   'Companion',
+  lifeos:      'LifeOS',
+  body:        'Body',
+  wildcard:    'Wildcard',
+};
+
+const METHOD_LABELS = {
+  referral: 'Referral',
+  peer:     'Peer Vote',
+  online:   'Online',
+};
+
+// TODO: GET /api/${hub}/finalists/public  → { calculated: bool, finalists: Finalist[], calculatedAt: string }
+const MOCK_FINALISTS = {
+  sf: [
+    { id:'sf_t01', rank:1,  team:'Team Meridian',   project:'Atlas',       track:'lifeos',      method:'referral' },
+    { id:'sf_t02', rank:2,  team:'Team Wavelength', project:'SolaceAI',    track:'companion',   method:'referral' },
+    { id:'sf_t03', rank:3,  team:'Team Pulse',      project:'BodySync',    track:'body',        method:'peer' },
+    { id:'sf_t04', rank:4,  team:'Team Nested',     project:'FamilyFlow',  track:'superparent', method:'peer' },
+    { id:'sf_t05', rank:5,  team:'Team Epoch',      project:'DayZero',     track:'lifeos',      method:'referral' },
+    { id:'sf_t06', rank:6,  team:'Remote Minds',    project:'AutoPilot',   track:'lifeos',      method:'online' },
+    { id:'sf_t07', rank:7,  team:'FamCloud',        project:'KidCast',     track:'superparent', method:'online' },
+    { id:'sf_t08', rank:8,  team:'FeelFirst',       project:'MoodSync',    track:'companion',   method:'peer' },
+    { id:'sf_t09', rank:9,  team:'Team Kinetic',    project:'RecoverAI',   track:'body',        method:'referral' },
+    { id:'sf_t10', rank:10, team:'Team Drift',      project:'FocusBuddy',  track:'companion',   method:'peer' },
+  ],
+  ny: [
+    { id:'ny_t01', rank:1, team:'Team Fulton',    project:'FinCoach',    track:'lifeos',      method:'referral' },
+    { id:'ny_t02', rank:2, team:'Team Brooklyn',  project:'MindMap',     track:'companion',   method:'peer' },
+    { id:'ny_t03', rank:3, team:'Team Harlem',    project:'StreetSense', track:'wildcard',    method:'referral' },
+    { id:'ny_t04', rank:4, team:'Team Tribeca',   project:'DadBot',      track:'superparent', method:'peer' },
+    { id:'ny_t05', rank:5, team:'Team Chelsea',   project:'HabitNest',   track:'lifeos',      method:'referral' },
+  ],
+  sh: [
+    { id:'sh_t01', rank:1, team:'队伍 · 晨曦', project:'DawnMind',   track:'lifeos',      method:'referral' },
+    { id:'sh_t02', rank:2, team:'队伍 · 织梦', project:'DreamWeave', track:'companion',   method:'peer' },
+    { id:'sh_t03', rank:3, team:'家家互联',      project:'亲子云',      track:'superparent', method:'online' },
+    { id:'sh_t04', rank:4, team:'队伍 · 脉动', project:'PulseLife',  track:'body',        method:'referral' },
+    { id:'sh_t05', rank:5, team:'意向科技',      project:'思伴',        track:'companion',   method:'online' },
+  ],
+};
+
+// ── State ───────────────────────────────────────────────────────────────────
+let currentHub = '';
+let countdownInterval = null;
+let refreshInterval   = null;
+
+// ── Init ────────────────────────────────────────────────────────────────────
+(function init() {
+  const params = new URLSearchParams(window.location.search);
+  currentHub = (params.get('hub') || '').toLowerCase();
+
+  if (!currentHub || !HUB_LABELS[currentHub]) {
+    show('unknown-screen');
+    return;
+  }
+
+  document.getElementById('header-hub').textContent = HUB_LABELS[currentHub];
+  document.title = `Eazo Hackathon 2026 — ${HUB_LABELS[currentHub]} Finalists`;
+
+  loadFinalists();
+
+  // Auto-refresh every 30s
+  refreshInterval = setInterval(loadFinalists, 30000);
+})();
+
+// ── Load Finalists ──────────────────────────────────────────────────────────
+async function loadFinalists() {
+  // TODO: replace with real API call:
+  // const res = await fetch(`/api/${currentHub}/finalists/public`);
+  // const data = await res.json();
+  // const { calculated, finalists, calculatedAt } = data;
+
+  // Mock: treat data as "calculated" if past deadline
+  const deadline = DEADLINES[currentHub];
+  const now = new Date();
+  const calculated = now >= deadline;
+  const calculatedAt = calculated ? deadline.toISOString() : null;
+  const finalists = calculated ? (MOCK_FINALISTS[currentHub] || []) : [];
+
+  if (calculated) {
+    clearInterval(countdownInterval);
+    renderFinalists(finalists, calculatedAt);
+  } else {
+    show('waiting-screen');
+    startCountdown(deadline);
+  }
+}
+
+// ── Render Finalists ─────────────────────────────────────────────────────────
+function renderFinalists(finalists, calculatedAt) {
+  show('finalist-screen');
+
+  if (calculatedAt) {
+    const d = new Date(calculatedAt);
+    document.getElementById('calc-timestamp').textContent =
+      `Calculated ${d.toLocaleString('en-US', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit', timeZoneName:'short' })}`;
+  }
+
+  document.getElementById('finalist-count').textContent =
+    `${finalists.length} team${finalists.length !== 1 ? 's' : ''}`;
+
+  const list = document.getElementById('finalist-list');
+  list.innerHTML = '';
+
+  // Separate offline and online
+  const offline = finalists.filter(t => t.method !== 'online');
+  const online  = finalists.filter(t => t.method === 'online');
+
+  offline.forEach(team => list.appendChild(buildRow(team)));
+
+  if (online.length > 0) {
+    const div = document.createElement('div');
+    div.className = 'group-divider';
+    div.innerHTML = `
+      <div class="group-divider-line"></div>
+      <div class="group-divider-label">${currentHub === 'sh' ? 'Asia Online' : 'Global Online'} Finalists</div>
+      <div class="group-divider-line"></div>
+    `;
+    list.appendChild(div);
+    online.forEach(team => list.appendChild(buildRow(team)));
+  }
+}
+
+function buildRow(team) {
+  const row = document.createElement('div');
+  row.className = 'finalist-row';
+
+  row.innerHTML = `
+    <div class="finalist-rank ${team.rank <= 3 ? 'top3' : ''}">${team.rank}</div>
+    <div class="finalist-info">
+      <div class="finalist-team">${esc(team.team)}</div>
+      <div class="finalist-project">${esc(team.project)}</div>
+    </div>
+    <div class="finalist-badges">
+      <span class="badge badge-${team.track}">${TRACK_LABELS[team.track] || team.track}</span>
+      <span class="badge badge-${team.method}">${METHOD_LABELS[team.method] || team.method}</span>
+    </div>
+  `;
+  return row;
+}
+
+// ── Countdown ─────────────────────────────────────────────────────────────────
+function startCountdown(deadline) {
+  if (countdownInterval) clearInterval(countdownInterval);
+  tick(deadline);
+  countdownInterval = setInterval(() => tick(deadline), 1000);
+}
+
+function tick(deadline) {
+  const diff = Math.max(0, deadline - new Date());
+  const totalSec = Math.floor(diff / 1000);
+  const h = Math.floor(totalSec / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  const s = totalSec % 60;
+
+  document.getElementById('cd-h').textContent = pad(h);
+  document.getElementById('cd-m').textContent = pad(m);
+  document.getElementById('cd-s').textContent = pad(s);
+
+  if (diff === 0) {
+    clearInterval(countdownInterval);
+    loadFinalists();
+  }
+}
+
+function pad(n) { return String(n).padStart(2, '0'); }
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+function show(id) {
+  ['unknown-screen', 'waiting-screen', 'finalist-screen'].forEach(sid => {
+    const el = document.getElementById(sid);
+    if (el) el.style.display = sid === id ? (id === 'waiting-screen' || id === 'unknown-screen' ? 'flex' : 'block') : 'none';
+  });
+}
+
+function esc(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+</script>
+</body>
+</html>

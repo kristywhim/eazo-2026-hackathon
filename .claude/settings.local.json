@@ -5,7 +5,14 @@
       "Bash(pdftoppm --version)",
       "Bash(pdftotext /Users/kristywhim_/Documents/work/coding/eazo/黑客松需求.pdf -)",
       "Bash(mkdir -p /Users/kristywhim_/Documents/work/coding/eazo/eazo-user-vote/.claude)",
-      "mcp__Claude_Preview__preview_start"
+      "mcp__Claude_Preview__preview_start",
+      "WebFetch(domain:docs.google.com)",
+      "Bash(git push *)",
+      "Bash(brew list *)",
+      "Bash(gh pr *)",
+      "Bash(pdftotext 黑客松需求.pdf -)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
     ]
   }
 }
