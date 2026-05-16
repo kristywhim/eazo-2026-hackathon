@@ -22,6 +22,8 @@
       --hub-sf: #2a5fa8;
       --hub-sh: #1d7a5a;
       --hub-ny: #6a3aaa;
+      --hub-go: #c05a18;  /* Global Online — Eazo orange tone */
+      --hub-ao: #a0720a;  /* Asia Online — amber */
     }
 
     html, body { height: 100%; }
@@ -225,6 +227,10 @@
     .hub-tab.active-sh::after { background: var(--hub-sh); }
     .hub-tab.active-ny { color: var(--hub-ny); }
     .hub-tab.active-ny::after { background: var(--hub-ny); }
+    .hub-tab.active-go { color: var(--hub-go); }
+    .hub-tab.active-go::after { background: var(--hub-go); }
+    .hub-tab.active-ao { color: var(--hub-ao); }
+    .hub-tab.active-ao::after { background: var(--hub-ao); }
 
     .hub-ip-badge {
       margin-left: auto;
@@ -904,9 +910,11 @@
     <!-- Hub tabs -->
     <div class="hub-tabs" id="hubTabs">
       <button class="hub-tab active-sf" data-hub="sf" onclick="setHub('sf')">🇺🇸 SF</button>
-      <button class="hub-tab"           data-hub="sh" onclick="setHub('sh')">🇨🇳 SH</button>
       <button class="hub-tab"           data-hub="ny" onclick="setHub('ny')">🗽 NY</button>
-      <!-- TODO: Show IP-detected badge when backend confirms hub — e.g. "📍 IP: SF" -->
+      <button class="hub-tab"           data-hub="sh" onclick="setHub('sh')">🇨🇳 SH</button>
+      <button class="hub-tab"           data-hub="go" onclick="setHub('go')">🌐 Global Online</button>
+      <button class="hub-tab"           data-hub="ao" onclick="setHub('ao')">🌏 Asia Online</button>
+      <!-- 📍 IP badge injected by backend / native bridge -->
       <div class="hub-ip-badge" id="hubIpBadge">📍 IP: SF</div>
     </div>
   </div>
@@ -985,22 +993,36 @@
       label:       'SF · Bay Area',
       eyebrow:     'Eazo Hackathon 2026 · SF',
       flag:        '🇺🇸',
-      closesLabel: 'Closes 7:00 PM PT ·',
-      deadline:    new Date('2026-05-25T02:00:00Z'), // May 24 7pm PDT (UTC-7)
+      closesLabel: 'Closes 10:00 AM PT ·',
+      deadline:    new Date('2026-05-24T17:00:00Z'), // May 24 10:00 AM PDT (UTC-7)
+    },
+    ny: {
+      label:       'NY · New York',
+      eyebrow:     'Eazo Hackathon 2026 · NY',
+      flag:        '🗽',
+      closesLabel: 'Closes 9:00 PM ET ·',
+      deadline:    new Date('2026-05-25T01:00:00Z'), // May 24 9:00 PM EDT (UTC-4)
     },
     sh: {
       label:       'SH · Shanghai',
       eyebrow:     'Eazo Hackathon 2026 · SH',
       flag:        '🇨🇳',
       closesLabel: 'Closes 7:00 PM CST ·',
-      deadline:    new Date('2026-05-24T11:00:00Z'), // May 24 7pm CST (UTC+8)
+      deadline:    new Date('2026-05-24T11:00:00Z'), // May 24 7:00 PM CST (UTC+8)
     },
-    ny: {
-      label:       'NY · New York',
-      eyebrow:     'Eazo Hackathon 2026 · NY',
-      flag:        '🗽',
-      closesLabel: 'Closes 7:00 PM ET ·',
-      deadline:    new Date('2026-05-24T23:00:00Z'), // May 24 7pm EDT (UTC-4)
+    go: {
+      label:       'Global Online',
+      eyebrow:     'Eazo Hackathon 2026 · Global Online',
+      flag:        '🌐',
+      closesLabel: 'Closes 10:00 AM PT ·',
+      deadline:    new Date('2026-05-24T17:00:00Z'), // Same as SF window
+    },
+    ao: {
+      label:       'Asia Online',
+      eyebrow:     'Eazo Hackathon 2026 · Asia Online',
+      flag:        '🌏',
+      closesLabel: 'Closes 7:00 PM CST ·',
+      deadline:    new Date('2026-05-24T11:00:00Z'), // Same as SH window
     },
   };
 
@@ -1011,7 +1033,7 @@
 
   // Per-hub vote maps: { hub: { projectId → votes given } }
   // Each hub gives the user a fresh 10-vote budget
-  const HUB_VOTE_MAPS = { sf: {}, sh: {}, ny: {} };
+  const HUB_VOTE_MAPS = { sf: {}, ny: {}, sh: {}, go: {}, ao: {} };
 
   let pendingId        = null;
   let pendingVoteCount = 1;
@@ -1065,7 +1087,28 @@
     { id:'ny_p07', name:'EchoPad',       team:'SoundWave',        desc:'Voice note taker for creatives — auto-transcribes, groups ideas by theme, and surfaces forgotten notes at the right moment.',                    track:'wildcard',    votes:45,  iconEmoji:'🎙', iconBg:'#E5E3DC', thumbUrl:null, submittedAt:new Date('2026-05-23T21:20:00') },
   ];
 
-  const HUB_PROJECTS = { sf: SF_PROJECTS, sh: SH_PROJECTS, ny: NY_PROJECTS };
+  // Global Online — remote participants (pools into SF prize bucket for finalist calculation)
+  // TODO: GET /api/hackathon/go/projects  (accessible to all IPs)
+  const GO_PROJECTS = [
+    { id:'go_p01', name:'AutoPilot Life', team:'Remote Minds',    desc:'AI life manager that automates repetitive decisions — from what to eat to when to exercise — using your personal values and schedule.',  track:'lifeos',      votes:187, iconEmoji:'🤖', iconBg:'#CCF0E3', thumbUrl:null, submittedAt:new Date('2026-05-23T16:00:00') },
+    { id:'go_p02', name:'KidCast',        team:'FamCloud',         desc:'Shared story-time app for remote families — a grandparent can read bedtime stories live to grandkids anywhere in the world.',             track:'superparent', votes:134, iconEmoji:'📡', iconBg:'#FAE6C2', thumbUrl:null, submittedAt:new Date('2026-05-23T17:30:00') },
+    { id:'go_p03', name:'MoodSync',       team:'FeelFirst',        desc:'Wearable-connected emotional state tracker that nudges you toward regulation before stress peaks, using biosignals and journaling.',       track:'companion',   votes:112, iconEmoji:'🌊', iconBg:'#EEEDFE', thumbUrl:null, submittedAt:new Date('2026-05-23T18:10:00') },
+    { id:'go_p04', name:'BodyClock AI',   team:'ChronoHealth',     desc:'Circadian rhythm optimizer — tracks your biological clock across time zones and adapts your sleep, meals, and focus blocks accordingly.',  track:'body',        votes:95,  iconEmoji:'⏰', iconBg:'#D4E8FA', thumbUrl:null, submittedAt:new Date('2026-05-23T19:40:00') },
+    { id:'go_p05', name:'WildBot',        team:'Outliers Inc',     desc:'A social experiment game where AI acts as a friend-matchmaker based on shared life philosophy, not hobbies or location.',                  track:'wildcard',    votes:67,  iconEmoji:'🎲', iconBg:'#E5E3DC', thumbUrl:null, submittedAt:new Date('2026-05-23T20:50:00') },
+    { id:'go_p06', name:'DailyQuest',     team:'QuestHQ',          desc:'Turns your to-do list into a RPG quest log — earn XP for completing real-world tasks and level up your life character.',                   track:'lifeos',      votes:143, iconEmoji:'⚔️', iconBg:'#CCF0E3', thumbUrl:null, submittedAt:new Date('2026-05-23T15:50:00') },
+  ];
+
+  // Asia Online — remote participants from Asia (pools into SH prize bucket for finalist calculation)
+  // TODO: GET /api/hackathon/ao/projects  (China-IP restricted on backend)
+  const AO_PROJECTS = [
+    { id:'ao_p01', name:'亲子云',         team:'家家互联',           desc:'面向海外华人家庭的亲子互动平台，通过实时视频+AR贴纸让远程家人一起参与孩子的成长时刻。',                                                track:'superparent', votes:201, iconEmoji:'👨‍👩‍👦', iconBg:'#FAE6C2', thumbUrl:null, submittedAt:new Date('2026-05-23T17:10:00') },
+    { id:'ao_p02', name:'健康日记',        team:'好身体科技',          desc:'结合中医体质辨识和现代可穿戴数据的健康日志APP，每日生成个性化的养生建议和作息指导。',                                                   track:'body',        votes:178, iconEmoji:'🌿', iconBg:'#D4E8FA', thumbUrl:null, submittedAt:new Date('2026-05-23T18:30:00') },
+    { id:'ao_p03', name:'思伴',            team:'意向科技',            desc:'AI情感陪伴助手，能识别用户情绪状态，提供有温度的对话陪伴和心理疏导，支持粤语和普通话。',                                               track:'companion',   votes:154, iconEmoji:'🫂', iconBg:'#EEEDFE', thumbUrl:null, submittedAt:new Date('2026-05-23T19:00:00') },
+    { id:'ao_p04', name:'时光规划师',      team:'效率工场',            desc:'智能日程规划工具，根据你的能量周期和专注力数据，自动为你分配深度工作时间，避免会议蔓延。',                                           track:'lifeos',      votes:132, iconEmoji:'🗓', iconBg:'#CCF0E3', thumbUrl:null, submittedAt:new Date('2026-05-23T16:50:00') },
+    { id:'ao_p05', name:'城市故事',        team:'地图诗人',            desc:'AR城市探索应用，将历史故事和本地达人的生活智慧叠加在真实街道上，边走边发现城市隐藏面。',                                              track:'wildcard',    votes:89,  iconEmoji:'🏙', iconBg:'#E5E3DC', thumbUrl:null, submittedAt:new Date('2026-05-23T21:00:00') },
+  ];
+
+  const HUB_PROJECTS = { sf: SF_PROJECTS, ny: NY_PROJECTS, sh: SH_PROJECTS, go: GO_PROJECTS, ao: AO_PROJECTS };
 
   const TRACK_LABEL = {
     all:         'All Tracks',
@@ -1136,6 +1179,7 @@
     trackFilter = 'all';
 
     // Update hub tab active states
+    // go/ao use their own active class directly
     document.querySelectorAll('.hub-tab').forEach(t => {
       t.className = 'hub-tab';
       if (t.dataset.hub === hub) t.classList.add(`active-${hub}`);
@@ -1354,7 +1398,7 @@
     return `
       <div class="my-votes-wrap">
         <div class="my-votes-head">
-          <div class="my-votes-label">My Votes · ${HUBS[hubMode].flag} ${hubMode.toUpperCase()}</div>
+          <div class="my-votes-label">My Votes · ${HUBS[hubMode].flag} ${HUBS[hubMode].label}</div>
           <div class="my-votes-counter">${used} / ${MAX_VOTES} used</div>
         </div>
         ${inner}

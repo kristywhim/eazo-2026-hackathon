@@ -97,8 +97,10 @@ html,body{width:100%;height:100%;overflow:hidden;
   transition:all .2s;
 }
 .hdr-hub-badge.sf{background:rgba(88,152,232,.14);color:var(--hub-sf);border-color:rgba(88,152,232,.28);}
-.hdr-hub-badge.sh{background:rgba(34,201,122,.14);color:var(--hub-sh);border-color:rgba(34,201,122,.28);}
 .hdr-hub-badge.ny{background:rgba(144,128,232,.14);color:var(--hub-ny);border-color:rgba(144,128,232,.28);}
+.hdr-hub-badge.sh{background:rgba(34,201,122,.14);color:var(--hub-sh);border-color:rgba(34,201,122,.28);}
+.hdr-hub-badge.go{background:rgba(255,107,32,.14);color:var(--orange);border-color:rgba(255,107,32,.28);}
+.hdr-hub-badge.ao{background:rgba(245,176,48,.14);color:var(--gold);border-color:rgba(245,176,48,.28);}
 
 .phase-pill{
   padding:5px 14px;border-radius:20px;
@@ -152,8 +154,10 @@ html,body{width:100%;height:100%;overflow:hidden;
 }
 .hub-filter-tab:hover{color:var(--t2);border-color:var(--bdr2);}
 .hub-filter-tab.active-sf{background:rgba(88,152,232,.14);color:var(--hub-sf);border-color:rgba(88,152,232,.35);}
-.hub-filter-tab.active-sh{background:rgba(34,201,122,.14);color:var(--hub-sh);border-color:rgba(34,201,122,.35);}
 .hub-filter-tab.active-ny{background:rgba(144,128,232,.14);color:var(--hub-ny);border-color:rgba(144,128,232,.35);}
+.hub-filter-tab.active-sh{background:rgba(34,201,122,.14);color:var(--hub-sh);border-color:rgba(34,201,122,.35);}
+.hub-filter-tab.active-go{background:rgba(255,107,32,.14);color:var(--orange);border-color:rgba(255,107,32,.35);}
+.hub-filter-tab.active-ao{background:rgba(245,176,48,.14);color:var(--gold);border-color:rgba(245,176,48,.35);}
 .hub-ip-note{
   margin-left:auto;font-size:10px;font-weight:600;color:var(--t3);
   font-family:'IBM Plex Mono',monospace;
@@ -478,9 +482,11 @@ html,body{width:100%;height:100%;overflow:hidden;
       <!-- Hub filter -->
       <div class="hub-filter">
         <button class="hub-filter-tab active-sf" data-hub="sf" onclick="setHub('sf',this)">🇺🇸 SF · Bay Area</button>
-        <button class="hub-filter-tab"           data-hub="sh" onclick="setHub('sh',this)">🇨🇳 SH · Shanghai</button>
         <button class="hub-filter-tab"           data-hub="ny" onclick="setHub('ny',this)">🗽 NY · New York</button>
-        <!-- TODO: Auto-detect hub from IP — GET /api/hackathon/detect-hub → setHub(result.hub) -->
+        <button class="hub-filter-tab"           data-hub="sh" onclick="setHub('sh',this)">🇨🇳 SH · Shanghai</button>
+        <button class="hub-filter-tab"           data-hub="go" onclick="setHub('go',this)">🌐 Global Online</button>
+        <button class="hub-filter-tab"           data-hub="ao" onclick="setHub('ao',this)">🌏 Asia Online</button>
+        <!-- IP detection: GET /api/hackathon/detect-hub → setHub(result.hub) -->
         <div class="hub-ip-note" id="hubIpNote">📍 IP: SF</div>
       </div>
 
@@ -584,9 +590,11 @@ const RESUME_DELAY = 3000;
 
 // Per-hub vote deadlines
 const HUB_CONFIG = {
-  sf: { label:'SF · Bay Area',    eventLabel:'San Francisco · PT', tz:'PT',  deadline:new Date('2026-05-25T02:00:00Z'), start:new Date('2026-05-23T17:00:00Z') },
+  sf: { label:'SF · Bay Area',    eventLabel:'San Francisco · PT', tz:'PT',  deadline:new Date('2026-05-24T17:00:00Z'), start:new Date('2026-05-23T17:00:00Z') },
+  ny: { label:'NY · New York',    eventLabel:'New York · ET',      tz:'ET',  deadline:new Date('2026-05-25T01:00:00Z'), start:new Date('2026-05-23T14:00:00Z') },
   sh: { label:'SH · Shanghai',    eventLabel:'Shanghai · CST',     tz:'CST', deadline:new Date('2026-05-24T11:00:00Z'), start:new Date('2026-05-23T02:00:00Z') },
-  ny: { label:'NY · New York',    eventLabel:'New York · ET',      tz:'ET',  deadline:new Date('2026-05-24T23:00:00Z'), start:new Date('2026-05-23T14:00:00Z') },
+  go: { label:'Global Online',    eventLabel:'Global Online · PT', tz:'PT',  deadline:new Date('2026-05-24T17:00:00Z'), start:new Date('2026-05-23T17:00:00Z') },
+  ao: { label:'Asia Online',      eventLabel:'Asia Online · CST',  tz:'CST', deadline:new Date('2026-05-24T11:00:00Z'), start:new Date('2026-05-23T02:00:00Z') },
 };
 
 const TRACKS = {
@@ -688,17 +696,57 @@ const HUB_POOL = {
     {id:35,team:'Team Ember',     project:'WarmBot',      track:2},
     {id:36,team:'Team Cascade',   project:'DropFlow',     track:1},
   ],
-  sh: [
-    {id:132,team:'队伍 · 霜叶',    project:'FrostLeaf',    track:1},
-    {id:133,team:'队伍 · 幽兰',    project:'LifeThread',   track:3},
-    {id:134,team:'队伍 · 朝阳',    project:'MorningOS',    track:2},
-  ],
   ny: [
     {id:232,team:'Team Nolita',   project:'StyleAI',      track:5},
     {id:233,team:'Team Cobble',   project:'CommConnect',  track:2},
     {id:234,team:'Team Dumbo',    project:'CreativeOS',   track:3},
   ],
+  sh: [
+    {id:132,team:'队伍 · 霜叶',    project:'FrostLeaf',    track:1},
+    {id:133,team:'队伍 · 幽兰',    project:'LifeThread',   track:3},
+    {id:134,team:'队伍 · 朝阳',    project:'MorningOS',    track:2},
+  ],
+  go: [
+    {id:332,team:'Remote Collective',project:'AutoPilot', track:3},
+    {id:333,team:'FamCloud Plus',    project:'KidCast 2', track:1},
+  ],
+  ao: [
+    {id:432,team:'数字家园',         project:'云端课堂',    track:1},
+    {id:433,team:'健康云',           project:'体质助手 2',  track:4},
+  ],
 };
+
+// ── Global Online mock leaderboard ──
+const GO_INIT = [
+  {id:301, team:'Remote Minds',    project:'AutoPilot Life', track:3, votes:1876, minsAgo:170},
+  {id:302, team:'FamCloud',        project:'KidCast',        track:1, votes:1643, minsAgo:155},
+  {id:303, team:'FeelFirst',       project:'MoodSync',       track:2, votes:1398, minsAgo:195},
+  {id:304, team:'ChronoHealth',    project:'BodyClock AI',   track:4, votes:1187, minsAgo:140},
+  {id:305, team:'QuestHQ',         project:'DailyQuest',     track:3, votes:1034, minsAgo:128},
+  {id:306, team:'Outliers Inc',    project:'WildBot',        track:5, votes: 891, minsAgo:115},
+  {id:307, team:'Pixel Nomads',    project:'NomadOS',        track:3, votes: 754, minsAgo:105},
+  {id:308, team:'Async Labs',      project:'DeepFocus',      track:3, votes: 623, minsAgo: 95},
+  {id:309, team:'Team Wanderer',   project:'TravelMind',     track:5, votes: 512, minsAgo: 84},
+  {id:310, team:'CloudParent',     project:'RemoteDad',      track:1, votes: 418, minsAgo: 73},
+  {id:311, team:'Bandwidth Co',    project:'LaglessLife',    track:5, votes: 334, minsAgo: 62},
+  {id:312, team:'Team Anywhere',   project:'LocationOS',     track:3, votes: 267, minsAgo: 51},
+];
+
+// ── Asia Online mock leaderboard ──
+const AO_INIT = [
+  {id:401, team:'家家互联',         project:'亲子云',         track:1, votes:2134, minsAgo:168},
+  {id:402, team:'好身体科技',        project:'健康日记',        track:4, votes:1892, minsAgo:152},
+  {id:403, team:'意向科技',          project:'思伴',            track:2, votes:1654, minsAgo:188},
+  {id:404, team:'效率工场',          project:'时光规划师',       track:3, votes:1423, minsAgo:138},
+  {id:405, team:'地图诗人',          project:'城市故事',         track:5, votes:1201, minsAgo:122},
+  {id:406, team:'数字家园',          project:'云端课堂',         track:1, votes:1034, minsAgo:110},
+  {id:407, team:'亚洲创客',          project:'智联家居',         track:3, votes: 867, minsAgo: 98},
+  {id:408, team:'健康云',            project:'体质助手',         track:4, votes: 712, minsAgo: 86},
+  {id:409, team:'星河实验室',         project:'星图日历',         track:3, votes: 598, minsAgo: 74},
+  {id:410, team:'萌芽科技',          project:'儿童成长AI',        track:1, votes: 476, minsAgo: 62},
+  {id:411, team:'悦动科技',          project:'运动伙伴',          track:4, votes: 381, minsAgo: 51},
+  {id:412, team:'行云科技',          project:'极简生活',          track:5, votes: 289, minsAgo: 40},
+];
 
 /* ══ STATE ══ */
 let activeHub   = 'sf';
@@ -707,8 +755,10 @@ let activeTrack = 0;  // 0 = all tracks
 // Per-hub state
 const hubStates = {
   sf: initHubState('sf', SF_INIT, HUB_POOL.sf),
-  sh: initHubState('sh', SH_INIT, HUB_POOL.sh),
   ny: initHubState('ny', NY_INIT, HUB_POOL.ny),
+  sh: initHubState('sh', SH_INIT, HUB_POOL.sh),
+  go: initHubState('go', GO_INIT, HUB_POOL.go),
+  ao: initHubState('ao', AO_INIT, HUB_POOL.ao),
 };
 
 function initHubState(hub, initData, poolData) {
@@ -755,7 +805,10 @@ function setHub(hub, el) {
   document.getElementById('hdrEvent').innerHTML = `<strong>Global Hackathon 2026</strong> &nbsp;·&nbsp; ${cfg.eventLabel}`;
   const badge = document.getElementById('hdrHubBadge');
   badge.className = `hdr-hub-badge ${hub}`;
-  badge.textContent = { sf:'🇺🇸 SF · Bay Area', sh:'🇨🇳 SH · Shanghai', ny:'🗽 NY · New York' }[hub];
+  badge.textContent = {
+    sf:'🇺🇸 SF · Bay Area', ny:'🗽 NY · New York',
+    sh:'🇨🇳 SH · Shanghai', go:'🌐 Global Online', ao:'🌏 Asia Online'
+  }[hub];
   document.getElementById('hubIpNote').textContent = `📍 IP: ${hub.toUpperCase()}`;
   document.getElementById('statsHd').textContent = `${hub.toUpperCase()} · Live Stats`;
 
