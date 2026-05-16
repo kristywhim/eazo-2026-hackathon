@@ -144,10 +144,13 @@
     }
 
     .logo-mark {
-      font-size: 26px;
-      line-height: 1;
-      color: var(--orange);
-      font-weight: 700;
+      width: 30px; height: 30px;
+      background: var(--orange);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; color: #fff; font-weight: 900;
+      box-shadow: 0 0 16px rgba(255,107,32,0.35);
+      flex-shrink: 0;
     }
 
     .header-title {
@@ -530,7 +533,10 @@
 <!-- ── Auth Screen ── -->
 <div id="auth-screen">
   <div class="auth-card">
-    <div class="auth-logo">✳</div>
+    <div class="auth-logo-wrap" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px;">
+      <div style="width:36px;height:36px;background:#FF6B20;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;font-weight:900;box-shadow:0 0 20px rgba(255,107,32,0.4);">✳</div>
+      <span style="font-family:'DM Sans',sans-serif;font-size:22px;font-weight:800;color:#EEF3FF;letter-spacing:-0.02em;">Eazo</span>
+    </div>
     <h1>Eazo Hackathon 2026</h1>
     <p>Judge Scoring Portal — Enter your access code to continue</p>
 
