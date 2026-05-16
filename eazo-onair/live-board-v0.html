@@ -3,44 +3,44 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Eazo Hackathon 2026 · Live Board · San Francisco</title>
+<title>Eazo Hackathon 2026 · Live Board</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  /* Warm dark palette — brown undertones, not blue-black */
-  --bg:   #100D08;
-  --s1:   #171209;
-  --s2:   #1E1910;
-  --s3:   #261F14;
-  --s4:   #30281A;
-  --bdr:  #332B1C;
-  --bdr2: #40361F;
+  /* ── Eazo brand: deep navy, not warm brown ── */
+  --bg:   #060D18;
+  --s1:   #0C1525;
+  --s2:   #112034;
+  --s3:   #182A44;
+  --s4:   #1F3454;
+  --bdr:  #253D5C;
+  --bdr2: #2E4D72;
 
-  /* Text — warm white */
-  --t1: #F2EDE3;
-  --t2: #9E9280;
-  --t3: #60574A;
+  /* Text — cool white */
+  --t1: #EEF3FF;
+  --t2: #8A9CC0;
+  --t3: #4A607E;
 
-  /* Brand orange — warm, friendly */
-  --orange:     #F47B20;
-  --orange-dim: rgba(244,123,32,.13);
-  --orange-mid: rgba(244,123,32,.22);
+  /* Brand — Eazo orange (from poster) */
+  --orange:     #FF6B20;
+  --orange-dim: rgba(255,107,32,.13);
+  --orange-mid: rgba(255,107,32,.22);
 
   /* Semantic */
-  --up:    #22C97A;
-  --up-dim:rgba(34,201,122,.12);
-  --dn:    #E05530;
-  --dn-dim:rgba(224,85,48,.12);
+  --up:     #22C97A;
+  --up-dim: rgba(34,201,122,.12);
+  --dn:     #E05530;
+  --dn-dim: rgba(224,85,48,.12);
 
   /* Podium medals */
-  --gold:    #F5B030;
-  --gold-dim:rgba(245,176,48,.13);
-  --gold-glow:rgba(245,176,48,.18);
-  --silver:  #A8B0BA;
-  --silver-dim:rgba(168,176,186,.1);
-  --bronze:  #C48840;
-  --bronze-dim:rgba(196,136,64,.1);
+  --gold:       #F5B030;
+  --gold-dim:   rgba(245,176,48,.13);
+  --gold-glow:  rgba(245,176,48,.18);
+  --silver:     #A8B0BA;
+  --silver-dim: rgba(168,176,186,.1);
+  --bronze:     #C48840;
+  --bronze-dim: rgba(196,136,64,.1);
 
   /* Tracks */
   --tr1:#E8A830; --tr1bg:rgba(232,168,48,.14);
@@ -48,6 +48,11 @@
   --tr3:#22C97A; --tr3bg:rgba(34,201,122,.14);
   --tr4:#5898E8; --tr4bg:rgba(88,152,232,.14);
   --tr5:#988880; --tr5bg:rgba(152,136,128,.14);
+
+  /* Hubs */
+  --hub-sf: #5898E8;
+  --hub-sh: #22C97A;
+  --hub-ny: #9080E8;
 }
 
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -70,11 +75,11 @@ html,body{width:100%;height:100%;overflow:hidden;
 }
 .logo{display:flex;align-items:center;gap:9px;}
 .logo-icon{
-  width:28px;height:28px;border-radius:8px;
-  background:var(--orange);
+  width:30px;height:30px;border-radius:9px;
+  background:#D9583A;   /* Eazo coral asterisk */
   display:flex;align-items:center;justify-content:center;
-  font-size:15px;color:#fff;font-weight:900;
-  box-shadow:0 0 16px rgba(244,123,32,.35);
+  font-size:16px;color:#fff;font-weight:900;
+  box-shadow:0 0 18px rgba(217,88,58,.38);
 }
 .logo-name{
   font-family:'Syne',sans-serif;font-size:17px;
@@ -84,14 +89,24 @@ html,body{width:100%;height:100%;overflow:hidden;
 .hdr-event{font-size:13px;color:var(--t2);font-weight:500;flex:1;}
 .hdr-event strong{color:var(--t1);font-weight:600;}
 
+/* hub badge in header */
+.hdr-hub-badge{
+  font-size:11px;font-weight:700;letter-spacing:.04em;
+  padding:4px 12px;border-radius:20px;
+  border:1px solid;
+  transition:all .2s;
+}
+.hdr-hub-badge.sf{background:rgba(88,152,232,.14);color:var(--hub-sf);border-color:rgba(88,152,232,.28);}
+.hdr-hub-badge.sh{background:rgba(34,201,122,.14);color:var(--hub-sh);border-color:rgba(34,201,122,.28);}
+.hdr-hub-badge.ny{background:rgba(144,128,232,.14);color:var(--hub-ny);border-color:rgba(144,128,232,.28);}
+
 .phase-pill{
   padding:5px 14px;border-radius:20px;
   font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;border:1px solid;
 }
-.pp-build {background:var(--orange-dim);color:var(--orange);border-color:rgba(244,123,32,.28);}
+.pp-build {background:var(--orange-dim);color:var(--orange);border-color:rgba(255,107,32,.28);}
 .pp-demo  {background:var(--up-dim);color:var(--up);border-color:rgba(34,201,122,.28);}
 .pp-awards{background:var(--gold-dim);color:var(--gold);border-color:rgba(245,176,48,.28);}
-
 
 /* ═══ LEADERBOARD PANEL (70%) ═══ */
 .lb-panel{
@@ -116,6 +131,55 @@ html,body{width:100%;height:100%;overflow:hidden;
 }
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
 .lb-updated{margin-left:auto;font-size:9px;color:var(--t3);font-family:'IBM Plex Mono',monospace;}
+
+/* ── Hub filter tabs (below topbar) ── */
+.hub-filter{
+  flex-shrink:0;
+  display:flex;align-items:center;gap:6px;
+  padding:8px 22px 8px;
+  background:var(--s1);border-bottom:1px solid var(--bdr);
+}
+.hub-filter-tab{
+  display:flex;align-items:center;gap:6px;
+  padding:5px 16px;border-radius:20px;
+  font-size:11.5px;font-weight:700;
+  border:1.5px solid var(--bdr2);
+  background:transparent;
+  color:var(--t3);
+  cursor:pointer;font-family:inherit;
+  transition:all .18s;user-select:none;
+  white-space:nowrap;
+}
+.hub-filter-tab:hover{color:var(--t2);border-color:var(--bdr2);}
+.hub-filter-tab.active-sf{background:rgba(88,152,232,.14);color:var(--hub-sf);border-color:rgba(88,152,232,.35);}
+.hub-filter-tab.active-sh{background:rgba(34,201,122,.14);color:var(--hub-sh);border-color:rgba(34,201,122,.35);}
+.hub-filter-tab.active-ny{background:rgba(144,128,232,.14);color:var(--hub-ny);border-color:rgba(144,128,232,.35);}
+.hub-ip-note{
+  margin-left:auto;font-size:10px;font-weight:600;color:var(--t3);
+  font-family:'IBM Plex Mono',monospace;
+  white-space:nowrap;
+}
+
+/* ── Track filter tabs ── */
+.track-filter{
+  flex-shrink:0;
+  display:flex;align-items:center;gap:5px;
+  padding:7px 22px;
+  background:var(--s1);border-bottom:1px solid var(--bdr);
+  overflow-x:auto;scrollbar-width:none;
+}
+.track-filter::-webkit-scrollbar{display:none;}
+.track-filter-tab{
+  padding:4px 13px;border-radius:20px;
+  font-size:11px;font-weight:700;
+  border:1.5px solid var(--bdr);
+  background:transparent;color:var(--t3);
+  cursor:pointer;font-family:inherit;
+  transition:all .15s;user-select:none;
+  white-space:nowrap;flex-shrink:0;
+}
+.track-filter-tab:hover{color:var(--t2);}
+.track-filter-tab.active{background:var(--orange);color:#fff;border-color:var(--orange);}
 
 /* ═══ PODIUM (Top 3 — fixed, no scroll) ═══ */
 .podium-wrap{
@@ -146,30 +210,29 @@ html,body{width:100%;height:100%;overflow:hidden;
 /* sheen */
 .pod::before{
   content:'';position:absolute;inset:0;
-  background:linear-gradient(150deg,rgba(255,255,255,.06) 0%,transparent 50%);
+  background:linear-gradient(150deg,rgba(255,255,255,.05) 0%,transparent 50%);
   border-radius:inherit;pointer-events:none;
 }
 
 .pod1{
   height:100%;
-  background:linear-gradient(155deg,#2C1E00,#1A1000);
+  background:linear-gradient(155deg,#1E1500,#100C00);
   border-color:rgba(245,176,48,.45);
-  box-shadow:0 0 48px rgba(245,176,48,.16),inset 0 1px 0 rgba(245,176,48,.22);
+  box-shadow:0 0 48px rgba(245,176,48,.14),inset 0 1px 0 rgba(245,176,48,.2);
 }
 .pod2{
   height:85%;
-  background:linear-gradient(155deg,#1E1C16,#141210);
-  border-color:rgba(200,200,200,.2);
-  box-shadow:0 0 22px rgba(200,200,200,.06),inset 0 1px 0 rgba(200,200,200,.1);
+  background:linear-gradient(155deg,#141C2A,#0C1320);
+  border-color:rgba(200,210,230,.18);
+  box-shadow:0 0 22px rgba(200,210,230,.05),inset 0 1px 0 rgba(200,210,230,.08);
 }
 .pod3{
   height:73%;
-  background:linear-gradient(155deg,#201608,#150E05);
+  background:linear-gradient(155deg,#181008,#0E0800);
   border-color:rgba(196,136,64,.32);
-  box-shadow:0 0 18px rgba(196,136,64,.09),inset 0 1px 0 rgba(196,136,64,.12);
+  box-shadow:0 0 18px rgba(196,136,64,.08),inset 0 1px 0 rgba(196,136,64,.12);
 }
 
-/* ordinal label — 1st / 2nd / 3rd */
 .pod-ordinal{
   font-family:'Syne',sans-serif;font-size:11px;font-weight:700;
   letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;opacity:.7;
@@ -178,7 +241,6 @@ html,body{width:100%;height:100%;overflow:hidden;
 .pod2 .pod-ordinal{color:var(--silver);}
 .pod3 .pod-ordinal{color:var(--bronze);}
 
-/* medal — scaled by rank */
 .pod-medal{
   font-size:28px;line-height:1;margin-bottom:8px;
   filter:drop-shadow(0 3px 8px rgba(0,0,0,.55));
@@ -186,7 +248,6 @@ html,body{width:100%;height:100%;overflow:hidden;
 .pod1 .pod-medal{font-size:40px;}
 .pod2 .pod-medal{font-size:32px;}
 
-/* team name — DM Sans matching the scroll list */
 .pod-team{
   font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;
   color:var(--t1);line-height:1.25;margin-bottom:3px;
@@ -194,7 +255,6 @@ html,body{width:100%;height:100%;overflow:hidden;
 }
 .pod1 .pod-team{font-size:18px;}
 
-/* project name */
 .pod-project{
   font-family:'DM Sans',sans-serif;font-size:12px;
   color:var(--t2);font-style:italic;
@@ -202,7 +262,6 @@ html,body{width:100%;height:100%;overflow:hidden;
   margin-bottom:8px;
 }
 
-/* vote count */
 .pod-votes{
   font-family:'Syne',sans-serif;font-weight:800;font-size:26px;
   line-height:1;
@@ -210,26 +269,21 @@ html,body{width:100%;height:100%;overflow:hidden;
 .pod1 .pod-votes{font-size:32px;color:var(--gold);}
 .pod2 .pod-votes{color:var(--silver);}
 .pod3 .pod-votes{color:var(--bronze);}
-.pod-votes-lbl{
-  font-size:10px;font-weight:500;color:var(--t3);margin-top:4px;
-}
+.pod-votes-lbl{font-size:10px;font-weight:500;color:var(--t3);margin-top:4px;}
 
 /* podium order: 2 | 1 | 3 */
-.pod2{order:1;}
-.pod1{order:2;}
-.pod3{order:3;}
+.pod2{order:1;} .pod1{order:2;} .pod3{order:3;}
 
 /* ═══ SCROLLING LIST (Rank 4+) ═══ */
 .lb-list-hdr{
   flex-shrink:0;display:grid;
-  grid-template-columns:64px 1fr 160px 60px;
+  grid-template-columns:64px 1fr 120px 60px;
   padding:7px 22px 6px;
   background:var(--s1);border-bottom:1px solid var(--bdr);
 }
 .lch{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);}
 .lch.r{text-align:right;}
 
-/* scroll outer — paused indicator */
 .lb-outer{
   flex:1;overflow-y:auto;overflow-x:hidden;position:relative;
   scroll-behavior:smooth;cursor:default;
@@ -248,9 +302,8 @@ html,body{width:100%;height:100%;overflow:hidden;
 
 .lb-inner{display:flex;flex-direction:column;padding:8px 0;}
 
-/* row */
 .lb-row{
-  display:grid;grid-template-columns:64px 1fr 160px 60px;
+  display:grid;grid-template-columns:64px 1fr 120px 60px;
   align-items:center;padding:13px 22px;margin:3px 10px;
   border-radius:14px;background:var(--s2);border:1px solid var(--bdr);
   transition:background .3s,border-color .3s;flex-shrink:0;
@@ -262,13 +315,11 @@ html,body{width:100%;height:100%;overflow:hidden;
 @keyframes fdn  {0%{background:rgba(224,85,48,.18)} 100%{background:var(--s2)}}
 @keyframes newin{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
 
-/* rank cell — friendly Syne, not monospace */
 .lb-rank{
   font-family:'Syne',sans-serif;font-size:17px;font-weight:800;
   color:var(--t3);text-align:center;line-height:1;
 }
 
-/* info */
 .lb-info{padding:0 14px 0 4px;min-width:0;}
 .lb-team{
   font-size:16px;font-weight:700;color:var(--t1);
@@ -283,15 +334,13 @@ html,body{width:100%;height:100%;overflow:hidden;
   padding:2px 8px;border-radius:5px;margin-top:5px;letter-spacing:.02em;
 }
 
-/* score — DM Sans bold, human not terminal */
+/* score — no bar for rank 4+ */
 .lb-score{padding-right:6px;}
 .lb-score-num{
   font-size:20px;font-weight:700;
   color:var(--t1);text-align:right;line-height:1.15;
 }
 .lb-score-lbl{font-size:10px;color:var(--t3);text-align:right;margin-top:2px;font-weight:500;}
-.lb-bar-bg{height:4px;background:var(--s4);border-radius:3px;margin-top:6px;overflow:hidden;}
-.lb-bar-fill{height:100%;border-radius:3px;background:var(--orange);transition:width 1.3s ease;}
 
 /* trend */
 .lb-trend{display:flex;flex-direction:column;align-items:flex-end;gap:2px;}
@@ -305,7 +354,6 @@ html,body{width:100%;height:100%;overflow:hidden;
 /* ═══ SIDEBAR (30%) ═══ */
 .sidebar{flex:1;display:flex;flex-direction:column;min-height:0;background:var(--bg);}
 
-/* countdown widget */
 .cdw{
   flex-shrink:0;padding:14px 16px 12px;
   background:var(--s1);border-bottom:1px solid var(--bdr);
@@ -324,7 +372,6 @@ html,body{width:100%;height:100%;overflow:hidden;
 .cdw-time.urgent{color:var(--dn);}
 .cdw-time.closed{color:var(--t3);font-size:24px;}
 .cdw-sub{font-size:11px;color:var(--t2);line-height:1.4;padding-bottom:3px;}
-/* progress bar — drains left to right as time runs out */
 .cdw-bar-bg{height:4px;border-radius:3px;background:var(--s3);overflow:hidden;}
 .cdw-bar-fill{
   height:100%;border-radius:3px;background:var(--orange);
@@ -333,7 +380,6 @@ html,body{width:100%;height:100%;overflow:hidden;
 .cdw-bar-fill.warn{background:var(--gold);}
 .cdw-bar-fill.urgent{background:var(--dn);}
 
-/* stats */
 .stats{
   flex-shrink:0;padding:16px 16px 14px;
   background:var(--s1);border-bottom:1px solid var(--bdr);
@@ -354,7 +400,6 @@ html,body{width:100%;height:100%;overflow:hidden;
 .stat-lbl{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);margin-top:3px;}
 .stat-sub{font-size:11px;color:var(--t2);margin-top:4px;line-height:1.4;}
 
-/* feed */
 .feed{flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden;}
 .feed-bar{
   flex-shrink:0;height:40px;display:flex;align-items:center;
@@ -413,9 +458,9 @@ html,body{width:100%;height:100%;overflow:hidden;
       <div class="logo-name">Eazo</div>
     </div>
     <div class="hdr-div"></div>
-    <div class="hdr-event"><strong>Global Hackathon 2026</strong> &nbsp;·&nbsp; San Francisco &nbsp;·&nbsp; PT</div>
+    <div class="hdr-event" id="hdrEvent"><strong>Global Hackathon 2026</strong> &nbsp;·&nbsp; San Francisco &nbsp;·&nbsp; PT</div>
+    <div class="hdr-hub-badge sf" id="hdrHubBadge">🇺🇸 SF · Bay Area</div>
     <div class="phase-pill pp-build" id="phaseBadge">BUILD &amp; VOTE</div>
-    <div class="phase-pill pp-build" id="phaseBadge2" style="display:none"></div>
   </div>
 
   <!-- ── MAIN ── -->
@@ -430,19 +475,36 @@ html,body{width:100%;height:100%;overflow:hidden;
         <div class="lb-updated" id="lastRefresh">Updates every 15s</div>
       </div>
 
-      <!-- PODIUM top 3 (fixed, no scroll) -->
+      <!-- Hub filter -->
+      <div class="hub-filter">
+        <button class="hub-filter-tab active-sf" data-hub="sf" onclick="setHub('sf',this)">🇺🇸 SF · Bay Area</button>
+        <button class="hub-filter-tab"           data-hub="sh" onclick="setHub('sh',this)">🇨🇳 SH · Shanghai</button>
+        <button class="hub-filter-tab"           data-hub="ny" onclick="setHub('ny',this)">🗽 NY · New York</button>
+        <!-- TODO: Auto-detect hub from IP — GET /api/hackathon/detect-hub → setHub(result.hub) -->
+        <div class="hub-ip-note" id="hubIpNote">📍 IP: SF</div>
+      </div>
+
+      <!-- Track filter -->
+      <div class="track-filter" id="trackFilter">
+        <button class="track-filter-tab active" data-track="0"  onclick="setTrack(0,this)">All Tracks</button>
+        <button class="track-filter-tab"        data-track="1"  onclick="setTrack(1,this)">Superparent</button>
+        <button class="track-filter-tab"        data-track="2"  onclick="setTrack(2,this)">AI Companion</button>
+        <button class="track-filter-tab"        data-track="3"  onclick="setTrack(3,this)">Life OS</button>
+        <button class="track-filter-tab"        data-track="4"  onclick="setTrack(4,this)">Body Intelligence</button>
+        <button class="track-filter-tab"        data-track="5"  onclick="setTrack(5,this)">Wildcard</button>
+      </div>
+
+      <!-- PODIUM top 3 -->
       <div class="podium-wrap">
         <div class="podium-label">🏆 Top 3</div>
-        <div class="podium-row" id="podiumRow">
-          <!-- filled by JS -->
-        </div>
+        <div class="podium-row" id="podiumRow"></div>
       </div>
 
       <!-- col headers for rank 4+ -->
       <div class="lb-list-hdr">
         <div class="lch" style="text-align:center">#</div>
         <div class="lch" style="padding-left:4px">Team · Project</div>
-        <div class="lch r">Score (Votes)</div>
+        <div class="lch r">Votes</div>
         <div class="lch r">±</div>
       </div>
 
@@ -457,18 +519,17 @@ html,body{width:100%;height:100%;overflow:hidden;
     <!-- ═══ SIDEBAR 30% ═══ -->
     <div class="sidebar">
 
-      <!-- COUNTDOWN -->
       <div class="cdw">
-        <div class="cdw-hd">⏳ Submission Closes In</div>
+        <div class="cdw-hd">⏳ Voting Closes In</div>
         <div class="cdw-body">
           <div class="cdw-time" id="cdwTime">--:--:--</div>
-          <div class="cdw-sub" id="cdwSub">calculating…</div>
+          <div class="cdw-sub"  id="cdwSub">calculating…</div>
         </div>
         <div class="cdw-bar-bg"><div class="cdw-bar-fill" id="cdwBar" style="width:100%"></div></div>
       </div>
 
       <div class="stats">
-        <div class="stats-hd">SF · Live Stats</div>
+        <div class="stats-hd" id="statsHd">SF · Live Stats</div>
         <div class="stats-row">
           <div class="stat">
             <div class="stat-val orange" id="statTeams">31</div>
@@ -492,7 +553,8 @@ html,body{width:100%;height:100%;overflow:hidden;
         <div class="feed-bar">
           <div class="feed-title">Recent Submissions</div>
           <div class="live-pill" style="margin-left:8px">
-            <span class="live-dot"></span><span style="font-size:10px;font-weight:700;color:var(--up)">Live</span>
+            <span class="live-dot"></span>
+            <span style="font-size:10px;font-weight:700;color:var(--up)">Live</span>
           </div>
         </div>
         <div class="feed-body">
@@ -512,14 +574,20 @@ html,body{width:100%;height:100%;overflow:hidden;
 
 <script>
 /* ══ CONFIG ══ */
-const DEADLINE      = new Date('2026-05-24T09:00:00-07:00');
-const VOTE_MS       = 12000;
-const SUB_MS        = 38000;
-const TOKEN_MS      = 2800;
-const SCROLL_SPD    = 34;    // px/s
-const PAUSE_TOP_MS  = 5500;
-const PAUSE_BOT_MS  = 2500;
-const RESUME_DELAY  = 3000;  // ms after mouseLeave before resuming
+const VOTE_MS      = 12000;
+const SUB_MS       = 38000;
+const TOKEN_MS     = 2800;
+const SCROLL_SPD   = 34;
+const PAUSE_TOP_MS = 5500;
+const PAUSE_BOT_MS = 2500;
+const RESUME_DELAY = 3000;
+
+// Per-hub vote deadlines
+const HUB_CONFIG = {
+  sf: { label:'SF · Bay Area',    eventLabel:'San Francisco · PT', tz:'PT',  deadline:new Date('2026-05-25T02:00:00Z'), start:new Date('2026-05-23T17:00:00Z') },
+  sh: { label:'SH · Shanghai',    eventLabel:'Shanghai · CST',     tz:'CST', deadline:new Date('2026-05-24T11:00:00Z'), start:new Date('2026-05-23T02:00:00Z') },
+  ny: { label:'NY · New York',    eventLabel:'New York · ET',      tz:'ET',  deadline:new Date('2026-05-24T23:00:00Z'), start:new Date('2026-05-23T14:00:00Z') },
+};
 
 const TRACKS = {
   1:{name:'Superparent',      cls:'tr1'},
@@ -530,8 +598,9 @@ const TRACKS = {
 };
 const MEDALS = {1:'🥇',2:'🥈',3:'🥉'};
 
-/* ══ DATA ══ */
-const INIT = [
+/* ══ MOCK DATA — per hub ══ */
+// TODO: Replace with — GET /api/hackathon/{hub}/leaderboard (real-time, keyed by hub)
+const SF_INIT = [
   {id:1,  team:'Team Meridian',  project:'Atlas',        track:3, votes:3241, minsAgo:180},
   {id:2,  team:'Team Wavelength',project:'SolaceAI',     track:2, votes:2891, minsAgo:165},
   {id:3,  team:'Team Pulse',     project:'BodySync',     track:4, votes:2654, minsAgo:210},
@@ -565,52 +634,147 @@ const INIT = [
   {id:31, team:'Team Apex',      project:'PeakOS',       track:3, votes:  42, minsAgo:  5},
 ];
 
-const POOL = [
-  {id:32,team:'Team Nova',      project:'StarMapper',   track:5},
-  {id:33,team:'Team Solstice',  project:'DayLight',     track:4},
-  {id:34,team:'Team Horizon',   project:'LookAhead',    track:3},
-  {id:35,team:'Team Ember',     project:'WarmBot',      track:2},
-  {id:36,team:'Team Cascade',   project:'DropFlow',     track:1},
-  {id:37,team:'Team Quartz',    project:'CrystalOS',    track:3},
-  {id:38,team:'Team Lynx',      project:'FastTrack',    track:4},
-  {id:39,team:'Team Tidal',     project:'WaveSync',     track:5},
-  {id:40,team:'Team Canopy',    project:'ForestMind',   track:2},
-  {id:41,team:'Team Flux',      project:'ShiftAI',      track:3},
-  {id:42,team:'Team Sparrow',   project:'MigrationKit', track:5},
-  {id:43,team:'Team Mirage',    project:'RealityCheck', track:2},
-  {id:44,team:'Team Torrent',   project:'DataRiver',    track:4},
-  {id:45,team:'Team Fable',     project:'StoryBot',     track:1},
-  {id:46,team:'Team Capsule',   project:'TimePill',     track:5},
-  {id:47,team:'Team Luminary',  project:'ShineAI',      track:2},
-  {id:48,team:'Team Bastion',   project:'SafeKeep',     track:1},
+const SH_INIT = [
+  {id:101, team:'队伍 · 晨曦',    project:'DawnMind',     track:3, votes:2987, minsAgo:185},
+  {id:102, team:'队伍 · 织梦',    project:'DreamWeave',   track:2, votes:2643, minsAgo:170},
+  {id:103, team:'队伍 · 脉动',    project:'PulseLife',    track:4, votes:2410, minsAgo:200},
+  {id:104, team:'队伍 · 繁星',    project:'StarGuard',    track:1, votes:2188, minsAgo:150},
+  {id:105, team:'队伍 · 流光',    project:'NeuraNow',     track:3, votes:1934, minsAgo:180},
+  {id:106, team:'队伍 · 清风',    project:'ShopSense',    track:3, votes:1712, minsAgo:140},
+  {id:107, team:'队伍 · 万象',    project:'FitKit',       track:4, votes:1543, minsAgo:120},
+  {id:108, team:'队伍 · 烟火',    project:'ZenRun',       track:4, votes:1388, minsAgo:110},
+  {id:109, team:'队伍 · 归途',    project:'TuanPal',      track:2, votes:1201, minsAgo:100},
+  {id:110, team:'队伍 · 拾光',    project:'TimeNest',     track:3, votes:1076, minsAgo: 90},
+  {id:111, team:'队伍 · 暖阳',    project:'KidScope',     track:1, votes: 943, minsAgo: 85},
+  {id:112, team:'队伍 · 星河',    project:'MomConnect',   track:1, votes: 822, minsAgo: 78},
+  {id:113, team:'队伍 · 竹影',    project:'SocialMesh',   track:5, votes: 697, minsAgo: 71},
+  {id:114, team:'队伍 · 山鸣',    project:'EchoChat',     track:2, votes: 621, minsAgo: 65},
+  {id:115, team:'队伍 · 晚霞',    project:'CareNet',      track:1, votes: 548, minsAgo: 58},
+  {id:116, team:'队伍 · 微光',    project:'HealthOS',     track:4, votes: 476, minsAgo: 52},
+  {id:117, team:'队伍 · 白云',    project:'CloudDiary',   track:5, votes: 389, minsAgo: 46},
+  {id:118, team:'队伍 · 春雨',    project:'NutriBot',     track:4, votes: 312, minsAgo: 40},
+  {id:119, team:'队伍 · 松声',    project:'FocusFlow',    track:3, votes: 254, minsAgo: 34},
+  {id:120, team:'队伍 · 碧波',    project:'WaveLearn',    track:2, votes: 198, minsAgo: 28},
 ];
 
-/* ══ STATE ══ */
-const state = {
-  teams:   INIT.map((t,i)=>({...t,prevRank:i+1,isNew:false,_flash:null})),
-  pool:    [...POOL], poolIdx:0,
-  feed:    [],
-  tokens:  824312,
-  apps:    47,
+const NY_INIT = [
+  {id:201, team:'Team Fulton',    project:'FinCoach',     track:3, votes:3102, minsAgo:175},
+  {id:202, team:'Team Brooklyn',  project:'MindMap',      track:2, votes:2756, minsAgo:160},
+  {id:203, team:'Team Harlem',    project:'StreetSense',  track:5, votes:2498, minsAgo:215},
+  {id:204, team:'Team Tribeca',   project:'DadBot',       track:1, votes:2234, minsAgo:148},
+  {id:205, team:'Team Chelsea',   project:'HabitNest',    track:3, votes:1965, minsAgo:192},
+  {id:206, team:'Team Soho',      project:'SleepSeed',    track:4, votes:1788, minsAgo:226},
+  {id:207, team:'Team Midtown',   project:'EchoPad',      track:5, votes:1601, minsAgo:138},
+  {id:208, team:'Team Uptown',    project:'CarePath',     track:1, votes:1434, minsAgo:118},
+  {id:209, team:'Team Lower East',project:'SpendAI',      track:3, votes:1267, minsAgo:102},
+  {id:210, team:'Team Bronx',     project:'MoveMind',     track:4, votes:1088, minsAgo: 97},
+  {id:211, team:'Team Queens',    project:'MoodTrack',    track:2, votes: 932, minsAgo: 90},
+  {id:212, team:'Team Staten',    project:'HomeOS',       track:1, votes: 814, minsAgo: 84},
+  {id:213, team:'Team Astoria',   project:'CityHealth',   track:4, votes: 688, minsAgo: 76},
+  {id:214, team:'Team Flushing',  project:'NeiMind',      track:2, votes: 601, minsAgo: 70},
+  {id:215, team:'Team Williamsburg',project:'CraftOS',   track:5, votes: 534, minsAgo: 63},
+  {id:216, team:'Team Bushwick',  project:'ArtAI',        track:5, votes: 462, minsAgo: 57},
+  {id:217, team:'Team Flatbush',  project:'HoodMap',      track:5, votes: 391, minsAgo: 51},
+  {id:218, team:'Team Greenpoint',project:'PlantBot',     track:3, votes: 323, minsAgo: 44},
+  {id:219, team:'Team Ridgewood', project:'CommutePal',   track:3, votes: 256, minsAgo: 37},
+  {id:220, team:'Team Rockaway',  project:'WaveRider',    track:5, votes: 188, minsAgo: 30},
+];
+
+const HUB_POOL = {
+  sf: [
+    {id:32,team:'Team Nova',      project:'StarMapper',   track:5},
+    {id:33,team:'Team Solstice',  project:'DayLight',     track:4},
+    {id:34,team:'Team Horizon',   project:'LookAhead',    track:3},
+    {id:35,team:'Team Ember',     project:'WarmBot',      track:2},
+    {id:36,team:'Team Cascade',   project:'DropFlow',     track:1},
+  ],
+  sh: [
+    {id:132,team:'队伍 · 霜叶',    project:'FrostLeaf',    track:1},
+    {id:133,team:'队伍 · 幽兰',    project:'LifeThread',   track:3},
+    {id:134,team:'队伍 · 朝阳',    project:'MorningOS',    track:2},
+  ],
+  ny: [
+    {id:232,team:'Team Nolita',   project:'StyleAI',      track:5},
+    {id:233,team:'Team Cobble',   project:'CommConnect',  track:2},
+    {id:234,team:'Team Dumbo',    project:'CreativeOS',   track:3},
+  ],
 };
 
-[...INIT].sort((a,b)=>a.minsAgo-b.minsAgo).slice(0,10)
-  .forEach(t=>state.feed.push({team:t.team,project:t.project,track:t.track,minsAgo:t.minsAgo}));
+/* ══ STATE ══ */
+let activeHub   = 'sf';
+let activeTrack = 0;  // 0 = all tracks
+
+// Per-hub state
+const hubStates = {
+  sf: initHubState('sf', SF_INIT, HUB_POOL.sf),
+  sh: initHubState('sh', SH_INIT, HUB_POOL.sh),
+  ny: initHubState('ny', NY_INIT, HUB_POOL.ny),
+};
+
+function initHubState(hub, initData, poolData) {
+  const teams = initData.map((t,i) => ({...t, prevRank:i+1, isNew:false, _flash:null}));
+  const feed  = [...initData].sort((a,b) => a.minsAgo - b.minsAgo).slice(0, 10)
+    .map(t => ({team:t.team, project:t.project, track:t.track, minsAgo:t.minsAgo}));
+  return { teams, pool:[...poolData], poolIdx:0, feed, tokens:800000+Math.floor(Math.random()*200000), apps:40+Math.floor(Math.random()*20) };
+}
+
+function hs() { return hubStates[activeHub]; }
 
 /* ══ HELPERS ══ */
-const fmt  = n => n.toLocaleString();
-const fmtK = n => n>=1e6?(n/1e6).toFixed(2)+'M':n>=1000?(n/1000).toFixed(1)+'K':String(n);
-const sorted  = () => [...state.teams].sort((a,b)=>b.votes-a.votes);
-const maxVotes = () => state.teams.length ? Math.max(...state.teams.map(t=>t.votes)) : 1;
+const fmt   = n => n.toLocaleString();
+const fmtK  = n => n>=1e6?(n/1e6).toFixed(2)+'M':n>=1000?(n/1000).toFixed(1)+'K':String(n);
+const sorted = () => {
+  let list = [...hs().teams].sort((a,b) => b.votes - a.votes);
+  if (activeTrack > 0) list = list.filter(t => t.track === activeTrack);
+  return list;
+};
+const maxVotes = () => hs().teams.length ? Math.max(...hs().teams.map(t=>t.votes)) : 1;
 function timeAgo(m) {
-  if(m<1) return 'just now';
+  if(m<1)  return 'just now';
   if(m<60) return `${Math.round(m)}m ago`;
-  const h=Math.floor(m/60),r=Math.round(m%60);
-  return r?`${h}h ${r}m ago`:`${h}h ago`;
+  const h=Math.floor(m/60), r=Math.round(m%60);
+  return r ? `${h}h ${r}m ago` : `${h}h ago`;
+}
+
+/* ══ HUB SWITCH ══ */
+function setHub(hub, el) {
+  activeHub   = hub;
+  activeTrack = 0;
+
+  // Update hub tabs
+  document.querySelectorAll('.hub-filter-tab').forEach(t => {
+    t.className = 'hub-filter-tab';
+    if (t.dataset.hub === hub) t.classList.add(`active-${hub}`);
+  });
+  // Update track tabs
+  document.querySelectorAll('.track-filter-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.track === '0');
+  });
+  // Update header
+  const cfg = HUB_CONFIG[hub];
+  document.getElementById('hdrEvent').innerHTML = `<strong>Global Hackathon 2026</strong> &nbsp;·&nbsp; ${cfg.eventLabel}`;
+  const badge = document.getElementById('hdrHubBadge');
+  badge.className = `hdr-hub-badge ${hub}`;
+  badge.textContent = { sf:'🇺🇸 SF · Bay Area', sh:'🇨🇳 SH · Shanghai', ny:'🗽 NY · New York' }[hub];
+  document.getElementById('hubIpNote').textContent = `📍 IP: ${hub.toUpperCase()}`;
+  document.getElementById('statsHd').textContent = `${hub.toUpperCase()} · Live Stats`;
+
+  // Re-init hub scroll
+  stopAutoScroll();
+  renderAll();
+  setTimeout(startAutoScroll, 600);
+}
+
+/* ══ TRACK SWITCH ══ */
+function setTrack(track, el) {
+  activeTrack = track;
+  document.querySelectorAll('.track-filter-tab').forEach(t => t.classList.remove('active'));
+  if (el) el.classList.add('active');
+  renderAll();
 }
 
 /* ══ RENDER: PODIUM (top 3) ══ */
-const ORDINALS = {1:'1st',2:'2nd',3:'3rd'};
+const ORDINALS = {1:'1st', 2:'2nd', 3:'3rd'};
 function renderPodium() {
   const list = sorted();
   const top3 = [list[1], list[0], list[2]]; // display order: 2 | 1 | 3
@@ -629,25 +793,23 @@ function renderPodium() {
   }).join('');
 }
 
-/* ══ RENDER: LIST (rank 4+) ══ */
+/* ══ RENDER: LIST (rank 4+) — NO bars ══ */
 function renderList() {
-  const list = sorted().slice(3); // rank 4 onwards
-  const maxV = maxVotes();
+  const list = sorted().slice(3);
   document.getElementById('lbInner').innerHTML = list.map((t,i) => {
     const rank = i + 4;
     const prev = t.prevRank || rank;
     const diff = prev - rank;
     const trk  = TRACKS[t.track];
-    const barPct = Math.round((t.votes/maxV)*100);
 
-    let tCls,arr,dlt;
-    if(t.isNew)       {tCls='tn';arr='★';dlt='NEW';}
-    else if(diff>0)   {tCls='tu';arr='↑';dlt=`+${diff}`;}
-    else if(diff<0)   {tCls='td';arr='↓';dlt=`${diff}`;}
-    else              {tCls='ts';arr='—';dlt='';}
+    let tCls, arr, dlt;
+    if(t.isNew)      { tCls='tn'; arr='★'; dlt='NEW'; }
+    else if(diff>0)  { tCls='tu'; arr='↑'; dlt=`+${diff}`; }
+    else if(diff<0)  { tCls='td'; arr='↓'; dlt=`${diff}`; }
+    else             { tCls='ts'; arr='—'; dlt=''; }
 
-    const flash = t._flash ? ` ${t._flash}` : '';
-    const newCl = t.isNew  ? ' new-row' : '';
+    const flash  = t._flash ? ` ${t._flash}` : '';
+    const newCl  = t.isNew  ? ' new-row' : '';
 
     return `<div class="lb-row${flash}${newCl}" id="row-${t.id}">
       <div class="lb-rank">#${rank}</div>
@@ -659,7 +821,6 @@ function renderList() {
       <div class="lb-score">
         <div class="lb-score-num">${fmt(t.votes)}</div>
         <div class="lb-score-lbl">votes</div>
-        <div class="lb-bar-bg"><div class="lb-bar-fill" style="width:${barPct}%"></div></div>
       </div>
       <div class="lb-trend ${tCls}">
         <div class="arr">${arr}</div>
@@ -668,11 +829,19 @@ function renderList() {
     </div>`;
   }).join('');
 
-  state.teams.forEach(t=>{t._flash=null;t.isNew=false;});
+  hs().teams.forEach(t => { t._flash=null; t.isNew=false; });
 }
 
-/* ══ AUTO-SCROLL (pause on hover) ══ */
-let scrollPhase = 'pause-top'; // pause-top | scrolling | pause-bottom
+function renderAll() {
+  renderPodium();
+  renderList();
+  renderStats();
+  renderFeed();
+  renderTicker();
+}
+
+/* ══ AUTO-SCROLL ══ */
+let scrollPhase = 'pause-top';
 let phaseTimer  = null;
 let rafId       = null;
 let lastTs      = null;
@@ -700,6 +869,12 @@ lbOuter.addEventListener('mouseleave', () => {
   }, RESUME_DELAY);
 });
 
+function stopAutoScroll() {
+  if(phaseTimer) { clearTimeout(phaseTimer); phaseTimer = null; }
+  if(rafId) { cancelAnimationFrame(rafId); rafId = null; }
+  lbOuter.scrollTop = 0;
+}
+
 function startAutoScroll() {
   if(phaseTimer) clearTimeout(phaseTimer);
   scrollPhase = 'pause-top';
@@ -722,7 +897,6 @@ function scrollStep(ts) {
 
   const inner  = document.getElementById('lbInner');
   const maxScr = inner.scrollHeight - lbOuter.clientHeight;
-
   if(maxScr <= 0) { startAutoScroll(); return; }
 
   lbOuter.scrollTop += SCROLL_SPD * dt;
@@ -741,14 +915,14 @@ function scrollStep(ts) {
 
 /* ══ RENDER: STATS ══ */
 function renderStats() {
-  document.getElementById('statTeams').textContent  = state.teams.length;
-  document.getElementById('statApps').textContent   = state.apps;
-  document.getElementById('statTokens').textContent = fmtK(state.tokens);
+  document.getElementById('statTeams').textContent  = hs().teams.length;
+  document.getElementById('statApps').textContent   = hs().apps;
+  document.getElementById('statTokens').textContent = fmtK(hs().tokens);
 }
 
 /* ══ RENDER: FEED ══ */
 function renderFeed() {
-  document.getElementById('feedInner').innerHTML = state.feed.slice(0,10).map((f,i) => {
+  document.getElementById('feedInner').innerHTML = hs().feed.slice(0,10).map((f,i) => {
     const trk = TRACKS[f.track];
     const isNew = i===0 && f._new;
     if(f._new) f._new = false;
@@ -774,78 +948,72 @@ function renderTicker() {
 /* ══ SIMULATE: VOTES ══ */
 function simVotes() {
   const old = sorted(), oldRank={};
-  old.forEach((t,i)=>oldRank[t.id]=i+1);
+  old.forEach((t,i) => oldRank[t.id]=i+1);
 
-  const n = 2+Math.floor(Math.random()*3);
+  const n = 2 + Math.floor(Math.random()*3);
   const picked = new Set();
-  while(picked.size < Math.min(n, state.teams.length))
-    picked.add(Math.floor(Math.pow(Math.random(),1.6)*state.teams.length));
+  while(picked.size < Math.min(n, hs().teams.length))
+    picked.add(Math.floor(Math.pow(Math.random(),1.6) * hs().teams.length));
 
   const arr = sorted();
-  picked.forEach(idx=>{
-    const st = state.teams.find(x=>x.id===arr[idx]?.id);
+  picked.forEach(idx => {
+    const st = hs().teams.find(x => x.id===arr[idx]?.id);
     if(!st) return;
     st.votes += Math.max(2, Math.floor(Math.random()*(130-idx*2)));
   });
 
-  sorted().forEach((t,i)=>{
-    const st=state.teams.find(x=>x.id===t.id); if(!st) return;
+  sorted().forEach((t,i) => {
+    const st = hs().teams.find(x => x.id===t.id); if(!st) return;
     const nr=i+1, or=oldRank[t.id]||nr;
     if(picked.has(old.indexOf(old.find(x=>x.id===t.id))))
       st._flash = nr<or?'flash-up':nr>or?'flash-down':null;
-    st.prevRank=or;
+    st.prevRank = or;
   });
 
-  renderPodium();
-  renderList();
-  renderTicker();
+  renderPodium(); renderList(); renderTicker();
   document.getElementById('lastRefresh').textContent =
     'Updated '+new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
 }
 
 /* ══ SIMULATE: SUBMISSION ══ */
 function simSubmission() {
-  if(state.poolIdx >= state.pool.length) return;
-  const t = state.pool[state.poolIdx++];
+  const h = hs();
+  if(h.poolIdx >= h.pool.length) return;
+  const t = h.pool[h.poolIdx++];
 
-  sorted().forEach((x,i)=>{
-    const st=state.teams.find(z=>z.id===x.id); if(st) st.prevRank=i+1;
+  sorted().forEach((x,i) => {
+    const st = hs().teams.find(z=>z.id===x.id); if(st) st.prevRank=i+1;
   });
 
-  state.teams.push({...t,votes:Math.floor(Math.random()*20)+3,minsAgo:0,prevRank:null,isNew:true,_flash:null});
-  state.apps += Math.random()<0.4 ? 2 : 1;
-  state.feed.unshift({team:t.team,project:t.project,track:t.track,minsAgo:0,_new:true});
+  h.teams.push({...t, votes:Math.floor(Math.random()*20)+3, minsAgo:0, prevRank:null, isNew:true, _flash:null});
+  h.apps += Math.random()<0.4 ? 2 : 1;
+  h.feed.unshift({team:t.team, project:t.project, track:t.track, minsAgo:0, _new:true});
 
-  renderPodium();
-  renderList();
-  renderStats();
-  renderFeed();
-  renderTicker();
+  renderAll();
 }
 
 /* ══ SIMULATE: TOKENS ══ */
 function simTokens() {
-  state.tokens += Math.floor(Math.random()*7000)+1200;
-  document.getElementById('statTokens').textContent = fmtK(state.tokens);
+  hs().tokens += Math.floor(Math.random()*7000)+1200;
+  document.getElementById('statTokens').textContent = fmtK(hs().tokens);
 }
 
 /* ══ COUNTDOWN ══ */
-const BUILD_START = new Date('2026-05-23T09:00:00-07:00'); // hackathon start
-const TOTAL_WINDOW = DEADLINE - BUILD_START;               // ~24h
-
 function updateCountdown() {
-  const diff   = DEADLINE - Date.now();
+  const cfg    = HUB_CONFIG[activeHub];
+  const diff   = cfg.deadline - Date.now();
   const cdwEl  = document.getElementById('cdwTime');
   const barEl  = document.getElementById('cdwBar');
   const subEl  = document.getElementById('cdwSub');
   const badge  = document.getElementById('phaseBadge');
+  const total  = cfg.deadline - cfg.start;
 
   if(diff <= 0){
     cdwEl.textContent = 'CLOSED';
     cdwEl.className   = 'cdw-time closed';
     barEl.style.width = '0%';
     barEl.className   = 'cdw-bar-fill';
-    subEl.textContent = 'Submissions are now closed';
+    subEl.textContent = 'Voting is now closed';
     if(badge){ badge.textContent='DEMO & VOTE'; badge.className='phase-pill pp-demo'; }
     return;
   }
@@ -856,52 +1024,49 @@ function updateCountdown() {
   const m   = Math.floor((sec%3600)/60);
   const s   = sec%60;
 
-  const timeStr = d > 0
+  cdwEl.textContent = d > 0
     ? `${d}d ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`
     : `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-  cdwEl.textContent = timeStr;
 
-  // urgency colouring
   const hrs = diff / 3600000;
   let urgClass = '';
-  if(hrs < 0.5)       urgClass = 'urgent';
-  else if(hrs < 2)    urgClass = 'warn';
-  cdwEl.className   = 'cdw-time' + (urgClass ? ' '+urgClass : '');
-  barEl.className   = 'cdw-bar-fill' + (urgClass ? ' '+urgClass : '');
+  if(hrs < 0.5)    urgClass = 'urgent';
+  else if(hrs < 2) urgClass = 'warn';
+  cdwEl.className = 'cdw-time' + (urgClass ? ' '+urgClass : '');
+  barEl.className = 'cdw-bar-fill' + (urgClass ? ' '+urgClass : '');
 
-  // drain bar — percentage of window remaining
-  const pct = Math.max(0, Math.min(100, (diff / TOTAL_WINDOW) * 100));
+  const pct = Math.max(0, Math.min(100, (diff / total) * 100));
   barEl.style.width = pct + '%';
 
-  // human subtitle
-  const label = d > 0 ? `${d} day${d>1?'s':''} left` : h > 0 ? `${h}h ${m}m left` : `${m}m ${s}s left — almost there!`;
+  const label = d>0 ? `${d} day${d>1?'s':''} left` : h>0 ? `${h}h ${m}m left` : `${m}m ${s}s left — almost there!`;
   subEl.textContent = label;
 }
 
 /* ══ FEED TICK ══ */
-function tickFeed(){
-  state.feed.forEach(f=>f.minsAgo+=1/60);
+function tickFeed() {
+  hs().feed.forEach(f => f.minsAgo += 1/60);
   renderFeed();
 }
 
 /* ══ INIT ══ */
 function init() {
-  sorted().forEach((t,i)=>{const st=state.teams.find(x=>x.id===t.id);if(st)st.prevRank=i+1;});
+  // Set initial prevRanks
+  ['sf','sh','ny'].forEach(hub => {
+    const s = hubStates[hub];
+    [...s.teams].sort((a,b)=>b.votes-a.votes).forEach((t,i)=>{
+      const st=s.teams.find(x=>x.id===t.id); if(st) st.prevRank=i+1;
+    });
+  });
 
-  renderPodium();
-  renderList();
-  renderStats();
-  renderFeed();
-  renderTicker();
+  renderAll();
   updateCountdown();
-
   setTimeout(startAutoScroll, 800);
 
   setInterval(simVotes,      VOTE_MS);
   setInterval(simSubmission, SUB_MS);
   setInterval(simTokens,     TOKEN_MS);
   setInterval(updateCountdown, 1000);
-  setInterval(tickFeed,      60000);
+  setInterval(tickFeed, 60000);
 }
 
 window.addEventListener('load', init);

@@ -4,8 +4,15 @@
     {
       "name": "vote-page",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["serve", "-p", "3401", "eazo-user-vote"],
+      "runtimeArgs": ["serve", "-p", "3401", "eazo-comm-votepage"],
       "port": 3401
+    }
+  ,
+    {
+      "name": "onair",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", "-p", "3402", "eazo-onair"],
+      "port": 3402
     }
   ]
 }

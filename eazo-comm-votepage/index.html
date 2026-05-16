@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>Eazo Hackathon SF 2026 — Vote</title>
+  <title>Eazo Hackathon 2026 — Community Vote</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
@@ -18,6 +18,10 @@
       --text3: #888780;
       --voted: #1D9E75;
       --urgent: #D85A30;
+      /* Hub colors */
+      --hub-sf: #2a5fa8;
+      --hub-sh: #1d7a5a;
+      --hub-ny: #6a3aaa;
     }
 
     html, body { height: 100%; }
@@ -46,7 +50,7 @@
       z-index: 100;
       background: var(--bg);
       border-bottom: 1px solid var(--border);
-      padding: 14px 16px 11px;
+      padding: 14px 16px 0;
     }
 
     .header-row {
@@ -95,6 +99,11 @@
     .votes-pill.low   { background: var(--urgent); }
     .votes-pill.empty { background: var(--border2); }
 
+    @keyframes dot-pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.5; transform: scale(0.75); }
+    }
+
     .pulse-dot {
       width: 6px;
       height: 6px;
@@ -119,10 +128,12 @@
 
     .pip.used { background: var(--voted); }
 
+    /* ── Countdown row ── */
     .countdown-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      padding-bottom: 10px;
     }
 
     .live-label {
@@ -162,14 +173,115 @@
     .countdown-time.urgent { color: var(--urgent); }
     .countdown-closed { font-size: 13px; font-weight: 700; color: var(--border2); }
 
-    /* ── Filter Bar ── */
+    /* ── Hub tabs ── */
+    .hub-tabs {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 0 0;
+      border-top: 1px solid var(--border);
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .hub-tabs::-webkit-scrollbar { display: none; }
+
+    .hub-tab {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 13px;
+      border-radius: 8px 8px 0 0;
+      font-size: 12px;
+      font-weight: 700;
+      border: none;
+      background: transparent;
+      color: var(--text3);
+      cursor: pointer;
+      transition: all 0.18s;
+      font-family: inherit;
+      user-select: none;
+      white-space: nowrap;
+      position: relative;
+      bottom: 0;
+    }
+
+    .hub-tab::after {
+      content: '';
+      display: block;
+      position: absolute;
+      bottom: -1px;
+      left: 0; right: 0;
+      height: 2px;
+      border-radius: 2px 2px 0 0;
+      background: transparent;
+      transition: background 0.18s;
+    }
+
+    .hub-tab:active { opacity: 0.7; }
+
+    .hub-tab.active-sf { color: var(--hub-sf); }
+    .hub-tab.active-sf::after { background: var(--hub-sf); }
+    .hub-tab.active-sh { color: var(--hub-sh); }
+    .hub-tab.active-sh::after { background: var(--hub-sh); }
+    .hub-tab.active-ny { color: var(--hub-ny); }
+    .hub-tab.active-ny::after { background: var(--hub-ny); }
+
+    .hub-ip-badge {
+      margin-left: auto;
+      font-size: 9.5px;
+      font-weight: 700;
+      color: var(--text3);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      padding: 3px 8px;
+      border-radius: 10px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* ── Filter bar ── */
     .filter-bar {
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* Track tabs (scrollable) */
+    .track-tabs {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 9px 16px 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      border-bottom: 1px solid var(--border);
+    }
+    .track-tabs::-webkit-scrollbar { display: none; }
+
+    .track-tab {
+      padding: 5px 13px;
+      border-radius: 20px;
+      font-size: 11.5px;
+      font-weight: 600;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      color: var(--text2);
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s;
+      font-family: inherit;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .track-tab:active { transform: scale(0.94); }
+    .track-tab.active { background: var(--text); color: #fff; border-color: var(--text); }
+
+    /* Sort row */
+    .sort-row {
       display: flex;
       align-items: center;
       gap: 7px;
-      padding: 10px 16px;
-      border-bottom: 1px solid var(--border);
-      background: var(--bg);
+      padding: 8px 16px;
     }
 
     .filter-label {
@@ -181,9 +293,9 @@
     }
 
     .filter-pill {
-      padding: 5px 14px;
+      padding: 4px 12px;
       border-radius: 20px;
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 600;
       border: 1.5px solid var(--border);
       background: var(--surface);
@@ -437,12 +549,10 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(26, 25, 22, 0.55);
+      background: rgba(0,0,0,0.45);
       z-index: 200;
-      backdrop-filter: blur(3px);
-      -webkit-backdrop-filter: blur(3px);
+      backdrop-filter: blur(2px);
     }
-
     .overlay.visible { display: block; }
 
     .sheet {
@@ -453,20 +563,20 @@
       width: 100%;
       max-width: 480px;
       background: var(--surface);
-      border-radius: 22px 22px 0 0;
-      padding: 8px 20px 48px;
+      border-radius: 20px 20px 0 0;
       z-index: 201;
+      padding: 16px 22px 36px;
       transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1);
     }
 
     .sheet.open { transform: translateX(-50%) translateY(0); }
 
     .sheet-handle {
-      width: 38px;
+      width: 36px;
       height: 4px;
-      background: var(--border);
+      background: var(--border2);
       border-radius: 2px;
-      margin: 12px auto 20px;
+      margin: 0 auto 18px;
     }
 
     .sheet-eyebrow {
@@ -475,158 +585,147 @@
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--text3);
-      margin-bottom: 10px;
+      margin-bottom: 14px;
     }
 
     .sheet-app-row {
       display: flex;
       align-items: center;
       gap: 12px;
-      margin-bottom: 4px;
+      margin-bottom: 16px;
     }
 
     .sheet-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 11px;
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 22px;
+      font-size: 24px;
       flex-shrink: 0;
       border: 1px solid rgba(0,0,0,0.06);
     }
 
     .sheet-app-name {
-      font-size: 17px;
+      font-size: 18px;
       font-weight: 800;
       color: var(--text);
-      letter-spacing: -0.01em;
+      letter-spacing: -0.02em;
     }
 
     .sheet-team {
-      font-size: 12px;
+      font-size: 12.5px;
       color: var(--text3);
-      margin-top: 2px;
+      margin-top: 1px;
     }
 
-    /* Previous vote note */
     .sheet-prev-note {
       display: none;
       font-size: 12px;
       color: var(--voted);
       font-weight: 600;
-      background: #E8F7F1;
+      background: #EDFAF4;
       border-radius: 8px;
-      padding: 7px 12px;
+      padding: 9px 13px;
       margin-bottom: 14px;
     }
 
     .sheet-prev-note.visible { display: block; }
 
-    /* ── Vote Quantity Stepper ── */
     .stepper-label {
-      font-size: 11px;
+      font-size: 10.5px;
       font-weight: 700;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--text3);
       text-align: center;
-      margin: 14px 0 10px;
+      margin-bottom: 14px;
     }
 
     .stepper-row {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 16px;
+      gap: 18px;
       margin-bottom: 10px;
     }
 
     .stepper-btn {
       width: 48px;
       height: 48px;
-      border-radius: 14px;
-      border: 1.5px solid var(--border2);
+      border-radius: 12px;
+      border: 1.5px solid var(--border);
       background: var(--surface);
-      font-size: 24px;
-      font-weight: 400;
       color: var(--text);
+      font-size: 22px;
+      font-weight: 400;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.15s;
       font-family: inherit;
+      transition: all 0.15s;
       user-select: none;
-      line-height: 1;
     }
 
-    .stepper-btn:active:not(:disabled) {
-      transform: scale(0.90);
-      background: var(--surface2);
-    }
-
-    .stepper-btn:disabled {
-      opacity: 0.25;
-      cursor: not-allowed;
-    }
+    .stepper-btn:active:not(:disabled) { background: var(--surface2); transform: scale(0.92); }
+    .stepper-btn:disabled { opacity: 0.25; cursor: not-allowed; }
 
     .stepper-num {
       font-size: 42px;
       font-weight: 900;
       color: var(--text);
       letter-spacing: -0.03em;
-      min-width: 72px;
+      min-width: 56px;
       text-align: center;
       line-height: 1;
     }
 
     .stepper-sublabel {
-      font-size: 12px;
+      font-size: 12.5px;
       color: var(--text3);
       text-align: center;
-      margin-bottom: 16px;
-      line-height: 1.5;
+      margin-bottom: 18px;
+      min-height: 20px;
     }
 
     .stepper-sublabel strong { color: var(--text2); font-weight: 700; }
 
-    /* Notice */
     .sheet-notice {
       background: var(--surface2);
       border-radius: 10px;
-      padding: 11px 13px;
+      padding: 12px 14px;
       font-size: 12.5px;
       color: var(--text2);
       line-height: 1.6;
-      margin-bottom: 16px;
+      margin-bottom: 18px;
     }
 
-    .sheet-notice strong { color: var(--text); font-weight: 700; }
-
-    .sheet-actions { display: flex; gap: 10px; }
+    .sheet-actions {
+      display: flex;
+      gap: 10px;
+    }
 
     .btn-cancel {
       flex: 1;
       padding: 14px;
-      border-radius: 13px;
-      border: 1.5px solid var(--border2);
-      background: transparent;
+      border-radius: 12px;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
       color: var(--text2);
       font-size: 14px;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
       font-family: inherit;
       transition: all 0.15s;
     }
-
-    .btn-cancel:active { background: var(--surface2); transform: scale(0.97); }
+    .btn-cancel:active { background: var(--surface2); }
 
     .btn-confirm {
-      flex: 2;
+      flex: 2.5;
       padding: 14px;
-      border-radius: 13px;
+      border-radius: 12px;
       border: none;
       background: var(--text);
       color: #fff;
@@ -636,45 +735,86 @@
       font-family: inherit;
       transition: all 0.15s;
     }
+    .btn-confirm:active { opacity: 0.85; transform: scale(0.98); }
 
-    .btn-confirm:active { transform: scale(0.97); background: #333; }
+    /* ── Closed banner ── */
+    .closed-banner {
+      background: var(--surface2);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
 
-    /* ── My Votes ── */
+    .closed-banner strong { font-size: 13.5px; color: var(--text); }
+    .closed-banner span   { font-size: 12px;   color: var(--text3); }
+
+    /* ── Empty state ── */
+    .empty-state {
+      padding: 48px 24px;
+      text-align: center;
+    }
+
+    .empty-icon { font-size: 40px; margin-bottom: 12px; }
+
+    .empty-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .empty-desc { font-size: 13px; color: var(--text3); line-height: 1.6; }
+
+    /* ── My Votes section ── */
     .my-votes-wrap {
       background: var(--surface);
       border: 1.5px solid var(--border);
       border-radius: 14px;
       overflow: hidden;
-      margin-top: 6px;
+      grid-column: 1 / -1;
     }
 
     .my-votes-head {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 13px 16px;
+      padding: 12px 14px 10px;
       border-bottom: 1px solid var(--border);
     }
 
-    .my-votes-label { font-size: 13px; font-weight: 700; color: var(--text); }
+    .my-votes-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text3);
+    }
 
     .my-votes-counter {
-      font-size: 12px;
-      font-weight: 600;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--text2);
+    }
+
+    .my-votes-empty {
+      padding: 18px 14px;
+      font-size: 12.5px;
       color: var(--text3);
-      background: var(--surface2);
-      padding: 3px 10px;
-      border-radius: 10px;
+      line-height: 1.6;
     }
 
-    .my-votes-list {
-      padding: 10px 16px 14px;
+    .my-vote-row {
       display: flex;
-      flex-direction: column;
+      align-items: center;
       gap: 10px;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
     }
 
-    .my-vote-row { display: flex; align-items: center; gap: 10px; }
+    .my-vote-row:last-child { border-bottom: none; }
 
     .my-vote-icon {
       width: 32px;
@@ -683,9 +823,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 16px;
+      font-size: 15px;
       flex-shrink: 0;
-      border: 1px solid rgba(0,0,0,0.05);
     }
 
     .my-vote-info { flex: 1; min-width: 0; }
@@ -699,54 +838,25 @@
       text-overflow: ellipsis;
     }
 
-    .my-vote-team { font-size: 11.5px; color: var(--text3); }
+    .my-vote-team {
+      font-size: 11px;
+      color: var(--text3);
+    }
 
     .my-vote-badge {
-      font-size: 11px;
+      background: var(--voted);
+      color: #fff;
+      font-size: 10.5px;
       font-weight: 700;
-      color: var(--voted);
-      background: #E8F7F1;
-      padding: 3px 8px;
-      border-radius: 8px;
-      white-space: nowrap;
+      padding: 3px 9px;
+      border-radius: 10px;
       flex-shrink: 0;
     }
 
-    .my-votes-empty {
-      padding: 20px 16px;
-      font-size: 13px;
-      color: var(--text3);
-      line-height: 1.65;
-      text-align: center;
-    }
-
-    /* ── Closed banner ── */
-    .closed-banner {
-      background: var(--surface2);
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      padding: 14px 16px;
-      text-align: center;
-    }
-
-    .closed-banner strong { display: block; font-size: 14px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
-    .closed-banner span   { font-size: 12.5px; color: var(--text3); line-height: 1.6; }
-
-    /* ── Empty state ── */
-    .empty-state { text-align: center; padding: 56px 20px; }
-    .empty-icon  { font-size: 44px; margin-bottom: 16px; }
-    .empty-title { font-size: 16px; font-weight: 800; color: var(--text2); margin-bottom: 6px; }
-    .empty-desc  { font-size: 13px; color: var(--text3); line-height: 1.65; }
-
     /* ── Animations ── */
-    @keyframes dot-pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.35; transform: scale(0.65); }
-    }
-
     @keyframes number-pop {
       0%   { transform: scale(1); }
-      40%  { transform: scale(1.4); color: var(--voted); }
+      40%  { transform: scale(1.28); }
       100% { transform: scale(1); }
     }
 
@@ -768,7 +878,7 @@
   <div class="header">
     <div class="header-row">
       <div>
-        <div class="event-eyebrow">Eazo Hackathon 2026 · SF</div>
+        <div class="event-eyebrow" id="headerEyebrow">Eazo Hackathon 2026 · SF</div>
         <div class="event-name">Community Vote</div>
       </div>
       <div class="votes-pill-wrap">
@@ -779,23 +889,45 @@
         <div class="pip-row" id="pipRow"></div>
       </div>
     </div>
+
     <div class="countdown-row">
       <div class="live-label" id="liveLabel">
         <div class="live-dot"></div>
         Live Voting
       </div>
       <div class="countdown-right">
-        <span>Closes 7:00 PM PT ·</span>
+        <span id="deadlineLabel">Closes 7:00 PM PT ·</span>
         <span class="countdown-time" id="countdownEl">--h --m</span>
       </div>
+    </div>
+
+    <!-- Hub tabs -->
+    <div class="hub-tabs" id="hubTabs">
+      <button class="hub-tab active-sf" data-hub="sf" onclick="setHub('sf')">🇺🇸 SF</button>
+      <button class="hub-tab"           data-hub="sh" onclick="setHub('sh')">🇨🇳 SH</button>
+      <button class="hub-tab"           data-hub="ny" onclick="setHub('ny')">🗽 NY</button>
+      <!-- TODO: Show IP-detected badge when backend confirms hub — e.g. "📍 IP: SF" -->
+      <div class="hub-ip-badge" id="hubIpBadge">📍 IP: SF</div>
     </div>
   </div>
 
   <!-- ── FILTER BAR ── -->
   <div class="filter-bar">
-    <span class="filter-label">Sort</span>
-    <button class="filter-pill active" data-group="sort" data-val="time"  onclick="setSort('time',this)">Newest First</button>
-    <button class="filter-pill"        data-group="sort" data-val="votes" onclick="setSort('votes',this)">Most Votes</button>
+    <!-- Track filter tabs (scrollable) -->
+    <div class="track-tabs" id="trackTabs">
+      <button class="track-tab active" data-track="all"         onclick="setTrack('all',this)">All</button>
+      <button class="track-tab"        data-track="superparent" onclick="setTrack('superparent',this)">Superparent</button>
+      <button class="track-tab"        data-track="companion"   onclick="setTrack('companion',this)">AI Companion</button>
+      <button class="track-tab"        data-track="lifeos"      onclick="setTrack('lifeos',this)">Life OS</button>
+      <button class="track-tab"        data-track="body"        onclick="setTrack('body',this)">Body Intel</button>
+      <button class="track-tab"        data-track="wildcard"    onclick="setTrack('wildcard',this)">Wildcard</button>
+    </div>
+    <!-- Sort -->
+    <div class="sort-row">
+      <span class="filter-label">Sort</span>
+      <button class="filter-pill active" data-group="sort" data-val="time"  onclick="setSort('time',this)">Newest First</button>
+      <button class="filter-pill"        data-group="sort" data-val="votes" onclick="setSort('votes',this)">Most Votes</button>
+    </div>
   </div>
 
   <!-- ── MAIN CONTENT ── -->
@@ -843,43 +975,100 @@
 
 <script>
   // ── CONFIG ────────────────────────────────────────────────────────────────
-  const MAX_VOTES = 10;
-  // Voting closes May 24 2026 at 7:00 PM PDT (UTC-7) = 02:00 UTC May 25
-  const VOTE_DEADLINE = new Date('2026-05-25T02:00:00Z');
+  const MAX_VOTES = 10; // votes per hub per user
+
+  // Hub definitions
+  // TODO: Backend detects user's hub via IP — GET /api/hackathon/detect-hub → { hub: 'sf'|'sh'|'ny' }
+  // IP rules: SF = SF/Silicon Valley/Bay Area + global online | SH = Shanghai IPs + Asia online | NY = New York IPs
+  const HUBS = {
+    sf: {
+      label:       'SF · Bay Area',
+      eyebrow:     'Eazo Hackathon 2026 · SF',
+      flag:        '🇺🇸',
+      closesLabel: 'Closes 7:00 PM PT ·',
+      deadline:    new Date('2026-05-25T02:00:00Z'), // May 24 7pm PDT (UTC-7)
+    },
+    sh: {
+      label:       'SH · Shanghai',
+      eyebrow:     'Eazo Hackathon 2026 · SH',
+      flag:        '🇨🇳',
+      closesLabel: 'Closes 7:00 PM CST ·',
+      deadline:    new Date('2026-05-24T11:00:00Z'), // May 24 7pm CST (UTC+8)
+    },
+    ny: {
+      label:       'NY · New York',
+      eyebrow:     'Eazo Hackathon 2026 · NY',
+      flag:        '🗽',
+      closesLabel: 'Closes 7:00 PM ET ·',
+      deadline:    new Date('2026-05-24T23:00:00Z'), // May 24 7pm EDT (UTC-4)
+    },
+  };
 
   // ── STATE ─────────────────────────────────────────────────────────────────
-  // voteMap: { projectId → total votes given by this user }
-  let voteMap   = {};
-  let pendingId = null;
-  let pendingVoteCount = 1;
-  let sortMode  = 'time';
+  let hubMode     = 'sf'; // TODO: set from IP detection API
+  let trackFilter = 'all';
+  let sortMode    = 'time';
 
-  function totalVotesUsed()      { return Object.values(voteMap).reduce((s, n) => s + n, 0); }
-  function votesForProject(id)   { return voteMap[id] || 0; }
+  // Per-hub vote maps: { hub: { projectId → votes given } }
+  // Each hub gives the user a fresh 10-vote budget
+  const HUB_VOTE_MAPS = { sf: {}, sh: {}, ny: {} };
+
+  let pendingId        = null;
+  let pendingVoteCount = 1;
+
+  function hubVoteMap()          { return HUB_VOTE_MAPS[hubMode]; }
+  function totalVotesUsed()      { return Object.values(hubVoteMap()).reduce((s, n) => s + n, 0); }
+  function votesForProject(id)   { return hubVoteMap()[id] || 0; }
   function remainingVotes()      { return MAX_VOTES - totalVotesUsed(); }
   function hasVotedFor(id)       { return votesForProject(id) > 0; }
+  function activeProjects()      { return HUB_PROJECTS[hubMode] || []; }
 
   // ── MOCK DATA ─────────────────────────────────────────────────────────────
-  // TODO: Replace with API — GET /api/hackathon/sf/projects
-  // Response shape: { projects: Project[], voteMap: { [id]: number }, remainingVotes: number }
-  // Project shape: { id, name, team, desc, track, votes, iconEmoji, iconBg, thumbUrl, submittedAt }
-  // thumbUrl: URL to 9:16 app screenshot. null = show gradient placeholder.
-  // All projects returned by this endpoint are SF hub only.
-  const PROJECTS = [
-    { id:'p01', name:'FamilySync AI',  team:'Team Harmony',   desc:'Smart family scheduler that syncs everyone\'s calendar, automates reminders, and fairly distributes household tasks.',             track:'superparent', votes:142, iconEmoji:'👨‍👩‍👧', iconBg:'#FAE6C2', thumbUrl:null, submittedAt:new Date('2026-05-23T18:30:00') },
-    { id:'p02', name:'MindBuddy',      team:'Calm Stack',     desc:'Daily emotional check-ins with mood tracking and AI-powered coping suggestions, designed for ADHD and anxiety management.',         track:'companion',   votes:98,  iconEmoji:'🧠',    iconBg:'#EEEDFE', thumbUrl:null, submittedAt:new Date('2026-05-23T19:10:00') },
-    { id:'p03', name:'GoalForge',      team:'Builders Inc',   desc:'AI second brain that breaks your goals into weekly micro-tasks and holds you accountable with a gentle morning check-in.',           track:'lifeos',      votes:211, iconEmoji:'⚡',    iconBg:'#CCF0E3', thumbUrl:null, submittedAt:new Date('2026-05-23T17:50:00') },
-    { id:'p04', name:'PulseCoach',     team:'HealthLab',      desc:'Personalized recovery and training plans built from your HRV, sleep quality, and activity patterns across any wearable device.',    track:'body',        votes:77,  iconEmoji:'💓',    iconBg:'#D4E8FA', thumbUrl:null, submittedAt:new Date('2026-05-23T20:05:00') },
-    { id:'p05', name:'NightWatch',     team:'Solo Founders',  desc:'AI-powered security camera analyzer that only alerts you when something truly matters. No more false alarm fatigue.',               track:'wildcard',    votes:55,  iconEmoji:'🌙',    iconBg:'#E5E3DC', thumbUrl:null, submittedAt:new Date('2026-05-23T20:40:00') },
-    { id:'p06', name:'ChoreCoins',     team:'FamTech',        desc:'Gamified chore tracker for kids with reward points, a family leaderboard, and parent-approved prize redemptions.',                   track:'superparent', votes:112, iconEmoji:'🪙',    iconBg:'#FAE6C2', thumbUrl:null, submittedAt:new Date('2026-05-23T17:15:00') },
-    { id:'p07', name:'FocusFlow',      team:'Deep Work Co',   desc:'Pomodoro-style focus timer with binaural beats, smart distraction blocking, and session analytics to help you maximize deep work.',  track:'lifeos',      votes:189, iconEmoji:'🎯',    iconBg:'#CCF0E3', thumbUrl:null, submittedAt:new Date('2026-05-23T16:30:00') },
-    { id:'p08', name:'OmniJournal',    team:'Reflect Studio', desc:'Voice-first journaling that transcribes your thoughts, tags emotional patterns, and surfaces recurring life themes over time.',       track:'companion',   votes:158, iconEmoji:'📖',    iconBg:'#EEEDFE', thumbUrl:null, submittedAt:new Date('2026-05-23T15:20:00') },
-    { id:'p09', name:'HabitGPT',       team:'Routine Labs',   desc:'Conversational habit coach that adapts your routine based on how your last week actually went — not just how you planned it.',        track:'lifeos',      votes:92,  iconEmoji:'🔄',    iconBg:'#CCF0E3', thumbUrl:null, submittedAt:new Date('2026-05-23T18:45:00') },
-    { id:'p10', name:'SleepRx',        team:'Rest Well',      desc:'Sleep score tracker that analyzes your habits and delivers a personalised 7-day improvement protocol each week.',                     track:'body',        votes:63,  iconEmoji:'😴',    iconBg:'#D4E8FA', thumbUrl:null, submittedAt:new Date('2026-05-23T19:55:00') },
-    { id:'p11', name:'DreamBox',       team:'Night Owls',     desc:'AI dream journal that interprets recurring themes and emotional patterns, then connects them to your waking-life goals.',             track:'wildcard',    votes:43,  iconEmoji:'💭',    iconBg:'#E5E3DC', thumbUrl:null, submittedAt:new Date('2026-05-23T21:00:00') },
+  // TODO: Replace with API — GET /api/hackathon/{hub}/projects
+  // Response: { projects: Project[], voteMap: { [id]: number }, remainingVotes: number }
+  // Project: { id, name, team, desc, track, votes, iconEmoji, iconBg, thumbUrl, submittedAt }
+  // thumbUrl: null = show gradient placeholder; real URL when API connected
+  // Hub filter enforced server-side (IP check); frontend just renders what backend returns
+
+  const SF_PROJECTS = [
+    { id:'sf_p01', name:'FamilySync AI',  team:'Team Harmony',   desc:'Smart family scheduler that syncs everyone\'s calendar, automates reminders, and fairly distributes household tasks.',             track:'superparent', votes:142, iconEmoji:'👨‍👩‍👧', iconBg:'#FAE6C2', thumbUrl:null, submittedAt:new Date('2026-05-23T18:30:00') },
+    { id:'sf_p02', name:'MindBuddy',      team:'Calm Stack',     desc:'Daily emotional check-ins with mood tracking and AI-powered coping suggestions, designed for ADHD and anxiety management.',         track:'companion',   votes:98,  iconEmoji:'🧠',    iconBg:'#EEEDFE', thumbUrl:null, submittedAt:new Date('2026-05-23T19:10:00') },
+    { id:'sf_p03', name:'GoalForge',      team:'Builders Inc',   desc:'AI second brain that breaks your goals into weekly micro-tasks and holds you accountable with a gentle morning check-in.',           track:'lifeos',      votes:211, iconEmoji:'⚡',    iconBg:'#CCF0E3', thumbUrl:null, submittedAt:new Date('2026-05-23T17:50:00') },
+    { id:'sf_p04', name:'PulseCoach',     team:'HealthLab',      desc:'Personalized recovery and training plans built from your HRV, sleep quality, and activity patterns across any wearable device.',    track:'body',        votes:77,  iconEmoji:'💓',    iconBg:'#D4E8FA', thumbUrl:null, submittedAt:new Date('2026-05-23T20:05:00') },
+    { id:'sf_p05', name:'NightWatch',     team:'Solo Founders',  desc:'AI-powered security camera analyzer that only alerts you when something truly matters. No more false alarm fatigue.',               track:'wildcard',    votes:55,  iconEmoji:'🌙',    iconBg:'#E5E3DC', thumbUrl:null, submittedAt:new Date('2026-05-23T20:40:00') },
+    { id:'sf_p06', name:'ChoreCoins',     team:'FamTech',        desc:'Gamified chore tracker for kids with reward points, a family leaderboard, and parent-approved prize redemptions.',                   track:'superparent', votes:112, iconEmoji:'🪙',    iconBg:'#FAE6C2', thumbUrl:null, submittedAt:new Date('2026-05-23T17:15:00') },
+    { id:'sf_p07', name:'FocusFlow',      team:'Deep Work Co',   desc:'Pomodoro-style focus timer with binaural beats, smart distraction blocking, and session analytics to maximize deep work.',          track:'lifeos',      votes:189, iconEmoji:'🎯',    iconBg:'#CCF0E3', thumbUrl:null, submittedAt:new Date('2026-05-23T16:30:00') },
+    { id:'sf_p08', name:'OmniJournal',    team:'Reflect Studio', desc:'Voice-first journaling that transcribes your thoughts, tags emotional patterns, and surfaces recurring life themes over time.',       track:'companion',   votes:158, iconEmoji:'📖',    iconBg:'#EEEDFE', thumbUrl:null, submittedAt:new Date('2026-05-23T15:20:00') },
+    { id:'sf_p09', name:'HabitGPT',       team:'Routine Labs',   desc:'Conversational habit coach that adapts your routine based on how your last week actually went — not just how you planned it.',        track:'lifeos',      votes:92,  iconEmoji:'🔄',    iconBg:'#CCF0E3', thumbUrl:null, submittedAt:new Date('2026-05-23T18:45:00') },
+    { id:'sf_p10', name:'SleepRx',        team:'Rest Well',      desc:'Sleep score tracker that analyzes your habits and delivers a personalised 7-day improvement protocol each week.',                     track:'body',        votes:63,  iconEmoji:'😴',    iconBg:'#D4E8FA', thumbUrl:null, submittedAt:new Date('2026-05-23T19:55:00') },
+    { id:'sf_p11', name:'DreamBox',       team:'Night Owls',     desc:'AI dream journal that interprets recurring themes and emotional patterns, then connects them to your waking-life goals.',             track:'wildcard',    votes:43,  iconEmoji:'💭',    iconBg:'#E5E3DC', thumbUrl:null, submittedAt:new Date('2026-05-23T21:00:00') },
   ];
 
+  const SH_PROJECTS = [
+    { id:'sh_p01', name:'KidScope',      team:'EduTech Lab',      desc:'Screen-time guardian for parents — auto-schedules learning blocks, detects focus patterns, and shares a daily digest with caregivers.',     track:'superparent', votes:189, iconEmoji:'🔭', iconBg:'#FAE6C2', thumbUrl:null, submittedAt:new Date('2026-05-23T17:20:00') },
+    { id:'sh_p02', name:'TuanPal',       team:'CircleUp',         desc:'AI friend that helps shy individuals start and maintain meaningful conversations, with real-time social coaching and weekly insights.',         track:'companion',   votes:175, iconEmoji:'🤝', iconBg:'#EEEDFE', thumbUrl:null, submittedAt:new Date('2026-05-23T18:00:00') },
+    { id:'sh_p03', name:'ZenRun',        team:'Move More',        desc:'Running coach that adapts your pace and route based on real-time HRV data, air quality, and your stated energy level before each session.',     track:'body',        votes:134, iconEmoji:'🏃', iconBg:'#D4E8FA', thumbUrl:null, submittedAt:new Date('2026-05-23T16:45:00') },
+    { id:'sh_p04', name:'TimeNest',      team:'ClockWise',        desc:'Smart day planner that learns from your calendar habits, auto-blocks deep work time, and defends your schedule from meeting creep.',            track:'lifeos',      votes:98,  iconEmoji:'⏱', iconBg:'#CCF0E3', thumbUrl:null, submittedAt:new Date('2026-05-23T19:30:00') },
+    { id:'sh_p05', name:'MomConnect',    team:'ParentFirst',      desc:'Private social space for new moms — AI-moderated support circles, milestone tracking, and curated expert advice tailored by baby age.',         track:'superparent', votes:88,  iconEmoji:'👶', iconBg:'#FAE6C2', thumbUrl:null, submittedAt:new Date('2026-05-23T20:15:00') },
+    { id:'sh_p06', name:'FitKit',        team:'VitalSigns',       desc:'Wearable-agnostic fitness dashboard that unifies data from any device and generates weekly health narratives in plain language.',               track:'body',        votes:145, iconEmoji:'💪', iconBg:'#D4E8FA', thumbUrl:null, submittedAt:new Date('2026-05-23T15:50:00') },
+    { id:'sh_p07', name:'SocialMesh',    team:'Mesh Labs',        desc:'Hyperlocal community app that surfaces shared interests between neighbours and organises spontaneous micro-events within a 1 km radius.',         track:'wildcard',    votes:67,  iconEmoji:'🕸', iconBg:'#E5E3DC', thumbUrl:null, submittedAt:new Date('2026-05-23T21:10:00') },
+    { id:'sh_p08', name:'ShopAI',        team:'BuyBetter',        desc:'AI shopping assistant that compares prices across Chinese e-commerce platforms, detects fake reviews, and tracks price drops automatically.',     track:'lifeos',      votes:203, iconEmoji:'🛍', iconBg:'#CCF0E3', thumbUrl:null, submittedAt:new Date('2026-05-23T17:00:00') },
+  ];
+
+  const NY_PROJECTS = [
+    { id:'ny_p01', name:'FinCoach',      team:'MoneyRight',       desc:'Conversational budgeting coach that connects to your bank, spots wasteful subscriptions, and builds a savings plan around your real spending.',  track:'lifeos',      votes:234, iconEmoji:'💰', iconBg:'#CCF0E3', thumbUrl:null, submittedAt:new Date('2026-05-23T16:10:00') },
+    { id:'ny_p02', name:'MindMap',       team:'NeuraTech',        desc:'Cognitive wellness app that turns daily reflections into a visual mind map, helping you spot thought patterns and emotional triggers over time.',  track:'companion',   votes:178, iconEmoji:'🧩', iconBg:'#EEEDFE', thumbUrl:null, submittedAt:new Date('2026-05-23T17:40:00') },
+    { id:'ny_p03', name:'StreetSense',   team:'UrbanAI',          desc:'Hyper-local urban navigation assistant that factors in real-time crime data, transit delays, and accessibility needs for every commute.',          track:'wildcard',    votes:156, iconEmoji:'🗺', iconBg:'#E5E3DC', thumbUrl:null, submittedAt:new Date('2026-05-23T18:20:00') },
+    { id:'ny_p04', name:'DadBot',        team:'ParentVault',      desc:'AI parenting sidekick for dads — age-appropriate activity ideas, bedtime story generator, and a weekly dad-score to keep the fun competitive.',   track:'superparent', votes:112, iconEmoji:'👨‍👦', iconBg:'#FAE6C2', thumbUrl:null, submittedAt:new Date('2026-05-23T19:00:00') },
+    { id:'ny_p05', name:'SleepSeed',     team:'RestLab',          desc:'Sleep onset app using personalised soundscapes, breathing guides, and cognitive shuffle techniques to cut time-to-sleep by 40%.',                 track:'body',        votes:89,  iconEmoji:'🌱', iconBg:'#D4E8FA', thumbUrl:null, submittedAt:new Date('2026-05-23T20:30:00') },
+    { id:'ny_p06', name:'HabitNest',     team:'BuildGood',        desc:'Micro-habit builder inspired by James Clear — each habit lives in a 2-minute nest and expands only after a 14-day streak.',                      track:'lifeos',      votes:145, iconEmoji:'🪺', iconBg:'#CCF0E3', thumbUrl:null, submittedAt:new Date('2026-05-23T15:00:00') },
+    { id:'ny_p07', name:'EchoPad',       team:'SoundWave',        desc:'Voice note taker for creatives — auto-transcribes, groups ideas by theme, and surfaces forgotten notes at the right moment.',                    track:'wildcard',    votes:45,  iconEmoji:'🎙', iconBg:'#E5E3DC', thumbUrl:null, submittedAt:new Date('2026-05-23T21:20:00') },
+  ];
+
+  const HUB_PROJECTS = { sf: SF_PROJECTS, sh: SH_PROJECTS, ny: NY_PROJECTS };
+
   const TRACK_LABEL = {
+    all:         'All Tracks',
     superparent: 'Superparent',
     companion:   'AI Companion',
     lifeos:      'Life OS',
@@ -896,18 +1085,19 @@
   };
 
   // ── HELPERS ───────────────────────────────────────────────────────────────
-  function isVotingOpen() { return Date.now() < VOTE_DEADLINE.getTime(); }
+  function getDeadline()     { return HUBS[hubMode].deadline; }
+  function isVotingOpen()    { return Date.now() < getDeadline().getTime(); }
 
   // ── COUNTDOWN ─────────────────────────────────────────────────────────────
   function tickCountdown() {
-    const diff = VOTE_DEADLINE - Date.now();
+    const diff = getDeadline() - Date.now();
     const el   = document.getElementById('countdownEl');
     const live = document.getElementById('liveLabel');
     if (!el) return;
 
     if (diff <= 0) {
       el.outerHTML = '<span class="countdown-closed">Voting closed</span>';
-      live.style.opacity = '0.4';
+      if (live) live.style.opacity = '0.4';
       renderAll();
       return;
     }
@@ -939,6 +1129,44 @@
     ).join('');
   }
 
+  // ── HUB SWITCH ────────────────────────────────────────────────────────────
+  function setHub(hub) {
+    if (hub === hubMode) return;
+    hubMode     = hub;
+    trackFilter = 'all';
+
+    // Update hub tab active states
+    document.querySelectorAll('.hub-tab').forEach(t => {
+      t.className = 'hub-tab';
+      if (t.dataset.hub === hub) t.classList.add(`active-${hub}`);
+    });
+
+    // Update header eyebrow and deadline label
+    document.getElementById('headerEyebrow').textContent  = HUBS[hub].eyebrow;
+    document.getElementById('deadlineLabel').textContent  = HUBS[hub].closesLabel;
+    document.getElementById('hubIpBadge').textContent     = `📍 IP: ${hub.toUpperCase()}`;
+
+    // Reset track filter UI to "All"
+    document.querySelectorAll('.track-tab').forEach(t => {
+      t.classList.toggle('active', t.dataset.track === 'all');
+    });
+
+    // TODO: Re-fetch projects for the new hub
+    // fetchProjects(hub).then(data => { HUB_PROJECTS[hub] = data.projects; renderAll(); });
+
+    updateRemainingUI();
+    renderAll();
+    tickCountdown();
+  }
+
+  // ── TRACK FILTER ──────────────────────────────────────────────────────────
+  function setTrack(track, el) {
+    trackFilter = track;
+    document.querySelectorAll('.track-tab').forEach(t => t.classList.remove('active'));
+    if (el) el.classList.add('active');
+    renderAll();
+  }
+
   // ── SORT ──────────────────────────────────────────────────────────────────
   function setSort(val, el) {
     sortMode = val;
@@ -947,8 +1175,9 @@
     renderAll();
   }
 
-  function sortedProjects() {
-    const list = [...PROJECTS];
+  function filteredProjects() {
+    let list = [...activeProjects()];
+    if (trackFilter !== 'all') list = list.filter(p => p.track === trackFilter);
     return sortMode === 'votes'
       ? list.sort((a, b) => b.votes - a.votes)
       : list.sort((a, b) => b.submittedAt - a.submittedAt);
@@ -979,10 +1208,11 @@
 
   // ── SHEET ─────────────────────────────────────────────────────────────────
   function openSheet(id) {
-    if (!isVotingOpen())          return;
-    if (remainingVotes() <= 0)    return;
+    if (!isVotingOpen())       return;
+    if (remainingVotes() <= 0) return;
 
-    const p = PROJECTS.find(x => x.id === id);
+    const projects = activeProjects();
+    const p = projects.find(x => x.id === id);
     if (!p) return;
 
     pendingId        = id;
@@ -1017,14 +1247,14 @@
     if (!pendingId || pendingVoteCount < 1) return;
     const id    = pendingId;
     const count = pendingVoteCount;
-    const p     = PROJECTS.find(x => x.id === id);
+    const p     = activeProjects().find(x => x.id === id);
     if (!p) return;
 
-    // TODO: POST /api/hackathon/sf/vote  body: { projectId: id, count }
+    // TODO: POST /api/hackathon/{hubMode}/vote  body: { projectId: id, count }
     // On API error → show toast, do not update local state
 
-    voteMap[id]  = (voteMap[id] || 0) + count;
-    p.votes     += count;
+    hubVoteMap()[id] = (hubVoteMap()[id] || 0) + count;
+    p.votes         += count;
 
     closeSheet();
     updateRemainingUI();
@@ -1102,11 +1332,11 @@
 
   // ── RENDER MY VOTES ───────────────────────────────────────────────────────
   function renderMyVotes() {
-    const voted = PROJECTS.filter(p => hasVotedFor(p.id));
+    const voted = activeProjects().filter(p => hasVotedFor(p.id));
     const used  = totalVotesUsed();
 
     const inner = voted.length === 0
-      ? `<div class="my-votes-empty">You haven't voted yet.<br>Tap Vote on any project to get started.</div>`
+      ? `<div class="my-votes-empty">You haven't voted in this hub yet.<br>Tap Vote on any project to get started.</div>`
       : `<div class="my-votes-list">${voted.map(p => {
           const n = votesForProject(p.id);
           return `
@@ -1124,7 +1354,7 @@
     return `
       <div class="my-votes-wrap">
         <div class="my-votes-head">
-          <div class="my-votes-label">My Votes</div>
+          <div class="my-votes-label">My Votes · ${HUBS[hubMode].flag} ${hubMode.toUpperCase()}</div>
           <div class="my-votes-counter">${used} / ${MAX_VOTES} used</div>
         </div>
         ${inner}
@@ -1135,8 +1365,9 @@
   function renderAll() {
     const content = document.getElementById('content');
     const open    = isVotingOpen();
-    const list    = sortedProjects();
-    const total   = PROJECTS.reduce((s, p) => s + p.votes, 0);
+    const list    = filteredProjects();
+    const allProj = activeProjects();
+    const total   = allProj.reduce((s, p) => s + p.votes, 0);
     let   html    = '';
 
     if (!open) {
@@ -1147,27 +1378,37 @@
         </div>`;
     }
 
-    if (list.length === 0) {
+    if (allProj.length === 0) {
       html += `
         <div class="empty-state">
           <div class="empty-icon">📭</div>
           <div class="empty-title">No submissions yet</div>
           <div class="empty-desc">Projects will appear here as teams submit their work.<br>Check back soon!</div>
         </div>`;
+    } else if (list.length === 0) {
+      // filtered to zero
+      html += `
+        <div class="empty-state">
+          <div class="empty-icon">🔍</div>
+          <div class="empty-title">No projects in this track</div>
+          <div class="empty-desc">No ${TRACK_LABEL[trackFilter]} submissions yet for this hub.</div>
+        </div>`;
     } else {
-      html += `<div class="stats-line">${list.length} projects · <strong>${total.toLocaleString()}</strong> total votes cast</div>`;
+      const trackNote = trackFilter !== 'all' ? ` · ${TRACK_LABEL[trackFilter]}` : '';
+      html += `<div class="stats-line">${list.length} project${list.length !== 1 ? 's' : ''}${trackNote} · <strong>${total.toLocaleString()}</strong> total votes cast</div>`;
       html += `<div class="cards-grid">${list.map(renderCard).join('')}</div>`;
     }
 
-    html += renderMyVotes();
+    // My Votes at TOP — prominent, before the grid
+    html = renderMyVotes() + html;
     content.innerHTML = html;
   }
 
   // ── SIMULATED LIVE VOTE COUNTS ─────────────────────────────────────────────
-  // TODO: Replace with WebSocket or polling — GET /api/hackathon/sf/vote-counts
+  // TODO: Replace with WebSocket or polling — GET /api/hackathon/{hub}/vote-counts
   // On response: call updateVoteCount(projectId, newCount) for each changed project.
   function updateVoteCount(projectId, newCount) {
-    const p = PROJECTS.find(x => x.id === projectId);
+    const p = activeProjects().find(x => x.id === projectId);
     if (!p) return;
     p.votes = newCount;
 
@@ -1178,23 +1419,31 @@
       setTimeout(() => numEl.classList.remove('number-pop'), 420);
     }
 
-    const total = PROJECTS.reduce((s, x) => s + x.votes, 0);
+    const total = activeProjects().reduce((s, x) => s + x.votes, 0);
     document.querySelectorAll('.stats-line').forEach(el => {
-      el.innerHTML = `${PROJECTS.length} projects · <strong>${total.toLocaleString()}</strong> total votes cast`;
+      const trackNote = trackFilter !== 'all' ? ` · ${TRACK_LABEL[trackFilter]}` : '';
+      const vis = filteredProjects().length;
+      el.innerHTML = `${vis} project${vis !== 1 ? 's' : ''}${trackNote} · <strong>${total.toLocaleString()}</strong> total votes cast`;
     });
   }
 
   function _simulateLive() {
     if (!isVotingOpen()) return;
-    const p = PROJECTS[Math.floor(Math.random() * PROJECTS.length)];
+    const projects = activeProjects();
+    if (!projects.length) return;
+    const p = projects[Math.floor(Math.random() * projects.length)];
     updateVoteCount(p.id, p.votes + Math.floor(Math.random() * 4) + 1);
   }
 
   // ── INIT ──────────────────────────────────────────────────────────────────
-  // Exposed for native WebView:
-  // window.refreshData      = () => fetchProjects().then(renderAll);
+  // Exposed for native WebView bridge:
+  // window.setHubFromIP   = (hub) => setHub(hub);          // called after IP detection
+  // window.refreshData    = () => fetchProjects(hubMode).then(renderAll);
   // window.receiveAuthToken = (token) => { AUTH_TOKEN = token; fetchVotedIds(); };
 
+  // TODO: On page load, call GET /api/hackathon/detect-hub → { hub } → setHub(hub)
+
+  document.getElementById('deadlineLabel').textContent = HUBS[hubMode].closesLabel;
   updateRemainingUI();
   renderAll();
   tickCountdown();
