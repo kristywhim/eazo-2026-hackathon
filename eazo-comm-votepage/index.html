@@ -9,6 +9,13 @@
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
     :root {
+      /* ── Eazo brand (canonical, shared across all pages) ── */
+      --eazo-orange:     #FF6B20;
+      --eazo-orange-dim: rgba(255,107,32,.13);
+      --eazo-gold:       #F5B030;
+      --eazo-success:    #22C97A;
+
+      /* ── Light-theme palette (mobile WebView surface) ── */
       --bg: #F0EDEA;
       --surface: #FFFFFF;
       --surface2: #EAE7E3;
@@ -17,14 +24,13 @@
       --text: #1A1916;
       --text2: #555350;
       --text3: #888780;
-      --voted: #1D9E75;
-      --urgent: #E05A1A;
-      /* Hub colors */
+      --voted: var(--eazo-success);  /* unified success/positive across all pages */
+      --urgent: var(--eazo-orange);
+
+      /* ── Region colors (light-theme variants — paired with dark-theme versions in onair/finalist) ── */
       --hub-sf: #2a5fa8;
       --hub-sh: #1d7a5a;
       --hub-ny: #6a3aaa;
-      --hub-go: #E05A1A;  /* Global Online — Eazo orange tone */
-      --hub-ao: #a0720a;  /* Asia Online — amber */
     }
 
     html, body { height: 100%; }
@@ -228,10 +234,7 @@
     .hub-tab.active-sh::after { background: var(--hub-sh); }
     .hub-tab.active-ny { color: var(--hub-ny); }
     .hub-tab.active-ny::after { background: var(--hub-ny); }
-    .hub-tab.active-go { color: var(--hub-go); }
-    .hub-tab.active-go::after { background: var(--hub-go); }
-    .hub-tab.active-ao { color: var(--hub-ao); }
-    .hub-tab.active-ao::after { background: var(--hub-ao); }
+    /* (active-go / active-ao removed — 5-hub UI was collapsed to 3 regions) */
 
     .hub-ip-badge {
       margin-left: auto;

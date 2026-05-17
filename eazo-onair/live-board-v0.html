@@ -8,7 +8,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  /* ── Eazo brand: deep navy, not warm brown ── */
+  /* ── Eazo brand (canonical, shared across all pages) ── */
+  --eazo-orange:     #FF6B20;
+  --eazo-orange-dim: rgba(255,107,32,.13);
+  --eazo-gold:       #F5B030;
+  --eazo-success:    #22C97A;
+
+  /* ── Dark-theme palette (large-screen / projection surface) ── */
   --bg:   #060D18;
   --s1:   #0C1525;
   --s2:   #112034;
@@ -16,25 +22,23 @@
   --s4:   #1F3454;
   --bdr:  #253D5C;
   --bdr2: #2E4D72;
+  --t1:   #EEF3FF;
+  --t2:   #8A9CC0;
+  --t3:   #4A607E;
 
-  /* Text — cool white */
-  --t1: #EEF3FF;
-  --t2: #8A9CC0;
-  --t3: #4A607E;
-
-  /* Brand — Eazo orange (from poster) */
-  --orange:     #FF6B20;
-  --orange-dim: rgba(255,107,32,.13);
+  /* Backward-compatible aliases (existing CSS rules reference these names) */
+  --orange:     var(--eazo-orange);
+  --orange-dim: var(--eazo-orange-dim);
   --orange-mid: rgba(255,107,32,.22);
 
   /* Semantic */
-  --up:     #22C97A;
+  --up:     var(--eazo-success);
   --up-dim: rgba(34,201,122,.12);
   --dn:     #E05530;
   --dn-dim: rgba(224,85,48,.12);
 
   /* Podium medals */
-  --gold:       #F5B030;
+  --gold:       var(--eazo-gold);
   --gold-dim:   rgba(245,176,48,.13);
   --gold-glow:  rgba(245,176,48,.18);
   --silver:     #A8B0BA;
@@ -76,7 +80,7 @@ html,body{width:100%;height:100%;overflow:hidden;
 .logo{display:flex;align-items:center;gap:9px;}
 .logo-icon{
   width:30px;height:30px;border-radius:9px;
-  background:#FF6B20;   /* Eazo orange */
+  background:var(--eazo-orange);
   display:flex;align-items:center;justify-content:center;
   font-size:16px;color:#fff;font-weight:900;
   box-shadow:0 0 18px rgba(255,107,32,.38);
@@ -99,8 +103,7 @@ html,body{width:100%;height:100%;overflow:hidden;
 .hdr-hub-badge.sf{background:rgba(88,152,232,.14);color:var(--hub-sf);border-color:rgba(88,152,232,.28);}
 .hdr-hub-badge.ny{background:rgba(144,128,232,.14);color:var(--hub-ny);border-color:rgba(144,128,232,.28);}
 .hdr-hub-badge.sh{background:rgba(34,201,122,.14);color:var(--hub-sh);border-color:rgba(34,201,122,.28);}
-.hdr-hub-badge.go{background:rgba(255,107,32,.14);color:var(--orange);border-color:rgba(255,107,32,.28);}
-.hdr-hub-badge.ao{background:rgba(245,176,48,.14);color:var(--gold);border-color:rgba(245,176,48,.28);}
+/* (.hdr-hub-badge.go/.ao removed — 5 hubs collapsed to 3 prize-pool regions) */
 
 .phase-pill{
   padding:5px 14px;border-radius:20px;
@@ -156,8 +159,7 @@ html,body{width:100%;height:100%;overflow:hidden;
 .hub-filter-tab.active-sf{background:rgba(88,152,232,.14);color:var(--hub-sf);border-color:rgba(88,152,232,.35);}
 .hub-filter-tab.active-ny{background:rgba(144,128,232,.14);color:var(--hub-ny);border-color:rgba(144,128,232,.35);}
 .hub-filter-tab.active-sh{background:rgba(34,201,122,.14);color:var(--hub-sh);border-color:rgba(34,201,122,.35);}
-.hub-filter-tab.active-go{background:rgba(255,107,32,.14);color:var(--orange);border-color:rgba(255,107,32,.35);}
-.hub-filter-tab.active-ao{background:rgba(245,176,48,.14);color:var(--gold);border-color:rgba(245,176,48,.35);}
+/* (active-go / active-ao removed — 5 hubs collapsed to 3 prize-pool regions) */
 .hub-ip-note{
   margin-left:auto;font-size:10px;font-weight:600;color:var(--t3);
   font-family:'IBM Plex Mono',monospace;
