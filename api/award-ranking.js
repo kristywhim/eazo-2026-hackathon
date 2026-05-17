@@ -1,21 +1,23 @@
 // GET /api/award-ranking?hub=sf|ny|sh
-// GET /api/award-ranking?hub=all  → returns all 3 regions side-by-side
-// GET /api/award-ranking           → same as ?hub=all
+// GET /api/award-ranking?hub=all   ← default
 //
 // Returns the final award ranking per prize-pool region. Used by the
-// Finalist Dashboard at the award ceremony — the host opens the page
-// when voting closes and sees who wins per region.
+// Finalist Dashboard at the award ceremony — the host opens the page when
+// voting closes and sees who wins per region.
 //
-// Composite scoring (per prize-logic-v4):
-//   composite = 0.50 * V_norm + 0.40 * J_norm + 0.10 * P_norm
-//   where V/J/P are min-max normalized within the prize hub so different
-//   scales (votes can be 1000s, judge avg is 0–50, peer is 0–30) don't
-//   dominate.
+// composite = 0.50*V_norm + 0.40*J_norm + 0.10*P_norm
+// Each V/J/P is min-max normalized within the prize hub.
 //
-// This endpoint is computed ENTIRELY in JS from existing tables. It does
-// not require any SQL changes — works against the schema as it stands.
+// In the app-centric model:
+//   - Finalists are still TEAMS (one Demo slot per team, no matter how many
+//     apps qualified).
+//   - For composite: team.V = MAX(votes across team's apps), team.P =
+//     MAX(peer_votes across team's apps), team.J = AVG(judge_total across
+//     the team's JUDGED apps).
+//   - Source views: v_team_max_votes, v_team_max_peer, v_team_judge_avg
+//     (defined in migration 005).
 //
-// Public read endpoint (no auth) — the dashboard is open to the host.
+// All computation is server-side in JS. No new SQL needed beyond those views.
 
 const { getClient } = require('./_supabase');
 
@@ -26,9 +28,8 @@ const PRIZE_LABELS = {
   sh: 'SH · Shanghai + Asia Online',
 };
 
-// ── Per-region composite computation ─────────────────────────────────
 async function calculateForRegion(supabase, prize_hub) {
-  // 1. Fetch finalists for this prize_hub
+  // 1. Finalists for this prize_hub (team-level)
   const { data: finalists, error: finalistsErr } = await supabase
     .from('finalists')
     .select(`
@@ -42,46 +43,24 @@ async function calculateForRegion(supabase, prize_hub) {
     return { error: finalistsErr.message, teams: [] };
   }
   if (!finalists || finalists.length === 0) {
-    return { teams: [], note: 'No finalists calculated yet for this region. Run calculate_finalists() first.' };
+    return { teams: [], note: 'No finalists yet — run calculate_finalists() after peer voting closes.' };
   }
 
   const teamIds = finalists.map(f => f.team_id);
 
-  // 2. Fetch component scores in parallel (V/J/P)
-  const [voteRes, peerRes, judgeRes] = await Promise.all([
-    supabase.from('community_votes').select('team_id, votes_count').in('team_id', teamIds),
-    supabase.from('peer_votes').select('voted_team_id').in('voted_team_id', teamIds),
-    supabase.from('judge_scores').select('team_id, completeness, innovation, technical, design, commercial').in('team_id', teamIds),
+  // 2. Team-level aggregates from the new app-derived views
+  const [vRes, pRes, jRes] = await Promise.all([
+    supabase.from('v_team_max_votes').select('team_id, team_max_votes').in('team_id', teamIds),
+    supabase.from('v_team_max_peer').select('team_id, team_max_peer').in('team_id', teamIds),
+    supabase.from('v_team_judge_avg').select('team_id, team_judge_avg').in('team_id', teamIds),
   ]);
 
-  // Sum community votes per team
-  const V = {};
-  for (const v of voteRes.data || []) {
-    V[v.team_id] = (V[v.team_id] || 0) + (v.votes_count || 0);
-  }
+  const V = {}, P = {}, J = {};
+  (vRes.data || []).forEach(r => { V[r.team_id] = Number(r.team_max_votes)  || 0; });
+  (pRes.data || []).forEach(r => { P[r.team_id] = Number(r.team_max_peer)   || 0; });
+  (jRes.data || []).forEach(r => { J[r.team_id] = Number(r.team_judge_avg)  || 0; });
 
-  // Count peer votes per team
-  const P = {};
-  for (const p of peerRes.data || []) {
-    P[p.voted_team_id] = (P[p.voted_team_id] || 0) + 1;
-  }
-
-  // Average judge total per team (each judge → 5 dims × 10 = 50 max)
-  const judgeAcc = {};
-  for (const j of judgeRes.data || []) {
-    const total = (Number(j.completeness) || 0) + (Number(j.innovation) || 0) +
-                  (Number(j.technical) || 0)    + (Number(j.design) || 0) +
-                  (Number(j.commercial) || 0);
-    if (!judgeAcc[j.team_id]) judgeAcc[j.team_id] = { sum: 0, count: 0 };
-    judgeAcc[j.team_id].sum   += total;
-    judgeAcc[j.team_id].count += 1;
-  }
-  const J = {};
-  for (const tid of Object.keys(judgeAcc)) {
-    J[tid] = judgeAcc[tid].sum / judgeAcc[tid].count;
-  }
-
-  // 3. Build base records
+  // 3. Base records
   const base = finalists.map(f => ({
     teamId:               f.team_id,
     teamName:             f.teams?.name        || '(unknown)',
@@ -94,45 +73,43 @@ async function calculateForRegion(supabase, prize_hub) {
     V: V[f.team_id] || 0,
     J: J[f.team_id] || 0,
     P: P[f.team_id] || 0,
-    judgeCount: judgeAcc[f.team_id]?.count || 0,
+    judged: (J[f.team_id] || 0) > 0,
   }));
 
-  // 4. Min-max normalize each component within the region
-  const minMax = (arr) => {
+  // 4. Min-max normalize within region
+  const minMax = arr => {
     if (!arr.length) return [0, 0];
     let mn = arr[0], mx = arr[0];
     for (const x of arr) { if (x < mn) mn = x; if (x > mx) mx = x; }
     return [mn, mx];
   };
-  const norm01 = (val, mn, mx) => (mx === mn ? 0.5 : (val - mn) / (mx - mn));
+  const norm01 = (v, mn, mx) => (mx === mn ? 0.5 : (v - mn) / (mx - mn));
 
   const [vMin, vMax] = minMax(base.map(b => b.V));
   const [jMin, jMax] = minMax(base.map(b => b.J));
   const [pMin, pMax] = minMax(base.map(b => b.P));
 
   const withComposite = base.map(b => {
-    const vNorm = norm01(b.V, vMin, vMax);
-    const jNorm = norm01(b.J, jMin, jMax);
-    const pNorm = norm01(b.P, pMin, pMax);
-    const composite = 0.50 * vNorm + 0.40 * jNorm + 0.10 * pNorm;
+    const vN = norm01(b.V, vMin, vMax);
+    const jN = norm01(b.J, jMin, jMax);
+    const pN = norm01(b.P, pMin, pMax);
+    const c  = 0.50 * vN + 0.40 * jN + 0.10 * pN;
     return {
       ...b,
-      vNorm: Math.round(vNorm * 10000) / 10000,
-      jNorm: Math.round(jNorm * 10000) / 10000,
-      pNorm: Math.round(pNorm * 10000) / 10000,
-      composite: Math.round(composite * 10000) / 10000,
+      vNorm: Math.round(vN * 10000) / 10000,
+      jNorm: Math.round(jN * 10000) / 10000,
+      pNorm: Math.round(pN * 10000) / 10000,
+      composite: Math.round(c * 10000) / 10000,
     };
   });
 
-  // 5. Sort by composite desc, then judge avg, then community votes
   withComposite.sort((a, b) =>
     b.composite - a.composite || b.J - a.J || b.V - a.V
   );
 
-  // 6. Tag award rank
   return {
     teams: withComposite.map((t, i) => ({ ...t, awardRank: i + 1 })),
-    judgesParticipated: Object.keys(judgeAcc).length > 0,
+    judgesParticipated: base.some(b => b.judged),
   };
 }
 
@@ -161,7 +138,7 @@ module.exports = async function handler(req, res) {
   }
 
   if (!PRIZE_HUBS.includes(hub)) {
-    return res.status(400).json({ error: `hub must be one of: ${PRIZE_HUBS.join(', ')}, all` });
+    return res.status(400).json({ error: `hub must be sf, ny, sh, or all` });
   }
 
   const result = await calculateForRegion(supabase, hub);

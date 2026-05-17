@@ -205,6 +205,41 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: error.message });
   }
 
+  // ── Ensure every team has at least one app row ───────────────────
+  // The gsheet doesn't carry project details (they live in Eazo Creator),
+  // so we create a placeholder app per team using team_name as app name.
+  // When Eazo portal pushes real apps (with eazo_app_id), use upsert on
+  // eazo_app_id; this placeholder stays as a fallback.
+  const { data: insertedTeams } = await supabase
+    .from('teams')
+    .select('id, name, hub, track, icon_emoji, icon_bg')
+    .in('eazo_team_id', mapped.map(t => t.eazo_team_id));
+
+  const teamIds = (insertedTeams || []).map(t => t.id);
+  const { data: existingApps } = await supabase
+    .from('apps')
+    .select('team_id')
+    .in('team_id', teamIds);
+  const teamsWithApps = new Set((existingApps || []).map(a => a.team_id));
+
+  const newApps = (insertedTeams || [])
+    .filter(t => !teamsWithApps.has(t.id))
+    .map(t => ({
+      team_id:    t.id,
+      name:       t.name,                  // placeholder = team name
+      hub:        t.hub,
+      track:      t.track,
+      icon_emoji: t.icon_emoji,
+      icon_bg:    t.icon_bg,
+    }));
+
+  let appsCreated = 0;
+  if (newApps.length) {
+    const { error: appErr } = await supabase.from('apps').insert(newApps);
+    if (appErr) console.error('[sync-teams] apps insert error:', appErr);
+    else appsCreated = newApps.length;
+  }
+
   // Tally per-hub for the response — useful for ops to spot data issues
   const byHub = mapped.reduce((acc, t) => {
     acc[t.hub] = (acc[t.hub] || 0) + 1;
@@ -214,6 +249,7 @@ module.exports = async function handler(req, res) {
   return res.json({
     ok: true,
     upserted: mapped.length,
+    appsCreated,
     rowsRead: rawRows.length,
     skipped: rawRows.length - mapped.length,
     byHub,

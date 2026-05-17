@@ -1020,8 +1020,8 @@
     sf: new Date('2026-05-24T17:00:00Z'), // May 24 10:00 AM PDT
     go: new Date('2026-05-24T17:00:00Z'), // same as SF
     ny: new Date('2026-05-25T01:00:00Z'), // May 24 9:00 PM EDT
-    sh: new Date('2026-05-24T11:00:00Z'), // May 24 7:00 PM CST
-    ao: new Date('2026-05-24T11:00:00Z'), // same as SH
+    sh: new Date('2026-05-24T11:30:00Z'), // May 24 7:30 PM CST — canonical per /api/deadlines
+    ao: new Date('2026-05-24T11:30:00Z'), // same as SH
   };
 
   const HUB_LABELS = {
@@ -1132,13 +1132,17 @@
     document.getElementById(id).classList.add('active');
   }
 
+  // Hub → prize-pool region (sf+go peer-vote each other; sh+ao peer-vote each other)
+  function regionForHub(h) {
+    return ({ sf:'sf', go:'sf', sh:'sh', ao:'sh', ny:'ny' })[h] || 'sf';
+  }
+
   function enterVoteScreen() {
     // TODO: GET /api/${myHub}/peer-vote-status?teamId=${myTeamId} → { hasVoted, votedFor }
-    // For now simulate no prior votes
     hasVoted    = false;
     votedForIds = [];
 
-    // TODO: GET /api/${myHub}/peer-projects?excludeTeamId=${myTeamId}
+    // Mock fallback: filter own team from MOCK_TEAMS
     allTeams = MOCK_TEAMS.filter(t => t.id !== myTeamId);
 
     if (hasVoted) {
@@ -1146,10 +1150,42 @@
       return;
     }
 
-    document.getElementById('headerEyebrow').textContent = `Eazo Hackathon 2026 · ${myHub.toUpperCase()}`;
+    const myRegion = regionForHub(myHub);
+    document.getElementById('headerEyebrow').textContent = `Eazo Hackathon 2026 · ${myRegion.toUpperCase()} Region`;
 
     showScreen('voteScreen');
     renderAll();
+
+    // ── Try live data: /api/projects?region={myRegion} ──
+    // Backend returns all teams in voter's prize-pool region. Filter own team
+    // client-side. Falls back to MOCK_TEAMS on any failure (preserves mock mode).
+    loadPeerCandidatesLive(myRegion);
+  }
+
+  async function loadPeerCandidatesLive(region) {
+    try {
+      const r = await fetch(`/api/projects?region=${encodeURIComponent(region)}`);
+      if (!r.ok) return;
+      const { apps = [] } = await r.json();
+      if (!apps.length) return; // keep mock fallback
+
+      // Map app shape → peer-vote card. One team may have multiple apps; all
+      // appear as separate cards. Self-team check (server-side) prevents
+      // voting for ANY app from your own team — but client-side we also hide
+      // them up-front for UX.
+      allTeams = apps
+        .filter(a => a.team_id !== myTeamId)   // exclude all my team's apps
+        .map(a => ({
+          id:      a.id,                       // app id (used as vote target)
+          team:    a.team_name || '(team)',
+          project: a.name,                     // app name = project title
+          track:   a.track,
+          desc:    a.description || '',
+          appUrl:  a.app_url || null,
+        }));
+
+      renderAll();
+    } catch (_) { /* keep mock */ }
   }
 
   function showDoneScreen(votedIds) {
@@ -1569,6 +1605,18 @@
 
   // ── INIT ──────────────────────────────────────────────────────────────────
   bootstrap();
+
+  // ── Async: pull canonical deadlines from /api/deadlines ──
+  (async () => {
+    try {
+      const r = await fetch('/api/deadlines');
+      if (!r.ok) return;
+      const { voting = {} } = await r.json();
+      for (const h of Object.keys(voting)) {
+        if (DEADLINES[h]) DEADLINES[h] = new Date(voting[h]);
+      }
+    } catch (_) { /* keep inline fallbacks */ }
+  })();
 </script>
 </body>
 </html>

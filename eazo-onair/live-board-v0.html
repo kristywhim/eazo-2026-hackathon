@@ -693,7 +693,7 @@ const RESUME_DELAY = 3000;
 const HUB_CONFIG = {
   sf: { label:'SF · Bay Area + Global Online', eventLabel:'San Francisco · PT', tz:'PT',  deadline:new Date('2026-05-24T17:00:00Z'), start:new Date('2026-05-23T17:00:00Z') },
   ny: { label:'NY · New York',                 eventLabel:'New York · ET',      tz:'ET',  deadline:new Date('2026-05-25T01:00:00Z'), start:new Date('2026-05-23T14:00:00Z') },
-  sh: { label:'SH · Shanghai + Asia Online',   eventLabel:'Shanghai · CST',     tz:'CST', deadline:new Date('2026-05-24T11:00:00Z'), start:new Date('2026-05-23T02:00:00Z') },
+  sh: { label:'SH · Shanghai + Asia Online',   eventLabel:'Shanghai · CST',     tz:'CST', deadline:new Date('2026-05-24T11:30:00Z'), start:new Date('2026-05-23T02:00:00Z') },
 };
 
 const TRACKS = {
@@ -1229,6 +1229,18 @@ function init() {
   setInterval(simTokens,     TOKEN_MS);
   setInterval(updateCountdown, 1000);
   setInterval(tickFeed, 60000);
+
+  // ── Async: pull canonical deadlines from /api/deadlines ──
+  (async () => {
+    try {
+      const r = await fetch('/api/deadlines');
+      if (!r.ok) return;
+      const { voting = {} } = await r.json();
+      for (const h of Object.keys(voting)) {
+        if (HUB_CONFIG[h]) HUB_CONFIG[h].deadline = new Date(voting[h]);
+      }
+    } catch (_) { /* keep inline fallbacks */ }
+  })();
 }
 
 window.addEventListener('load', init);

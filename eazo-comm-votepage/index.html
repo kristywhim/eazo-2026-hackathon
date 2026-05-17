@@ -1398,7 +1398,7 @@
       eyebrow:     'Hackathon 2026 · SH Region',
       flag:        '🇨🇳',
       closesLabel: 'Closes 7:00 PM CST ·',
-      deadline:    new Date('2026-05-24T11:00:00Z'), // May 24 7:00 PM CST (UTC+8)
+      deadline:    new Date('2026-05-24T11:30:00Z'), // May 24 7:30 PM CST (UTC+8) — canonical per /api/deadlines
     },
   };
 
@@ -1583,13 +1583,59 @@
       t.classList.toggle('active', t.dataset.track === 'all');
     });
 
-    // TODO: Re-fetch projects for the new hub
-    // fetchProjects(hub).then(data => { HUB_PROJECTS[hub] = data.projects; renderAll(); });
+    // Re-fetch from live API (backend does sf+go / sh+ao merging)
+    loadProjectsLive(hub);
 
     clearSearch();
     updateRemainingUI();
     renderAll();
     tickCountdown();
+  }
+
+  // ── LIVE DATA LOADER ──────────────────────────────────────────────────────
+  // Calls /api/projects?region=X which returns APPS (not teams). One team can
+  // submit multiple apps; each app is its own card with its own vote count.
+  // Region merges sf+go (SF tab) and sh+ao (SH tab) on the backend.
+  // On success: replaces HUB_PROJECTS[region] and HUB_VOTE_MAPS[region] from live data.
+  // On failure: silently keeps mock fallback so demo/preview still works.
+  async function loadProjectsLive(region) {
+    try {
+      const headers = {};
+      if (typeof AUTH_TOKEN !== 'undefined' && AUTH_TOKEN) {
+        headers['Authorization'] = `Bearer ${AUTH_TOKEN}`;
+      }
+      const r = await fetch(`/api/projects?region=${encodeURIComponent(region)}`, { headers });
+      if (!r.ok) return;
+      const { apps = [], voteMap = {}, remainingVotes } = await r.json();
+      if (!apps.length) return; // keep mock if no real data yet
+
+      // Map app shape → frontend card shape. Each card.id = app.id (uuid).
+      // card.team is the team name (one team may produce multiple cards).
+      HUB_PROJECTS[region] = apps.map(a => ({
+        id:          a.id,
+        name:        a.name,                          // app name (= project title)
+        team:        a.team_name || '(team)',
+        desc:        a.description || '',
+        track:       a.track,
+        votes:       a.votes || 0,
+        iconEmoji:   a.icon_emoji || '🚀',
+        iconBg:      a.icon_bg    || '#CCF0E3',
+        thumbUrl:    a.cover_url  || null,
+        appUrl:      a.app_url    || null,
+        submittedAt: a.submitted_at ? new Date(a.submitted_at) : new Date(),
+      }));
+
+      // Adopt server-side vote map + region budget (server is source of truth)
+      if (remainingVotes >= 0) {
+        HUB_VOTE_MAPS[region] = {};
+        Object.entries(voteMap).forEach(([appId, n]) => { HUB_VOTE_MAPS[region][appId] = n; });
+      }
+
+      if (region === hubMode) {
+        updateRemainingUI();
+        renderAll();
+      }
+    } catch (_) { /* keep mock fallback */ }
   }
 
   // ── TRACK FILTER ──────────────────────────────────────────────────────────
@@ -2094,6 +2140,23 @@
   tickCountdown();
   setInterval(tickCountdown, 1_000);
   setInterval(_simulateLive, 3_800);
+
+  // Initial live data fetch for the default region — silently falls back to mock
+  loadProjectsLive(hubMode);
+
+  // ── Async: pull canonical deadlines from /api/deadlines on load ──
+  // Inline values above stay as the fallback so demo mode (no API) still works.
+  (async () => {
+    try {
+      const r = await fetch('/api/deadlines');
+      if (!r.ok) return;
+      const { voting = {} } = await r.json();
+      for (const h of Object.keys(voting)) {
+        if (HUBS[h]) HUBS[h].deadline = new Date(voting[h]);
+      }
+      tickCountdown(); // re-tick with new value
+    } catch (_) { /* keep inline fallbacks */ }
+  })();
 </script>
 </body>
 </html>

@@ -155,20 +155,52 @@ The cross-check ("is this Eazo Creator app actually a hackathon project?") happe
 
 ---
 
+## Data Model (after migrations 003-006)
+
+A team can submit **multiple apps**. Voting / scoring is per-app; qualification thresholds are per-app; finalist slots are per-team (one Demo slot per team regardless of how many of their apps qualified).
+
+| Concept | Aggregation |
+|---|---|
+| Team's community-vote score (V) | `MAX(votes)` across team's apps |
+| Team's peer-vote score (P) | `MAX(peer_votes)` across team's apps |
+| Team's judge score (J) | `AVG(total)` across team's judged apps |
+| Demo finalist | Team enters with their best-app score in each bucket |
+| Special Award (B-class $1000) | Any team where best app > 200 community votes AND not in Demo |
+| User vote budget | 10 votes per **PRIZE-POOL REGION** (sf+go share one, sh+ao share one, ny standalone) |
+
 ## Code Pointers
 
 Codebase: `github.com/kristywhim/eazo-2026-hackathon`
 
 | Concern | File |
 |---|---|
-| Sheets ingestion (interim) | `api/sync-teams.js` |
-| Seed mock teams (dry-run) | `api/seed-mock-teams.js` — `POST /api/seed-mock-teams?secret=...` |
+| Canonical deadlines (single source of truth) | `api/_deadlines.js` + public `GET /api/deadlines` |
+| Eazo portal naming bridge (stub) | `api/_eazo_portal_mapping.js` |
+| Sheets ingestion (interim) | `api/sync-teams.js` (creates 1 placeholder app per team) |
+| Seed mock teams (dry-run) | `POST /api/seed-mock-teams?secret=...` |
+| Seed mock apps (multi-app demo) | `POST /api/seed-mock-apps?secret=...` |
 | Auth token verification (Item 1, still pending) | `api/_auth.js` |
-| Hub / region detection (default-only) | `api/detect-hub.js` |
-| Judge rubric (done) | `api/judge-score.js`, `eazo-judgescorer/index.html`, `supabase/schema.sql`, `supabase/migrations/001_judge_rubric_5_criteria.sql` |
-| Comm-vote (3 regions + detail view) | `eazo-comm-votepage/index.html` |
-| Peer-vote (detail view) | `eazo-peer-votepage/index.html` |
-| Reference materials | `_reference/hackathon-api.md`, `_reference/eazo_2026_judge_guide_en.md`, `_reference/prize-logic-v4.html` |
+| Community vote (per-app, per-region budget) | `api/vote.js` |
+| Peer vote (per-app, region-merged) | `api/peer-vote.js` |
+| Projects listing (3-region merged at backend) | `api/projects.js` (`?region=sf\|ny\|sh`) |
+| Leaderboard (app-level ranking) | `api/leaderboard.js` |
+| Judge rubric (per-app scoring, 5 criteria × 10 pts) | `api/judge-score.js`, `eazo-judgescorer/index.html` |
+| Award ranking (composite V·50% + J·40% + P·10%) | `api/award-ranking.js`, `eazo-finalist/index.html` |
+| Special Award candidates | `api/special-awards.js`, `eazo-finalist/index.html` |
+| Schema (current) | `supabase/schema.sql` |
+| Migrations (run in order) | `supabase/migrations/001..006` |
+| Reference materials | `_reference/hackathon-api.md`, `_reference/eazo_2026_judge_guide_en.md`, `_reference/prize-logic-v4.html`, `_reference/1778987515256.jpg` (deadlines) |
+
+## Migrations to Run in Supabase (in order)
+
+If you've already run `001`, run these next:
+
+1. `003_online_qualification_fix.sql` — corrects C/D online qualification (V·50% + P·10% standardized, not just V)
+2. `004_region_budget.sql` — adds `user_region_budget` (10 votes / prize-pool region)
+3. `005_apps_table.sql` — adds `apps` table + new views; migrates each existing team into 1 placeholder app
+4. `006_calculate_finalists_app_dimension.sql` — rewrites `calculate_finalists` to rank apps then dedup by team
+
+All are wrapped in `BEGIN/COMMIT`, so any failure rolls back cleanly.
 
 ---
 
