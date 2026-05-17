@@ -1,113 +1,201 @@
 // POST /api/sync-teams?secret=ADMIN_SECRET
-// Syncs team data from Eazo's API into our Supabase `teams` table.
-// Run this once after team registration closes, and again if Eazo updates data.
+// Pulls REGISTRATION rows from the hackathon Google Sheet (Tally form → Sheet)
+// and upserts them into the local `teams` table.
 //
-// ⚠️  PENDING from Eazo team:
-//   - EAZO_API_BASE  : base URL for their team list API
-//   - EAZO_API_KEY   : auth key for their API
-//   - Field mapping  : exact field names in their response
+// Run this manually after registration opens, then periodically (or on demand).
+// Idempotent: keyed on Tally `Submission ID`.
 //
-// Expected Eazo API response (approximate — confirm with Eazo):
-// GET ${EAZO_API_BASE}/hackathon/teams
-// [
-//   {
-//     team_id: "abc123",
-//     team_name: "Team Harmony",
-//     project_name: "FamilySync AI",
-//     project_desc: "...",
-//     hub: "sf",          // sf | ny | sh | go | ao
-//     track: "superparent",
-//     referral_count: 320,
-//     submitted_at: "2026-05-23T18:30:00Z",
-//   },
-//   ...
-// ]
+// ── Architecture note ────────────────────────────────────────────────
+// The gsheet only carries REGISTRATION data: team roster, region, track,
+// captain email. **Project details (app title, URL, cover, description)
+// never land in the sheet.** They live in Eazo's `creator_apps` table —
+// teams build their actual hackathon app on Eazo Creator inside the
+// Eazo Mobile app.
+//
+// Eazo's backend (per `_reference/hackathon-api.md`) does the join:
+//
+//   sheet col 7 "Eazo Creator registration email"
+//     ↔ Eazo `users.email`
+//     → Eazo `creator_apps.*` (appTitle, appUrl, coverUrl, …)
+//
+// and exposes the merged result at `GET /api/v1/hackathon/apps`.
+//
+// So this sync produces "skeleton" rows (team_id, name, hub, track, roster)
+// with project fields empty. To populate project info, we'll later call
+// Eazo's portal endpoint (separate sync, or swap this one) when it's live.
+// ──────────────────────────────────────────────────────────────────────
+//
+// IMPORTANT: We parse by COLUMN INDEX, not header text. Header text changes
+// (English/Chinese, renames). Column positions are the stable contract.
+//
+// Required env vars:
+//   EAZO_SHEETS_API_KEY        — Google Sheets API v4 key (read-only public sheet)
+//   SUPABASE_URL               — Supabase project URL
+//   SUPABASE_SERVICE_ROLE_KEY  — service-role key for upserts
+//
+// Optional env vars:
+//   EAZO_SHEET_ID    — override default sheet
+//   EAZO_SHEET_RANGE — defaults to '工作表1'!A2:Z (skip header row)
+//   ADMIN_SECRET     — defaults to 'HACKATHON_ADMIN_2026'
 
 const { getClient } = require('./_supabase');
 
-const ADMIN_SECRET  = process.env.ADMIN_SECRET   || 'HACKATHON_ADMIN_2026';
-const EAZO_API_BASE = process.env.EAZO_API_BASE  || null;  // e.g. 'https://api.eazo.com'
-const EAZO_API_KEY  = process.env.EAZO_API_KEY   || null;
+// ── Config ─────────────────────────────────────────────────────────
+const ADMIN_SECRET = process.env.ADMIN_SECRET || 'HACKATHON_ADMIN_2026';
+const SHEET_ID     = process.env.EAZO_SHEET_ID || '1W7VBHzbeHyxGaIIg_UonmZgCVbZpoZ5x20PvlWvG8kE';
+const SHEET_RANGE  = process.env.EAZO_SHEET_RANGE || "'工作表1'!A2:Z";
+const API_KEY      = process.env.EAZO_SHEETS_API_KEY || process.env.HACKATHON_SHEETS_API_KEY;
 
-// ── Field mapping from Eazo → our schema ──────────────────────────
-// UPDATE THESE once Eazo confirms their API field names
-function mapEazoTeam(t) {
-  return {
-    eazo_team_id:   String(t.team_id || t.id),
-    name:           t.team_name || t.name,
-    project_name:   t.project_name || t.project,
-    project_desc:   t.project_desc || t.description || null,
-    hub:            normalizeHub(t.hub || t.location || 'sf'),
-    track:          normalizeTrack(t.track || t.category || 'wildcard'),
-    icon_emoji:     t.icon_emoji || '🚀',
-    icon_bg:        t.icon_bg || '#CCF0E3',
-    thumb_url:      t.thumb_url || t.cover_image || null,
-    referral_count: Number(t.referral_count || t.referrals || 0),
-    submitted_at:   t.submitted_at || t.created_at || new Date().toISOString(),
-  };
+// ── Column map (0-based) for the registration sheet 1W7V... ─────────
+// Verified by reading row 1 (header) on 2026-05-16.
+// All project-details columns (title / URL / cover / description) are
+// intentionally absent — those live in Eazo Creator, not Tally. See file header.
+const COL = {
+  submissionId: 0,
+  // 1 = Respondent ID (Tally internal)
+  submittedAt:  2,
+  // 3 = Submission PDF, 4 = Submission preview (Tally artifacts)
+  region:       5,
+  teamName:     6,
+  // 7 = Eazo Creator registration email (PII — used by Eazo's portal join, not stored here)
+  track:        8,
+  teamSize:     9,
+  leaderName:  10,
+  // 11 = leader phone (PII)
+  // 12 = leader email (PII — fallback portal-join key, not stored here)
+  leaderRole:  13,
+  member2Name: 14,
+  // 15 = member 2 email (PII)
+  member2Role: 16,
+  member3Name: 17,
+  // 18 = member 3 email (PII)
+  member3Role: 19,
+  // 20-22 = Code of Conduct confirmations
+  // 23     = freeform "anything else" note
+};
+
+// ── Region text → hub enum (matches Eazo v1.2 alias list, kept at 5 hubs for now;
+//    Stage 2 will collapse sf+go→global, sh+ao→asia, ny→new_york) ────
+const HUB_ALIASES = [
+  { hub: 'sf', needles: ['san francisco'] },
+  { hub: 'go', needles: ['global online'] },
+  { hub: 'sh', needles: ['shanghai offline', 'shanghai'] },
+  { hub: 'ao', needles: ['asian online', 'asia online'] },
+  { hub: 'ny', needles: ['new york offline', 'new york'] },
+];
+
+function classifyHub(rawText) {
+  if (!rawText) return null;
+  const t = String(rawText).toLowerCase().trim();
+  for (const { hub, needles } of HUB_ALIASES) {
+    if (needles.some(n => t.includes(n))) return hub;
+  }
+  return null;
 }
 
-function normalizeHub(h) {
-  const map = { sf:1, ny:1, sh:1, go:1, ao:1,
-    'san francisco':1, 'new york':1, shanghai:1,
-    'global online':1, 'asia online':1 };
-  const raw = h.toLowerCase().replace(/\s+/g,'_');
-  return { san_francisco:'sf', new_york:'ny', shanghai:'sh',
-           global_online:'go', asia_online:'ao' }[raw] || h.toLowerCase().slice(0,2) || 'sf';
-}
+// ── Track text → track enum ──────────────────────────────────────────
+const TRACK_KEYWORDS = {
+  superparent: ['superparent', 'super parent', 'parent', '亲子', '家长'],
+  companion:   ['companion', 'ai companion', '陪伴'],
+  lifeos:      ['lifeos', 'life os', '生活操作系统', '生活'],
+  body:        ['body', 'health', '健康', '身体'],
+};
 
-function normalizeTrack(t) {
-  const valid = ['superparent','companion','lifeos','body','wildcard'];
-  const raw = t.toLowerCase().replace(/[^a-z]/g,'');
-  if (valid.includes(raw)) return raw;
-  if (raw.includes('parent')) return 'superparent';
-  if (raw.includes('companion') || raw.includes('ai')) return 'companion';
-  if (raw.includes('life') || raw.includes('os')) return 'lifeos';
-  if (raw.includes('body') || raw.includes('health')) return 'body';
+function classifyTrack(rawText) {
+  if (!rawText) return 'wildcard';
+  const t = String(rawText).toLowerCase();
+  for (const [code, kws] of Object.entries(TRACK_KEYWORDS)) {
+    if (kws.some(k => t.includes(k))) return code;
+  }
   return 'wildcard';
 }
 
+// ── Date parsing — Tally writes ISO-ish strings; tolerate variants ──
+function parseSubmittedAt(raw) {
+  if (!raw) return new Date().toISOString();
+  const d = new Date(raw);
+  return Number.isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString();
+}
+
+// ── Row → team record ─────────────────────────────────────────────────
+function mapRow(row) {
+  const submissionId = row[COL.submissionId];
+  if (!submissionId) return null;          // skip empty rows
+
+  const teamName = (row[COL.teamName] || '').trim()
+                   || `Team ${String(submissionId).slice(-4)}`;
+
+  const hub = classifyHub(row[COL.region]);
+  if (!hub) {
+    // Unrecognized region — skip rather than write a row that violates the CHECK constraint
+    console.warn('[sync-teams] skipping row, unknown region:', row[COL.region], 'submissionId:', submissionId);
+    return null;
+  }
+  const track = classifyTrack(row[COL.track]);
+
+  // NOTE: this sheet doesn't (yet) carry project-submission columns. Until those
+  // columns appear (Tally extension or separate submission flow), project_name
+  // falls back to team_name and project_desc / thumb_url stay null.
+  return {
+    eazo_team_id:   String(submissionId),
+    name:           teamName,
+    project_name:   teamName,
+    project_desc:   null,
+    hub,
+    track,
+    icon_emoji:     '🚀',
+    icon_bg:        '#CCF0E3',
+    thumb_url:      null,
+    referral_count: 0,                                // not in sheet — populated separately if/when Eazo provides
+    submitted_at:   parseSubmittedAt(row[COL.submittedAt]),
+  };
+}
+
+// ── Fetch sheet via Google Sheets API v4 ─────────────────────────────
+async function fetchSheetRows() {
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}`
+            + `/values/${encodeURIComponent(SHEET_RANGE)}?key=${API_KEY}`;
+  const r = await fetch(url);
+  if (!r.ok) {
+    const body = await r.text();
+    throw new Error(`Sheets API ${r.status}: ${body.slice(0, 300)}`);
+  }
+  const { values } = await r.json();
+  return values || [];
+}
+
+// ── Handler ────────────────────────────────────────────────────────────
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'POST only' });
 
   const secret = req.query.secret || req.body?.secret;
   if (secret !== ADMIN_SECRET) return res.status(403).json({ error: 'Forbidden' });
 
-  // ── Fetch from Eazo API ─────────────────────────────────────────
-  if (!EAZO_API_BASE) {
+  if (!API_KEY) {
     return res.status(503).json({
-      error: 'EAZO_API_BASE not configured — set env var once Eazo provides the endpoint',
+      error: 'EAZO_SHEETS_API_KEY not configured — set this env var in Vercel.',
     });
   }
 
-  let eazoTeams;
+  let rawRows;
   try {
-    const eazoRes = await fetch(`${EAZO_API_BASE}/hackathon/teams`, {
-      headers: {
-        'Authorization': `Bearer ${EAZO_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!eazoRes.ok) {
-      return res.status(502).json({ error: `Eazo API returned ${eazoRes.status}` });
-    }
-
-    const body = await eazoRes.json();
-    // Handle both array and { teams: [...] } response shapes
-    eazoTeams = Array.isArray(body) ? body : (body.teams || body.data || []);
+    rawRows = await fetchSheetRows();
   } catch (err) {
-    return res.status(502).json({ error: `Failed to reach Eazo API: ${err.message}` });
+    return res.status(502).json({ error: `Failed to read sheet: ${err.message}` });
   }
 
-  if (!eazoTeams.length) {
-    return res.status(200).json({ ok: true, upserted: 0, message: 'No teams returned from Eazo API' });
+  const mapped = rawRows.map(mapRow).filter(Boolean);
+
+  if (!mapped.length) {
+    return res.json({
+      ok: true,
+      upserted: 0,
+      rowsRead: rawRows.length,
+      message: 'No valid rows to sync (sheet empty or all rows skipped).',
+    });
   }
 
-  // ── Upsert into Supabase ─────────────────────────────────────────
   const supabase = getClient();
-  const mapped = eazoTeams.map(mapEazoTeam);
-
   const { error } = await supabase
     .from('teams')
     .upsert(mapped, { onConflict: 'eazo_team_id' });
@@ -117,5 +205,17 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: error.message });
   }
 
-  return res.json({ ok: true, upserted: mapped.length });
+  // Tally per-hub for the response — useful for ops to spot data issues
+  const byHub = mapped.reduce((acc, t) => {
+    acc[t.hub] = (acc[t.hub] || 0) + 1;
+    return acc;
+  }, {});
+
+  return res.json({
+    ok: true,
+    upserted: mapped.length,
+    rowsRead: rawRows.length,
+    skipped: rawRows.length - mapped.length,
+    byHub,
+  });
 };

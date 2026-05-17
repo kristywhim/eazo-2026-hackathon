@@ -754,6 +754,103 @@
     .eazo-mark   { width: 28px; height: 28px; background: #1A1916; border-radius: 7px; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; color: #fff; font-weight: 900; flex-shrink: 0; letter-spacing: 0; }
     .eazo-wordmark { font-size: 17px; font-weight: 700; color: #1A1916; letter-spacing: -0.02em; line-height: 1; font-family: 'DM Sans', -apple-system, sans-serif; }
     .header-left { display: flex; flex-direction: column; gap: 4px; }
+
+    /* ── Project detail modal (parity with comm-vote) ── */
+    .detail-modal {
+      position: fixed; inset: 0;
+      background: var(--bg);
+      z-index: 300;
+      overflow-y: auto;
+      transform: translateY(100%);
+      transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+      display: flex; flex-direction: column;
+    }
+    .detail-modal.open { transform: translateY(0); }
+    .detail-topbar {
+      position: sticky; top: 0;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+      display: flex; align-items: center; justify-content: space-between;
+      z-index: 1;
+    }
+    .detail-back {
+      background: none; border: none;
+      font-size: 14px; font-weight: 700; color: var(--text);
+      cursor: pointer; padding: 6px 10px; border-radius: 8px;
+      font-family: inherit;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .detail-back:active { background: var(--surface2); }
+    .detail-topbar-title {
+      font-size: 13px; font-weight: 700; color: var(--text3);
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .detail-topbar-status {
+      font-size: 12px; font-weight: 700; color: var(--text2);
+      background: var(--surface2);
+      padding: 4px 10px; border-radius: 12px;
+    }
+    .detail-topbar-status.is-selected { background: var(--voted); color: #fff; }
+    .detail-hero { padding: 24px 20px 16px; }
+    .detail-hero-name {
+      font-size: 22px; font-weight: 800; color: var(--text);
+      letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 4px;
+    }
+    .detail-hero-team { font-size: 13.5px; color: var(--text2); margin-bottom: 8px; }
+    .detail-section { padding: 16px 20px; border-top: 1px solid var(--border); }
+    .detail-section-label {
+      font-size: 10.5px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text3); margin-bottom: 8px;
+    }
+    .detail-desc {
+      font-size: 14.5px; color: var(--text); line-height: 1.7;
+      white-space: pre-wrap;
+    }
+    .detail-embed-wrap { padding: 0 20px 16px; }
+    .detail-embed-card {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .detail-embed-headline { font-size: 14.5px; font-weight: 700; color: var(--text); }
+    .detail-embed-sub { font-size: 12.5px; color: var(--text3); line-height: 1.55; }
+    .btn-open-app {
+      align-self: flex-start;
+      background: var(--text); color: #fff;
+      border: none; border-radius: 10px;
+      font-size: 13.5px; font-weight: 700;
+      padding: 10px 18px;
+      cursor: pointer; font-family: inherit;
+      transition: opacity 0.15s;
+    }
+    .btn-open-app:active { opacity: 0.85; }
+    .btn-open-app.disabled {
+      background: var(--surface2); color: var(--text3); cursor: not-allowed;
+    }
+    .detail-footer {
+      position: sticky; bottom: 0;
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+      display: flex; gap: 10px;
+      margin-top: auto;
+    }
+    .btn-detail-select {
+      flex: 1;
+      padding: 14px;
+      border-radius: 12px; border: none;
+      background: var(--text); color: #fff;
+      font-size: 14.5px; font-weight: 700;
+      cursor: pointer; font-family: inherit;
+    }
+    .btn-detail-select.is-selected { background: var(--voted); }
+    .btn-detail-select.is-disabled { background: var(--surface2); color: var(--text3); cursor: not-allowed; }
+    .btn-detail-select:active:not(.is-disabled) { opacity: 0.85; transform: scale(0.99); }
+    .card { cursor: pointer; }
   </style>
 </head>
 <body>
@@ -859,6 +956,40 @@
 <!-- ── Sticky confirm bar ── -->
 <div class="confirm-bar" id="confirmBar">
   <button class="confirm-btn" id="confirmBtn" onclick="openConfirmSheet()">Review &amp; Submit Votes</button>
+</div>
+
+<!-- ── Project detail modal (parity with comm-vote) ── -->
+<div class="detail-modal" id="detailModal" role="dialog" aria-modal="true" aria-labelledby="detailHeroName">
+  <div class="detail-topbar">
+    <button class="detail-back" onclick="closeDetail()" aria-label="Back to teams">
+      <span aria-hidden="true">←</span> Back
+    </button>
+    <div class="detail-topbar-title">Team Detail</div>
+    <div class="detail-topbar-status" id="detailTopStatus">Not selected</div>
+  </div>
+
+  <div class="detail-hero">
+    <div class="detail-hero-name" id="detailHeroName"></div>
+    <div class="detail-hero-team" id="detailHeroTeam"></div>
+    <span class="track-badge" id="detailTrackBadge"></span>
+  </div>
+
+  <div class="detail-section">
+    <div class="detail-section-label">About this project</div>
+    <div class="detail-desc" id="detailDesc"></div>
+  </div>
+
+  <div class="detail-embed-wrap">
+    <div class="detail-embed-card">
+      <div class="detail-embed-headline" id="detailEmbedHeadline">Try the app</div>
+      <div class="detail-embed-sub" id="detailEmbedSub">Opens this team's submission in a new tab.</div>
+      <button class="btn-open-app" id="detailOpenApp" onclick="openDetailApp()">Open App →</button>
+    </div>
+  </div>
+
+  <div class="detail-footer">
+    <button class="btn-detail-select" id="btnDetailSelect" onclick="toggleSelectFromDetail()">Select for vote</button>
+  </div>
 </div>
 
 <!-- ── Overlay ── -->
@@ -1192,7 +1323,7 @@
     }
 
     return `
-      <div class="card${sel ? ' selected' : ''}" id="card-${t.id}">
+      <div class="card${sel ? ' selected' : ''}" id="card-${t.id}" onclick="openDetail('${t.id}')" role="button" tabindex="0">
         <div class="card-body">
           <div class="card-top">
             <div class="card-info">
@@ -1204,13 +1335,108 @@
               class="${btnClass}"
               id="selbtn-${t.id}"
               ${btnDisabled}
-              onclick="toggleSelect('${t.id}')"
+              onclick="event.stopPropagation(); toggleSelect('${t.id}')"
             >${btnLabel}</button>
           </div>
           <div class="card-desc">${escHtml(t.desc)}</div>
         </div>
       </div>`;
   }
+
+  // ── PROJECT DETAIL MODAL (parity with comm-vote) ──────────────────────────
+  let detailId = null;
+  function openDetail(id) {
+    const t = allTeams.find(x => x.id === id);
+    if (!t) return;
+    detailId = id;
+
+    document.getElementById('detailHeroName').textContent = t.project;
+    document.getElementById('detailHeroTeam').textContent = `by ${t.team}`;
+
+    const badge = document.getElementById('detailTrackBadge');
+    badge.className = `track-badge badge-${t.track}`;
+    badge.textContent = TRACK_LABEL[t.track] || t.track;
+
+    document.getElementById('detailDesc').textContent = t.desc || 'No description provided.';
+
+    // App URL — peer-vote teams may or may not have an appUrl on the record
+    const openBtn  = document.getElementById('detailOpenApp');
+    const headline = document.getElementById('detailEmbedHeadline');
+    const sub      = document.getElementById('detailEmbedSub');
+    if (t.appUrl) {
+      openBtn.classList.remove('disabled');
+      openBtn.disabled = false;
+      openBtn.textContent = 'Open App →';
+      headline.textContent = 'Try the app';
+      sub.textContent = 'Opens this team\'s submission in a new tab.';
+    } else {
+      openBtn.classList.add('disabled');
+      openBtn.disabled = true;
+      openBtn.textContent = 'No link yet';
+      headline.textContent = 'App link coming soon';
+      sub.textContent = 'This team hasn\'t shared an app URL yet.';
+    }
+
+    refreshDetailSelectBtn();
+    document.getElementById('detailModal').classList.add('open');
+  }
+
+  function closeDetail() {
+    document.getElementById('detailModal').classList.remove('open');
+    detailId = null;
+  }
+
+  function refreshDetailSelectBtn() {
+    if (!detailId) return;
+    const btn = document.getElementById('btnDetailSelect');
+    const status = document.getElementById('detailTopStatus');
+    const sel = selectedIds.has(detailId);
+    const open = isVotingOpen();
+    const limitReached = selectedIds.size >= MAX_SELECTIONS && !sel;
+
+    btn.classList.remove('is-selected', 'is-disabled');
+    status.classList.remove('is-selected');
+
+    if (!open) {
+      btn.classList.add('is-disabled');
+      btn.textContent = 'Voting closed';
+      btn.disabled = true;
+      status.textContent = 'Voting closed';
+    } else if (sel) {
+      btn.classList.add('is-selected');
+      btn.textContent = '✓ Selected · Tap to remove';
+      btn.disabled = false;
+      status.classList.add('is-selected');
+      status.textContent = '✓ Selected';
+    } else if (limitReached) {
+      btn.classList.add('is-disabled');
+      btn.textContent = `Limit reached (${MAX_SELECTIONS}/${MAX_SELECTIONS})`;
+      btn.disabled = true;
+      status.textContent = 'Not selected';
+    } else {
+      btn.textContent = 'Select for vote';
+      btn.disabled = false;
+      status.textContent = `${selectedIds.size}/${MAX_SELECTIONS} selected`;
+    }
+  }
+
+  function toggleSelectFromDetail() {
+    if (!detailId) return;
+    toggleSelect(detailId);
+    refreshDetailSelectBtn();
+  }
+
+  function openDetailApp() {
+    if (!detailId) return;
+    const t = allTeams.find(x => x.id === detailId);
+    if (!t || !t.appUrl) return;
+    window.open(t.appUrl, '_blank', 'noopener,noreferrer');
+  }
+
+  // Close detail on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && detailId) closeDetail();
+  });
 
   // ── FULL RENDER ───────────────────────────────────────────────────────────
   function renderAll() {

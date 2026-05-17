@@ -206,10 +206,10 @@
     /* ── Criteria Header ── */
     .criteria-header {
       display: grid;
-      grid-template-columns: 48px 220px 1fr 140px 140px 140px 80px;
-      gap: 12px;
+      grid-template-columns: 40px 180px 200px repeat(5, 96px) 72px;
+      gap: 10px;
       align-items: center;
-      padding: 0 16px 10px;
+      padding: 0 14px 10px;
       border-bottom: 1px solid var(--bdr);
       margin-bottom: 8px;
     }
@@ -219,11 +219,20 @@
       font-weight: 600;
       color: var(--t3);
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.06em;
     }
 
     .criteria-header .crit-label {
       text-align: center;
+      cursor: help;
+    }
+
+    .criteria-header .crit-num {
+      display: block;
+      color: var(--t3);
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      margin-bottom: 2px;
     }
 
     /* ── Team Card ── */
@@ -232,10 +241,10 @@
       border: 1px solid var(--bdr);
       border-radius: 12px;
       margin-bottom: 8px;
-      padding: 16px;
+      padding: 14px;
       display: grid;
-      grid-template-columns: 48px 220px 1fr 140px 140px 140px 80px;
-      gap: 12px;
+      grid-template-columns: 40px 180px 200px repeat(5, 96px) 72px;
+      gap: 10px;
       align-items: center;
       transition: border-color 0.15s;
     }
@@ -297,30 +306,23 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 6px;
-    }
-
-    .score-field-label {
-      font-size: 10px;
-      color: var(--t3);
-      font-weight: 500;
-      text-align: center;
+      gap: 4px;
     }
 
     .score-controls {
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 3px;
     }
 
     .score-btn {
-      width: 28px;
-      height: 28px;
+      width: 24px;
+      height: 26px;
       background: var(--s3);
       border: 1px solid var(--bdr);
-      border-radius: 6px;
+      border-radius: 5px;
       color: var(--t2);
-      font-size: 16px;
+      font-size: 14px;
       line-height: 1;
       cursor: pointer;
       display: flex;
@@ -333,18 +335,26 @@
     .score-btn:hover { background: var(--bdr2); color: var(--t1); }
 
     .score-input {
-      width: 44px;
+      width: 38px;
       background: var(--s2);
       border: 1px solid var(--bdr);
-      border-radius: 6px;
+      border-radius: 5px;
       color: var(--t1);
       font-family: inherit;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
       text-align: center;
       padding: 4px 2px;
       outline: none;
       transition: border-color 0.15s;
+      /* Hide number spinners (Chrome/Safari/Firefox) */
+      appearance: textfield;
+      -moz-appearance: textfield;
+    }
+    .score-input::-webkit-outer-spin-button,
+    .score-input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
     }
 
     .score-input:focus { border-color: var(--orange); }
@@ -502,7 +512,7 @@
       }
       .criteria-header,
       .team-card {
-        min-width: 680px;
+        min-width: 960px;
       }
 
       /* Save bar: stack vertically */
@@ -520,10 +530,22 @@
     @media (min-width: 768px) and (max-width: 1023px) {
       .header-inner { padding: 0 18px; }
       main { padding: 24px 18px 100px; }
+      /* Tablet: enable horizontal scroll like mobile, keep desktop column widths */
+      .table-scroll-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        border-radius: 12px;
+      }
       .criteria-header,
       .team-card {
-        grid-template-columns: 40px 160px 1fr 120px 120px 120px 70px;
-        gap: 10px;
+        min-width: 960px;
+      }
+      .table-scroll-hint {
+        display: block;
+        font-size: 11px;
+        color: var(--t3);
+        text-align: right;
+        margin-bottom: 6px;
       }
     }
   </style>
@@ -570,9 +592,9 @@
 
   <main>
     <div class="instruction-bar">
-      <strong>Instructions:</strong> Score each finalist team on the three criteria below (0–10 each).
-      Use the +/− buttons or type directly. Scores are tallied automatically.
-      When you're done, click <strong>Save All Scores</strong>.
+      <strong>Instructions:</strong> Score each finalist on the five criteria below — <strong>0–10 each, 50 points total</strong>.
+      Anchor 6 = meets the basic standard; 9–10 = standout. Hover a column header for full guidance.
+      Use the +/− buttons or type directly. When you're done, click <strong>Save All Scores</strong>.
     </div>
 
     <div class="table-scroll-hint">← Scroll right to see all criteria →</div>
@@ -582,10 +604,12 @@
         <span>#</span>
         <span>Team</span>
         <span>Badges</span>
-        <span class="crit-label">Criterion 1 (TBD)</span>
-        <span class="crit-label">Criterion 2 (TBD)</span>
-        <span class="crit-label">Criterion 3 (TBD)</span>
-        <span class="crit-label">Total</span>
+        <span class="crit-label" title="01 · Product Completeness — Is this a working product a real user could pick up and use on their own? Anchor 6 = meets basic standard; 9–10 = fully live with no critical gaps."><span class="crit-num">01</span>Complete</span>
+        <span class="crit-label" title="02 · Innovation — Does this bring a fresh perspective or novel solution? Anchor 6 = some original thinking; 9–10 = genuinely surprising and original."><span class="crit-num">02</span>Innovate</span>
+        <span class="crit-label" title="03 · Technical Execution — Depth and quality of Eazo Creator usage. Anchor 6 = basic implementation; 9–10 = creative, advanced use of platform capabilities."><span class="crit-num">03</span>Technical</span>
+        <span class="crit-label" title="04 · Design & Experience — Is the interface clear and the experience smooth? Anchor 6 = functional but average; 9–10 = polished UI, smooth interactions, clear hierarchy."><span class="crit-num">04</span>Design</span>
+        <span class="crit-label" title="05 · Commercial Potential — Is there a real user need? Could this become a real business? Anchor 6 = problem visible but target vague; 9–10 = clear user + viable commercial path."><span class="crit-num">05</span>Commercial</span>
+        <span class="crit-label">Total / 50</span>
       </div>
 
       <div id="finalists-list"></div>
@@ -625,43 +649,53 @@ const METHOD_LABELS = {
   online:   'Online',
 };
 
-// TODO: GET /api/${hub}/finalists?code=${judgeCode}  → { finalists: Finalist[] }
-// TODO: POST /api/${hub}/judge-scores  body: { judgeCode, scores: [{teamId, c1, c2, c3}] }
+// ── Rubric (Eazo Judge Guide 2026) ─────────────────────────────────────────
+// 5 dimensions × 10 pts = 50 pts/judge. Regional score = avg across judges.
+const CRITERIA = [
+  { key: 'completeness', label: 'Complete' },
+  { key: 'innovation',   label: 'Innovate' },
+  { key: 'technical',    label: 'Technical' },
+  { key: 'design',       label: 'Design' },
+  { key: 'commercial',   label: 'Commercial' },
+];
 
-const MOCK_FINALISTS = {
-  sf: [
-    { id:'sf_t01', rank:1,  team:'Team Meridian',   project:'Atlas',       track:'lifeos',      method:'referral' },
-    { id:'sf_t02', rank:2,  team:'Team Wavelength', project:'SolaceAI',    track:'companion',   method:'referral' },
-    { id:'sf_t03', rank:3,  team:'Team Pulse',      project:'BodySync',    track:'body',        method:'peer' },
-    { id:'sf_t04', rank:4,  team:'Team Nested',     project:'FamilyFlow',  track:'superparent', method:'peer' },
-    { id:'sf_t05', rank:5,  team:'Team Epoch',      project:'DayZero',     track:'lifeos',      method:'referral' },
-    { id:'sf_t06', rank:6,  team:'Remote Minds',    project:'AutoPilot',   track:'lifeos',      method:'online' },
-    { id:'sf_t07', rank:7,  team:'FamCloud',        project:'KidCast',     track:'superparent', method:'online' },
-    { id:'sf_t08', rank:8,  team:'FeelFirst',       project:'MoodSync',    track:'companion',   method:'peer' },
-    { id:'sf_t09', rank:9,  team:'Team Kinetic',    project:'RecoverAI',   track:'body',        method:'referral' },
-    { id:'sf_t10', rank:10, team:'Team Drift',      project:'FocusBuddy',  track:'companion',   method:'peer' },
-  ],
-  ny: [
-    { id:'ny_t01', rank:1, team:'Team Fulton',    project:'FinCoach',    track:'lifeos',      method:'referral' },
-    { id:'ny_t02', rank:2, team:'Team Brooklyn',  project:'MindMap',     track:'companion',   method:'peer' },
-    { id:'ny_t03', rank:3, team:'Team Harlem',    project:'StreetSense', track:'wildcard',    method:'referral' },
-    { id:'ny_t04', rank:4, team:'Team Tribeca',   project:'DadBot',      track:'superparent', method:'peer' },
-    { id:'ny_t05', rank:5, team:'Team Chelsea',   project:'HabitNest',   track:'lifeos',      method:'referral' },
-  ],
-  sh: [
-    { id:'sh_t01', rank:1, team:'队伍 · 晨曦', project:'DawnMind',   track:'lifeos',      method:'referral' },
-    { id:'sh_t02', rank:2, team:'队伍 · 织梦', project:'DreamWeave', track:'companion',   method:'peer' },
-    { id:'sh_t03', rank:3, team:'家家互联',      project:'亲子云',      track:'superparent', method:'online' },
-    { id:'sh_t04', rank:4, team:'队伍 · 脉动', project:'PulseLife',  track:'body',        method:'referral' },
-    { id:'sh_t05', rank:5, team:'意向科技',      project:'思伴',        track:'companion',   method:'online' },
-  ],
-};
+// Data source — fetched live from /api/finalists?hub=${hub}
+let FINALISTS = [];  // populated by loadFinalists() on auth
+
+async function loadFinalists(hub) {
+  try {
+    const r = await fetch(`/api/finalists?hub=${encodeURIComponent(hub)}`);
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const { calculated, finalists = [] } = await r.json();
+    return {
+      calculated,
+      teams: finalists.map(f => ({
+        id:      f.teamId,
+        rank:    f.rank,
+        team:    f.teamName,
+        project: f.projectName,
+        track:   f.track,
+        method:  f.qualificationMethod,
+      })),
+    };
+  } catch (err) {
+    console.error('[judge-scorer] failed to load finalists:', err);
+    return { calculated: false, teams: [], error: err.message };
+  }
+}
 
 // ── State ───────────────────────────────────────────────────────────────────
 let currentHub = '';
 let judgeCode  = '';
-let scores     = {};  // { teamId: { c1, c2, c3 } }
+let scores     = {};  // { teamId: { completeness, innovation, technical, design, commercial } }
 let selectedAuthHub = '';
+
+function blankScore() {
+  return CRITERIA.reduce((acc, c) => (acc[c.key] = 0, acc), {});
+}
+function scoreTotal(s) {
+  return CRITERIA.reduce((sum, c) => sum + (Number(s[c.key]) || 0), 0);
+}
 
 // ── Init ────────────────────────────────────────────────────────────────────
 (function init() {
@@ -716,7 +750,7 @@ function handleAuth(e) {
 }
 
 // ── App ──────────────────────────────────────────────────────────────────────
-function showApp() {
+async function showApp() {
   document.getElementById('auth-screen').style.display = 'none';
   const appEl = document.getElementById('app-screen');
   appEl.style.display = 'flex';
@@ -725,16 +759,33 @@ function showApp() {
   document.getElementById('judge-badge-label').textContent = `Code: ${judgeCode}`;
   document.getElementById('save-hub-label').textContent = `· ${HUB_LABELS[currentHub] || ''}`;
 
+  // Show loading state in the list area
+  const container = document.getElementById('finalists-list');
+  container.innerHTML = '<div style="padding:32px 16px;text-align:center;color:var(--t3);font-size:13px;">Loading finalists…</div>';
+
+  const { calculated, teams, error } = await loadFinalists(currentHub);
+  FINALISTS = teams;
+
+  if (error) {
+    container.innerHTML = `<div style="padding:32px 16px;text-align:center;color:#FF5A5A;font-size:13px;">Failed to load finalists: ${error}. <a href="#" onclick="location.reload()" style="color:var(--orange);">Retry</a></div>`;
+    return;
+  }
+
+  if (!calculated || !teams.length) {
+    container.innerHTML = `<div style="padding:32px 16px;text-align:center;color:var(--t3);font-size:13px;">Finalists for this hub haven't been calculated yet. The list will appear here once peer voting closes and the host runs the finalist calculation.</div>`;
+    return;
+  }
+
   renderFinalists();
 }
 
 function renderFinalists() {
-  const finalists = MOCK_FINALISTS[currentHub] || [];
+  const finalists = FINALISTS;
   const container = document.getElementById('finalists-list');
   container.innerHTML = '';
 
   finalists.forEach(team => {
-    scores[team.id] = { c1: 0, c2: 0, c3: 0 };
+    scores[team.id] = blankScore();
 
     const card = document.createElement('div');
     card.className = 'team-card';
@@ -748,11 +799,9 @@ function renderFinalists() {
         <span class="badge badge-${team.track}">${TRACK_LABELS[team.track] || team.track}</span>
         <span class="badge badge-${team.method}">${METHOD_LABELS[team.method] || team.method}</span>
       </div>
-      ${scoreField(team.id, 'c1', 'Criterion 1 (TBD)')}
-      ${scoreField(team.id, 'c2', 'Criterion 2 (TBD)')}
-      ${scoreField(team.id, 'c3', 'Criterion 3 (TBD)')}
+      ${CRITERIA.map(c => scoreField(team.id, c.key)).join('')}
       <div class="team-total">
-        <div class="total-label">Total</div>
+        <div class="total-label">/ 50</div>
         <div class="total-value" id="total-${team.id}">0</div>
       </div>
     `;
@@ -762,12 +811,11 @@ function renderFinalists() {
   updateSaveCount();
 }
 
-function scoreField(teamId, crit, label) {
+function scoreField(teamId, crit) {
   return `
     <div class="score-field">
-      <div class="score-field-label">${label}</div>
       <div class="score-controls">
-        <button class="score-btn" onclick="adjustScore('${teamId}','${crit}',-1)">−</button>
+        <button class="score-btn" onclick="adjustScore('${teamId}','${crit}',-1)" aria-label="decrease">−</button>
         <input
           class="score-input"
           type="number"
@@ -777,7 +825,7 @@ function scoreField(teamId, crit, label) {
           max="10"
           oninput="onScoreInput('${teamId}','${crit}',this)"
         />
-        <button class="score-btn" onclick="adjustScore('${teamId}','${crit}',1)">+</button>
+        <button class="score-btn" onclick="adjustScore('${teamId}','${crit}',1)" aria-label="increase">+</button>
       </div>
     </div>
   `;
@@ -806,13 +854,11 @@ function onScoreInput(teamId, crit, input) {
 }
 
 function updateTotal(teamId) {
-  const s = scores[teamId];
-  const total = (s.c1 || 0) + (s.c2 || 0) + (s.c3 || 0);
-  document.getElementById(`total-${teamId}`).textContent = total;
+  document.getElementById(`total-${teamId}`).textContent = scoreTotal(scores[teamId]);
 }
 
 function updateSaveCount() {
-  const scored = Object.values(scores).filter(s => (s.c1 + s.c2 + s.c3) > 0).length;
+  const scored = Object.values(scores).filter(s => scoreTotal(s) > 0).length;
   document.getElementById('save-count').textContent = scored;
 }
 
@@ -823,8 +869,15 @@ function resetSaveBtn() {
 }
 
 function saveAllScores() {
-  // TODO: POST /api/${currentHub}/judge-scores  body: { judgeCode, scores: Object.entries(scores).map(([teamId,s]) => ({teamId,...s})) }
-  console.log('Saving scores for hub:', currentHub, scores);
+  // POST /api/judge-score
+  // body: { hub, judgeCode, scores: [{ teamId, completeness, innovation, technical, design, commercial }] }
+  const payload = {
+    hub: currentHub,
+    judgeCode,
+    scores: Object.entries(scores).map(([teamId, s]) => ({ teamId, ...s })),
+  };
+  console.log('Saving scores:', payload);
+  // TODO (Stage 3): fetch('/api/judge-score', { method:'POST', body: JSON.stringify(payload) })
 
   const btn = document.getElementById('save-btn');
   btn.className = 'btn-save submitted';

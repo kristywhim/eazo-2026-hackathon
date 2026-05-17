@@ -1,15 +1,26 @@
 // POST /api/judge-score
 // Submit or update judge scores for finalist teams.
+// Rubric: 5 dimensions × 10 pts each = 50 pts/judge (per Eazo Judge Guide 2026)
 //
-// Body: { hub, judgeCode, scores: [{ teamId, c1, c2, c3, notes }] }
+// Body: { hub, judgeCode, scores: [{ teamId, completeness, innovation, technical, design, commercial, notes }] }
 // Response: { ok: true, saved: number }
 //
 // GET /api/judge-score?hub=sf&code=JUDGE_SF_01
-// Response: { scores: [{ teamId, c1, c2, c3, notes, total }] }
+// Response: { scores: [{ teamId, completeness, innovation, technical, design, commercial, total, notes }] }
 
 const { getClient } = require('./_supabase');
 
 const PRIZE_HUBS = ['sf', 'ny', 'sh'];
+
+const CRITERIA = ['completeness', 'innovation', 'technical', 'design', 'commercial'];
+
+// Clamp + coerce to 0..10, or null if not provided
+function clamp10(v) {
+  if (v === undefined || v === null || v === '') return null;
+  const n = Number(v);
+  if (Number.isNaN(n)) return null;
+  return Math.max(0, Math.min(10, n));
+}
 
 async function validateJudgeCode(supabase, code, hub) {
   const { data, error } = await supabase
@@ -42,7 +53,7 @@ module.exports = async function handler(req, res) {
 
     const { data: scores, error } = await supabase
       .from('judge_scores')
-      .select('team_id, criterion_1, criterion_2, criterion_3, notes, updated_at')
+      .select('team_id, completeness, innovation, technical, design, commercial, notes, updated_at')
       .eq('judge_id', code)
       .eq('hub', hub);
 
@@ -52,13 +63,15 @@ module.exports = async function handler(req, res) {
       judgeLabel: judge.label,
       hub,
       scores: (scores || []).map(s => ({
-        teamId: s.team_id,
-        c1: s.criterion_1,
-        c2: s.criterion_2,
-        c3: s.criterion_3,
-        total: (s.criterion_1 || 0) + (s.criterion_2 || 0) + (s.criterion_3 || 0),
-        notes: s.notes,
-        updatedAt: s.updated_at,
+        teamId:       s.team_id,
+        completeness: s.completeness,
+        innovation:   s.innovation,
+        technical:    s.technical,
+        design:       s.design,
+        commercial:   s.commercial,
+        total: CRITERIA.reduce((sum, k) => sum + (Number(s[k]) || 0), 0),
+        notes:        s.notes,
+        updatedAt:    s.updated_at,
       })),
     });
   }
@@ -76,14 +89,16 @@ module.exports = async function handler(req, res) {
 
   // Upsert all scores
   const rows = scores.map(s => ({
-    judge_id:    judgeCode,
-    team_id:     s.teamId,
+    judge_id:     judgeCode,
+    team_id:      s.teamId,
     hub,
-    criterion_1: s.c1 !== undefined ? Number(s.c1) : null,
-    criterion_2: s.c2 !== undefined ? Number(s.c2) : null,
-    criterion_3: s.c3 !== undefined ? Number(s.c3) : null,
-    notes:       s.notes || null,
-    updated_at:  new Date().toISOString(),
+    completeness: clamp10(s.completeness),
+    innovation:   clamp10(s.innovation),
+    technical:    clamp10(s.technical),
+    design:       clamp10(s.design),
+    commercial:   clamp10(s.commercial),
+    notes:        s.notes || null,
+    updated_at:   new Date().toISOString(),
   }));
 
   const { error } = await supabase

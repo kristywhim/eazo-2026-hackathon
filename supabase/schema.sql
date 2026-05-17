@@ -72,16 +72,19 @@ create index if not exists pv_voter_idx     on peer_votes(voter_team_id);
 
 -- ══════════════════════════════════════════════════════════════════
 -- 4. JUDGE SCORES
---    Criteria TBD — 3 placeholder fields, each 0–10
+--    Per Eazo Judge Guide 2026: 5 dimensions × 10 pts each = 50 pts total.
+--    Each judge scores independently; regional score = average across judges.
 -- ══════════════════════════════════════════════════════════════════
 create table if not exists judge_scores (
   id            uuid primary key default gen_random_uuid(),
   judge_id      text not null,                     -- judge code (e.g. "JUDGE_SF_01")
   team_id       uuid not null references teams(id) on delete cascade,
   hub           text not null,
-  criterion_1   numeric(4,1) check (criterion_1 between 0 and 10),  -- TBD
-  criterion_2   numeric(4,1) check (criterion_2 between 0 and 10),  -- TBD
-  criterion_3   numeric(4,1) check (criterion_3 between 0 and 10),  -- TBD
+  completeness  numeric(4,1) check (completeness between 0 and 10),  -- 01 · Product Completeness
+  innovation    numeric(4,1) check (innovation   between 0 and 10),  -- 02 · Innovation
+  technical     numeric(4,1) check (technical    between 0 and 10),  -- 03 · Technical Execution (Eazo Creator depth)
+  design        numeric(4,1) check (design       between 0 and 10),  -- 04 · Design & Experience
+  commercial    numeric(4,1) check (commercial   between 0 and 10),  -- 05 · Commercial Potential
   notes         text,
   created_at    timestamptz default now(),
   updated_at    timestamptz default now(),
@@ -138,12 +141,20 @@ from teams t
 left join peer_votes pv on pv.voted_team_id = t.id
 group by t.id;
 
--- Judge score totals per team (average across all judges)
+-- Judge score totals per team (average across all judges; max 50 pts per judge)
 create or replace view v_judge_score_totals as
 select
   team_id,
   hub,
-  round(avg(coalesce(criterion_1,0) + coalesce(criterion_2,0) + coalesce(criterion_3,0)), 2) as judge_total_avg,
+  round(avg(
+    coalesce(completeness,0) + coalesce(innovation,0) + coalesce(technical,0) +
+    coalesce(design,0)       + coalesce(commercial,0)
+  ), 2) as judge_total_avg,
+  round(avg(coalesce(completeness,0)), 2) as completeness_avg,
+  round(avg(coalesce(innovation,0)),   2) as innovation_avg,
+  round(avg(coalesce(technical,0)),    2) as technical_avg,
+  round(avg(coalesce(design,0)),       2) as design_avg,
+  round(avg(coalesce(commercial,0)),   2) as commercial_avg,
   count(distinct judge_id) as judge_count
 from judge_scores
 group by team_id, hub;

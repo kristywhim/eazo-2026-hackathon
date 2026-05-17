@@ -1,15 +1,15 @@
 # Eazo Hackathon 2026 · Engineering Handoff
 
-**To:** Eazo Product & Engineering Team  
-**From:** Hackathon Operations  
-**Re:** Voting & Scoring System — Integration Requirements  
-**Date:** May 2026
+**To:** Eazo Product & Engineering Team
+**From:** Hackathon Operations
+**Re:** Voting & Scoring System — Integration Requirements
+**Last updated:** 2026-05-16
 
 ---
 
 ## What We've Built
 
-We've built and deployed a full voting + scoring system for the Global Hackathon. It runs as a separate web service that sits on top of Eazo's existing platform. Here's what exists:
+A full voting + scoring system for the Global Hackathon. Runs as a separate web service that sits on top of Eazo's existing platform.
 
 | Page | URL | Who uses it |
 |------|-----|-------------|
@@ -19,113 +19,106 @@ We've built and deployed a full voting + scoring system for the Global Hackathon
 | Judge Scorer | `/judge?hub=sf&code=JUDGE_SF_01` | Judges — link sent via messaging app |
 | Finalist Announcement | `/finalist?hub=sf` | MC/host — projected on screen |
 
-The system has its own database (Supabase/Postgres). **We do not touch Eazo's database directly.** Everything flows through the three integration points described below.
+The system has its own database (Supabase/Postgres). **We do not touch Eazo's database directly.** Everything flows through the integration points described below.
 
 ---
 
-## What We Need From You
+## ✅ Resolved Since Last Version
 
-There are exactly **three things** we need. Nothing else is blocking us.
+Thank you for sending `hackathon-api.md` (v1.2) and the judge guide. Items previously listed as "pending" are now resolved:
 
----
-
-### 1. Team Data API
-
-**What it is:** An endpoint that returns the list of registered hackathon teams with their project info.
-
-**When we call it:** Once after registration closes, then again if data changes. We sync it into our database with `POST /api/sync-teams`.
-
-**What we need the response to include, per team:**
-
-```json
-{
-  "team_id": "string — your internal team identifier",
-  "team_name": "string",
-  "project_name": "string",
-  "project_desc": "string (optional)",
-  "hub": "sf | ny | sh | go | ao",
-  "track": "superparent | companion | lifeos | body | wildcard",
-  "referral_count": 320,
-  "submitted_at": "2026-05-23T18:30:00Z"
-}
-```
-
-**Fields we can adapt to:** If your field names are different (e.g. `location` instead of `hub`, `category` instead of `track`), just tell us the actual names — we have a mapping layer ready.
-
-**What we also need from you:**
-- The endpoint URL (e.g. `https://api.eazo.com/hackathon/teams`)
-- Auth method (Bearer token, API key header, etc.) and the key/token value
-- Whether referral count (`referral_count`) is available in this response, or comes from a separate endpoint
-
-> **Note on `referral_count`:** This is critical. It determines which teams qualify for the Demo (A-class slots: top 10 referrals per hub, threshold >500). If it's not in the team API, we need a separate endpoint or a webhook that pushes referral counts to us.
+| Previously needed | Status | Notes |
+|---|---|---|
+| Judge scoring rubric (was TBD) | ✅ Resolved | Using the 5-criterion rubric from the Judge Guide (Completeness / Innovation / Technical / Design / Commercial; 10 pts each, 50 total). Schema, API, UI, and migration SQL all updated. |
+| Team **roster** source | ✅ Resolved (interim) | `api/sync-teams.js` reads the Tally registration sheet (`1W7V…`) by column index for team_name / region / track / roster. The sheet **does not and will not** carry project details (title / URL / cover / description). |
+| Project **details** source | 🟡 Architectural alignment | Project details live in Eazo Creator (`creator_apps.*`), not in Tally. Eazo's portal endpoint `GET /api/v1/hackathon/apps` is the bridge — it joins sheet email → Eazo `users.email` → `creator_apps` and returns the merged record. We consume that endpoint when it goes live. Until then, the project_name / project_desc / appUrl fields stay empty (the detail-view "Open App" button shows "coming soon"). |
+| Hub / region structure | ✅ Resolved | Frontend pages (comm-vote, peer-vote, onair) display **3 prize-pool regions per prize-logic-v4**: SF = SF Bay Area + Global Online · NY = standalone · SH = Shanghai + Asia Online. Backend `teams.hub` keeps the 5-hub enum for now (sf/ny/sh/go/ao) so we still know who's offline vs online in finalist buckets. |
+| CN-only IP gating | ✅ Resolved | Dropped — all regions visible everywhere. `api/detect-hub.js` is now just a default-selection hint. |
+| Composite weighting | ✅ Resolved | 50% public vote / 40% judge / 10% peer, per the Judge Guide. |
+| Peer-vote rules | ✅ Resolved | 3 votes per person, no self-vote, auto-lock at deadline, vote-once (no edits). Already correctly implemented in `api/peer-vote.js`; frontend now matches with detail modal parity to comm-vote. |
+| Project detail view | ✅ Resolved | Tap any project card in comm-vote or peer-vote → full-screen detail modal showing project info, track, "Open App →" button (when team has shared a URL), and vote/select CTA. Designed for the Eazo mobile-app WebView context. |
 
 ---
 
-### 2. User Auth Token
+## What We Still Need From You
 
-**What it is:** The Eazo app needs to pass a user identity token into the voting WebViews so we know who is voting. This is how we enforce the 10-vote-per-hub budget and prevent double voting.
+Only **two open items** remain. Both are short.
+
+---
+
+### 1. User Auth Token (for the WebViews)
+
+**Status:** Still required. `hackathon-api.md` declares the read API public, but **our voting endpoints** need to know *who* is voting in order to enforce per-user vote budgets and prevent double voting. The browse API being public doesn't change that.
 
 **How the WebView bridge works (our side):** We listen for a global variable injection:
 
 ```js
-// We expect the app to inject this before the page loads,
-// OR call this function after load:
+// Option A: inject before load
 window.EAZO_TOKEN = "...";
-// or:
+// Option B: call after load
 window.receiveAuthToken("...");
+// Option C: postMessage — we'll listen for {type:'eazo_token', token:'...'}
 ```
 
 **What the token must contain** (after we decode/verify it):
-- `user_id` — unique, stable user identifier (used to track their vote budget)
-- `team_id` — the user's team identifier, same value as `team_id` in the team API above (needed for peer vote — to exclude their own team from the list)
-- `hub` — which hub this user belongs to (so we auto-select the right tab)
+- `user_id` — unique, stable user identifier (vote-budget key)
+- `team_id` — the user's team identifier (for peer vote, to exclude their own team)
+- `region` — `new_york` / `asia` / `global` (so we auto-select the right tab; also reliably tells us their country without an IP lookup)
 
 **What we need from you:**
-1. **Token format** — is it a standard JWT (RS256 / HS256 / ES256)? Or a different format?
-2. **Verification key** — the public key or shared secret so we can validate the token server-side
-3. **Payload field names** — what are the actual field names for user ID, team ID, and hub in your token? (e.g. is it `sub`, `userId`, or `user_id`?)
-4. **Injection method** — does the app inject `window.EAZO_TOKEN` before load, call a function, or use `postMessage`? We'll adapt to whatever you already do.
+1. **Token format** — JWT (RS256/HS256/ES256)? Or a different format?
+2. **Verification key** — public key or shared secret so we can validate it server-side
+3. **Payload field names** — actual field names for the three values above (is it `sub`, `userId`, `user_id`?)
+4. **Injection method** — which of A/B/C above does the Eazo app already do?
 
-> If you don't have a WebView bridge mechanism yet, the simplest path: inject `window.EAZO_TEAM = { userId, teamId, hub }` as a plain JS object before the WebView loads. No crypto required for MVP — we can add signature verification later.
+> **Simplest MVP path:** if you don't have a signed-token bridge yet, inject `window.EAZO_USER = { userId, teamId, region }` as a plain JS object before the WebView loads. No crypto needed — we add signature verification later.
 
 ---
 
-### 3. IP Geolocation Confirmation (SH / Asia Online)
+### 2. Portal Endpoint & Deployment Status (`GET /api/v1/hackathon/apps`)
 
-**What it is:** Per the event design, the Shanghai and Asia Online tabs should only be visible to users on China IPs.
-
-**Our current implementation:** We call `ip-api.com` to detect country code and hide the SH/Asia Online tabs for non-CN IPs. This works for the web version.
+**This is the load-bearing piece.** It's how project info reaches our voting pages. Without it, the comm-vote and peer-vote detail pages can show team names + tracks but **cannot show the actual app or link to it.** The Tally sheet only has registration data; the project itself lives in Eazo Creator (`creator_apps`). Your portal does the email-based join and returns the merged record — we consume that one endpoint and we're good.
 
 **What we need from you:**
-- For the **app WebView**: does Eazo already know the user's region/country from their account or device? If so, just include a `region` or `country` field in the auth token above — we'll use that instead of doing IP lookup ourselves. This is more reliable than IP detection.
-- Confirmation of whether the restriction should apply at the **tab visibility** level (hide the tab entirely), or the **data level** (tabs visible but API rejects non-CN requests). We currently do tab-level hiding.
+1. **Portal base URL** — what's `$PORTAL` in your spec examples? (e.g. `https://api.eazo.com`)
+2. **Expected deployment date** — so we know when to swap our data source from "registration-only" to "registration + project."
+3. **Heads-up on the `sortBy=votes` user story** — note that "votes" in your spec maps to `creator_apps.like_num`, not hackathon community votes. **Our hackathon votes live in our Supabase**, not in your portal. We will **not** consume `sortBy=votes` from your endpoint — our own vote rankings stay authoritative. (Flagging this so the Eazo dev team doesn't build something we won't use.)
+4. **Confirm the no-match policy** — when a sheet row's `Eazo Creator registration email` doesn't match any Eazo user yet (e.g. team registered but hasn't installed the app or built anything), does your endpoint return the team with `creatorApp: null`, or omit them entirely? We need to know whether to show "registered, no app yet" rows or filter them out.
 
 ---
 
 ## What You Don't Need to Do
 
-To be clear about what's fully handled on our side:
+Fully handled on our side:
 
-- ✅ All vote storage and deduplication
-- ✅ 10-vote-per-user budget enforcement (per hub)
+- ✅ All vote storage, deduplication, and per-user budget enforcement
 - ✅ Peer vote rules (3 votes, no self-vote, once only)
-- ✅ Finalist calculation logic (referral / peer / online buckets, dedup, ny=15 slots, sf+sh=10 slots)
-- ✅ Judge scoring interface
+- ✅ Finalist calculation logic and demo-slot allocation
+- ✅ Judge scoring interface and 5-criterion rubric
 - ✅ Live leaderboard (OnAir)
 - ✅ All frontend pages
-- ✅ Database schema
+- ✅ Database schema + migrations
+- ✅ Direct ingestion of the Tally → Google Sheet submission data
 
 ---
 
-## Deployment
+## Deployment Configuration
 
-We deploy to **Vercel**. Once you provide the three items above, we configure the environment variables and go live in under an hour. No access to Eazo infrastructure needed.
+We deploy to **Vercel**. Required environment variables once you confirm the items above:
 
+```bash
+# Resolved (in place)
+EAZO_SHEETS_API_KEY=AIzaSy...           # Google Sheets API key for the submission sheet
+EAZO_SHEET_ID=1muwuDscQpacD1Ifbzsl0jwBj16-_HQPHPXRB5Zl1HC4
+SUPABASE_URL=https://...                 # our Supabase
+SUPABASE_SERVICE_ROLE_KEY=...
+
+# Still pending (Item 1 + 2 above)
+EAZO_JWT_SECRET=...                      # token verification key
+EAZO_PORTAL_BASE=https://api.eazo.com    # optional — once portal is deployed, we'll swap from direct sheet to portal
 ```
-EAZO_API_BASE=https://...       # team data endpoint base URL
-EAZO_API_KEY=...                # your API key
-EAZO_JWT_SECRET=...             # token verification key
-```
+
+> **API key handling reminder:** the Sheets API key you shared was passed in plaintext over chat. Please rotate it and apply restrictions (Sheets API only, HTTP referrer = our Vercel domain) per [Google's key best-practices doc](https://docs.cloud.google.com/docs/authentication/api-keys-best-practices). Send the new key via a secure channel (1Password share, Vercel env vars dashboard, etc.).
 
 ---
 
@@ -133,18 +126,57 @@ EAZO_JWT_SECRET=...             # token verification key
 
 | Item | Needed by | Why |
 |------|-----------|-----|
-| Team data API + key | ASAP | We need to populate our DB before voting opens |
-| Auth token spec | ASAP | Community vote and peer vote can't go live without it |
-| Referral count data | Before submission deadline | Used to calculate finalist A-slots |
-| IP/region field in token | Before event | Needed for SH/Asia Online gate |
+| Auth token spec (Item 1) | ASAP | Community vote and peer vote can't go live without it |
+| Portal endpoint URL (Item 2) | Optional — interim path works | Lets us pick up `creatorApp` enrichment when ready |
+| Restricted API key (rotation) | Before go-live | Current key is exposed in chat history |
 
 ---
 
-## Questions? 
+## Architecture at a Glance
 
-Everything above is in the codebase: `github.com/kristywhim/eazo-2026-hackathon`
+```
+Eazo Mobile App                       Tally form → our gsheet (1W7V…)
+─────────────────                     ─────────────────────────────────
+Team forms                            Registration submitted
+↓                                     ↓
+Team builds app on Eazo Creator       Team roster + region + track
+↓                                     ↓
+(creator_apps.*)                      (no project details — by design)
+        │                                            │
+        └──────────────┬─────────────────────────────┘
+                       ↓
+         Eazo portal joins by email
+         GET /api/v1/hackathon/apps
+                       ↓
+         Our Supabase ← → Our voting pages
+```
 
-The three `⚠️ PENDING` markers in the code correspond exactly to the three sections above:
-- `api/sync-teams.js` — team data API
-- `api/_auth.js` — token verification
-- `api/detect-hub.js` — IP / region logic
+The cross-check ("is this Eazo Creator app actually a hackathon project?") happens at **email-match time** in the portal. We don't reproduce that logic — we just consume the answer.
+
+---
+
+## Code Pointers
+
+Codebase: `github.com/kristywhim/eazo-2026-hackathon`
+
+| Concern | File |
+|---|---|
+| Sheets ingestion (interim) | `api/sync-teams.js` |
+| Seed mock teams (dry-run) | `api/seed-mock-teams.js` — `POST /api/seed-mock-teams?secret=...` |
+| Auth token verification (Item 1, still pending) | `api/_auth.js` |
+| Hub / region detection (default-only) | `api/detect-hub.js` |
+| Judge rubric (done) | `api/judge-score.js`, `eazo-judgescorer/index.html`, `supabase/schema.sql`, `supabase/migrations/001_judge_rubric_5_criteria.sql` |
+| Comm-vote (3 regions + detail view) | `eazo-comm-votepage/index.html` |
+| Peer-vote (detail view) | `eazo-peer-votepage/index.html` |
+| Reference materials | `_reference/hackathon-api.md`, `_reference/eazo_2026_judge_guide_en.md`, `_reference/prize-logic-v4.html` |
+
+---
+
+## Still On Our Side To Do (post-handoff)
+
+So you can see what's coming from our side without waiting on Eazo:
+
+- Finalist admin dashboard: rebuild as a 3-region view with A/B/C-D buckets per `prize-logic-v4`.
+- OnAir leaderboard: collapse 5 boards → 3 regions.
+- `calculate_finalists` Postgres function: drop the `referral_count > 200` constraint from the peer-vote bucket (peer top-N is the rule per prize-logic; the >200 threshold belongs to the *Special Award* B-class, which is a separate track).
+- Wire the remaining frontends (comm-vote, peer-vote, onair, finalist) to live API endpoints after the regions and finalist work settle.
