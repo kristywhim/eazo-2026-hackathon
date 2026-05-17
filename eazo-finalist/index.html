@@ -8,6 +8,13 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     :root {
+      /* ── Eazo brand (canonical, shared across all pages) ── */
+      --eazo-orange:     #FF6B20;
+      --eazo-orange-dim: rgba(255,107,32,.13);
+      --eazo-gold:       #F5B030;
+      --eazo-success:    #22C97A;
+
+      /* ── Dark-theme palette (large-screen / projection surface) ── */
       --bg:   #060D18;
       --s1:   #0C1525;
       --s2:   #112034;
@@ -17,11 +24,14 @@
       --t1:   #EEF3FF;
       --t2:   #8A9CC0;
       --t3:   #4A607E;
-      --orange: #FF6B20;
-      --gold:   #F5B030;
-      --up:     #22C97A;
+
+      /* Backward-compatible aliases (existing CSS rules reference these names) */
+      --orange: var(--eazo-orange);
+      --gold:   var(--eazo-gold);
+      --up:     var(--eazo-success);
       --bronze: #B07A3F;
 
+      /* ── Region colors (dark-theme variants, matched with onair / judge-scorer) ── */
       --hub-sf: #5898E8;
       --hub-ny: #9080E8;
       --hub-sh: #22C97A;
