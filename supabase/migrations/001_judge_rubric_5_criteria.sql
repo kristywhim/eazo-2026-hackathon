@@ -33,14 +33,17 @@ set
   technical    = coalesce(technical,    criterion_3)
 where criterion_1 is not null or criterion_2 is not null or criterion_3 is not null;
 
--- 3. Drop the old columns
+-- 3. Drop the dependent view FIRST so we can drop the old columns it references.
+--    (We'll recreate the view at the end with the new column names.)
+drop view if exists v_judge_score_totals;
+
+-- 4. Drop the old columns
 alter table judge_scores
   drop column if exists criterion_1,
   drop column if exists criterion_2,
   drop column if exists criterion_3;
 
--- 4. Replace the aggregate view (uses new column names)
-drop view if exists v_judge_score_totals;
+-- 5. Recreate the aggregate view using the new column names
 create view v_judge_score_totals as
 select
   team_id,
