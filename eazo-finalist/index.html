@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Eazo Hackathon 2026 — Finalist Announcement</title>
+  <title>Eazo Hackathon 2026 — Award Rankings</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
@@ -20,6 +20,11 @@
       --orange: #FF6B20;
       --gold:   #F5B030;
       --up:     #22C97A;
+      --bronze: #B07A3F;
+
+      --hub-sf: #5898E8;
+      --hub-ny: #9080E8;
+      --hub-sh: #22C97A;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -29,7 +34,6 @@
       background: var(--bg);
       color: var(--t1);
       min-height: 100vh;
-      overflow-x: hidden;
     }
 
     /* ── Header ── */
@@ -42,9 +46,9 @@
     }
 
     .header-inner {
-      max-width: 1400px;
+      max-width: 1600px;
       margin: 0 auto;
-      padding: 0 40px;
+      padding: 0 32px;
       height: 72px;
       display: flex;
       align-items: center;
@@ -61,66 +65,63 @@
       flex-shrink: 0;
     }
 
-    .header-wordmark {
-      font-family: 'Syne', 'DM Sans', sans-serif;
-      font-size: 19px; font-weight: 800;
-      color: var(--t1); letter-spacing: -0.02em;
-    }
-
-    .header-title {
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--t1);
-    }
-
-    .header-divider {
-      width: 1px;
-      height: 28px;
-      background: var(--bdr);
-    }
-
-    .header-hub {
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--t2);
-    }
-
-    .header-sep { flex: 1; }
+    .header-wordmark { font-size: 19px; font-weight: 800; color: var(--t1); letter-spacing: -0.02em; }
+    .header-title    { font-size: 17px; font-weight: 700; color: var(--t1); }
+    .header-eyebrow  { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); margin-bottom: 1px; }
+    .header-titleblock { display: flex; flex-direction: column; }
+    .header-sep      { flex: 1; }
 
     .live-dot-wrap {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 13px;
-      font-weight: 600;
+      display: flex; align-items: center; gap: 8px;
+      font-size: 13px; font-weight: 600;
       color: var(--up);
     }
-
     .live-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
+      width: 10px; height: 10px; border-radius: 50%;
       background: var(--up);
       animation: pulse 1.6s ease-in-out infinite;
     }
+    .live-dot.closed { background: var(--orange); animation: none; }
+    .live-dot-wrap.closed { color: var(--orange); }
 
     @keyframes pulse {
       0%, 100% { opacity: 1; transform: scale(1); }
-      50%       { opacity: 0.4; transform: scale(0.75); }
+      50%      { opacity: 0.4; transform: scale(0.75); }
     }
 
-    .refresh-label {
-      font-size: 12px;
-      color: var(--t3);
+    .refresh-label { font-size: 12px; color: var(--t3); }
+    .calc-timestamp { font-size: 12px; color: var(--t3); margin-left: 16px; font-variant-numeric: tabular-nums; }
+
+    /* ── Region tabs ── */
+    .region-tabs {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 20px 32px 0;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
-    .calc-timestamp {
-      font-size: 12px;
-      color: var(--t3);
-      margin-left: 16px;
+    .region-tab {
+      background: var(--s1);
+      border: 1px solid var(--bdr);
+      border-radius: 10px;
+      color: var(--t2);
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 9px 18px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .region-tab:hover { border-color: var(--bdr2); color: var(--t1); }
+    .region-tab.active {
+      background: var(--s2);
+      border-color: var(--gold);
+      color: var(--gold);
     }
 
-    /* ── Waiting Screen ── */
+    /* ── Waiting (countdown) screen ── */
     #waiting-screen {
       display: none;
       align-items: center;
@@ -130,274 +131,315 @@
       text-align: center;
       padding: 40px;
     }
-
-    .waiting-icon {
-      font-size: 64px;
-      margin-bottom: 20px;
-      opacity: 0.5;
+    .waiting-icon  { font-size: 64px; margin-bottom: 20px; opacity: 0.5; }
+    .waiting-title { font-size: 30px; font-weight: 700; color: var(--t1); margin-bottom: 8px; }
+    .waiting-sub   { font-size: 16px; color: var(--t2); margin-bottom: 36px; }
+    .waiting-hub-pill {
+      display: inline-block;
+      font-size: 12px; font-weight: 700; letter-spacing: 0.06em;
+      background: var(--s2); border: 1px solid var(--bdr);
+      color: var(--gold);
+      padding: 6px 14px; border-radius: 20px;
+      margin-bottom: 24px;
     }
-
-    .waiting-title {
-      font-size: 32px;
-      font-weight: 700;
-      color: var(--t1);
-      margin-bottom: 10px;
-    }
-
-    .waiting-sub {
-      font-size: 18px;
-      color: var(--t2);
-      margin-bottom: 40px;
-    }
-
     .countdown-box {
       background: var(--s1);
       border: 1px solid var(--bdr);
       border-radius: 16px;
-      padding: 36px 48px;
+      padding: 32px 40px;
       display: inline-flex;
-      gap: 32px;
+      gap: 28px;
     }
-
-    .countdown-segment {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-    }
-
+    .countdown-segment { display: flex; flex-direction: column; align-items: center; gap: 6px; }
     .countdown-num {
-      font-size: 56px;
-      font-weight: 800;
-      color: var(--t1);
-      line-height: 1;
-      font-variant-numeric: tabular-nums;
-      min-width: 72px;
-      text-align: center;
+      font-size: 52px; font-weight: 800; color: var(--t1);
+      line-height: 1; font-variant-numeric: tabular-nums; min-width: 68px; text-align: center;
     }
-
     .countdown-label {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--t3);
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
+      font-size: 11px; font-weight: 600; color: var(--t3);
+      text-transform: uppercase; letter-spacing: 0.1em;
     }
+    .countdown-sep { font-size: 44px; font-weight: 800; color: var(--t3); line-height: 1; align-self: center; margin-top: -8px; }
 
-    .countdown-sep {
-      font-size: 48px;
-      font-weight: 800;
-      color: var(--t3);
-      line-height: 1;
-      align-self: center;
-      margin-top: -8px;
-    }
-
-    /* ── Finalist List ── */
-    #finalist-screen {
-      display: none;
-    }
-
-    .finalist-header {
-      max-width: 1400px;
+    /* ── Main content ── */
+    main {
+      max-width: 1600px;
       margin: 0 auto;
-      padding: 36px 40px 24px;
-      display: flex;
-      align-items: baseline;
-      gap: 16px;
+      padding: 24px 32px 80px;
     }
 
-    .finalist-header h2 {
-      font-size: 28px;
-      font-weight: 800;
-      color: var(--t1);
-    }
-
-    .finalist-count {
-      font-size: 15px;
-      color: var(--t2);
-    }
-
-    .finalist-list {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 0 40px 80px;
-    }
-
-    .finalist-row {
+    /* ── 3-column "all regions" view ── */
+    .all-regions-grid {
       display: grid;
-      grid-template-columns: 80px 1fr auto auto;
-      gap: 20px;
-      align-items: center;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 18px;
+    }
+
+    .region-card {
       background: var(--s1);
       border: 1px solid var(--bdr);
       border-radius: 14px;
-      padding: 24px 32px;
-      margin-bottom: 12px;
-      transition: border-color 0.15s;
+      overflow: hidden;
     }
 
-    .finalist-row:hover { border-color: var(--bdr2); }
+    .region-card-head {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--bdr);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .region-card-name {
+      font-size: 16px; font-weight: 700; color: var(--t1);
+    }
+    .region-card-meta { font-size: 11.5px; color: var(--t3); }
 
-    .finalist-rank {
-      font-size: 40px;
+    .region-card.sf .region-card-name { color: var(--hub-sf); }
+    .region-card.ny .region-card-name { color: var(--hub-ny); }
+    .region-card.sh .region-card-name { color: var(--hub-sh); }
+
+    .region-card-body {
+      padding: 8px 0;
+      max-height: calc(100vh - 280px);
+      overflow-y: auto;
+    }
+
+    /* Per-team row in any view */
+    .award-row {
+      display: grid;
+      grid-template-columns: 44px 1fr auto;
+      gap: 14px;
+      align-items: center;
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--s2);
+      transition: background 0.15s;
+    }
+    .award-row:hover { background: var(--s2); }
+    .award-row:last-child { border-bottom: none; }
+
+    .award-rank {
+      font-size: 18px;
       font-weight: 800;
       color: var(--t3);
       text-align: center;
       font-variant-numeric: tabular-nums;
     }
+    .award-rank.rank-1 { color: var(--gold);   font-size: 22px; }
+    .award-rank.rank-2 { color: #C0C0C0;       font-size: 22px; }
+    .award-rank.rank-3 { color: var(--bronze); font-size: 22px; }
 
-    .finalist-rank.top3 { color: var(--gold); }
-
-    .finalist-info {}
-
-    .finalist-team {
-      font-size: 26px;
+    .award-info { min-width: 0; }
+    .award-team {
+      font-size: 14.5px;
       font-weight: 700;
       color: var(--t1);
-      margin-bottom: 4px;
+      line-height: 1.25;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
-
-    .finalist-project {
-      font-size: 16px;
+    .award-project {
+      font-size: 12px;
       color: var(--t2);
       font-style: italic;
-    }
-
-    .finalist-badges {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      align-items: flex-end;
-    }
-
-    .badge {
-      font-size: 12px;
-      font-weight: 600;
-      border-radius: 20px;
-      padding: 4px 12px;
-      letter-spacing: 0.03em;
+      margin-top: 1px;
+      overflow: hidden;
+      text-overflow: ellipsis;
       white-space: nowrap;
     }
-
-    /* Track badges */
-    .badge-superparent { background: rgba(245,176,48,0.15);  color: #F5B030; border: 1px solid rgba(245,176,48,0.3); }
-    .badge-companion   { background: rgba(144,128,232,0.15); color: #9080E8; border: 1px solid rgba(144,128,232,0.3); }
-    .badge-lifeos      { background: rgba(34,201,122,0.15);  color: #22C97A; border: 1px solid rgba(34,201,122,0.3); }
-    .badge-body        { background: rgba(88,152,232,0.15);  color: #5898E8; border: 1px solid rgba(88,152,232,0.3); }
-    .badge-wildcard    { background: rgba(74,96,126,0.2);    color: #8A9CC0; border: 1px solid rgba(74,96,126,0.4); }
-
-    /* Method badges */
-    .badge-referral { background: rgba(255,107,32,0.15); color: #FF6B20; border: 1px solid rgba(255,107,32,0.3); }
-    .badge-peer     { background: rgba(144,128,232,0.15); color: #9080E8; border: 1px solid rgba(144,128,232,0.3); }
-    .badge-online   { background: rgba(88,152,232,0.15);  color: #5898E8; border: 1px solid rgba(88,152,232,0.3); }
-
-    /* ── Online group divider ── */
-    .group-divider {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      margin: 28px 0 14px;
-    }
-
-    .group-divider-line {
-      flex: 1;
-      height: 1px;
-      background: var(--bdr);
-    }
-
-    .group-divider-label {
-      font-size: 12px;
-      font-weight: 600;
+    .award-source-hub {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
       color: var(--t3);
       text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-left: 6px;
+    }
+
+    .award-score-block {
+      text-align: right;
+    }
+    .award-composite {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--gold);
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+    }
+    .award-composite-label {
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--t3);
       letter-spacing: 0.1em;
-      white-space: nowrap;
+      text-transform: uppercase;
+      margin-top: 3px;
     }
 
-    /* ── Error / Unknown hub ── */
-    #unknown-screen {
-      display: none;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      min-height: calc(100vh - 72px);
-      text-align: center;
+    /* ── Single-region detail view ── */
+    .single-region-head {
+      display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+    .single-region-title {
+      font-size: 26px; font-weight: 800; color: var(--t1);
+    }
+    .single-region-count { font-size: 14px; color: var(--t2); }
+
+    .detail-table {
+      background: var(--s1);
+      border: 1px solid var(--bdr);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    .detail-row {
+      display: grid;
+      grid-template-columns: 60px 1fr 110px 110px 110px 130px;
       gap: 16px;
+      align-items: center;
+      padding: 16px 22px;
+      border-bottom: 1px solid var(--s2);
+    }
+    .detail-row.head {
+      background: var(--s2);
+      border-bottom: 1px solid var(--bdr);
+      padding-top: 12px; padding-bottom: 12px;
+    }
+    .detail-row.head span {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--t3);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .detail-row.head .col-num { text-align: right; }
+
+    .detail-row:last-child { border-bottom: none; }
+
+    .detail-row .col-rank {
+      font-size: 20px; font-weight: 800; color: var(--t3); text-align: center;
+      font-variant-numeric: tabular-nums;
+    }
+    .detail-row .col-rank.rank-1 { color: var(--gold);   }
+    .detail-row .col-rank.rank-2 { color: #C0C0C0;        }
+    .detail-row .col-rank.rank-3 { color: var(--bronze); }
+
+    .detail-row .col-info { min-width: 0; }
+    .detail-row .col-info .t1 {
+      font-size: 16px; font-weight: 700; color: var(--t1); line-height: 1.25;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .detail-row .col-info .t2 {
+      font-size: 13px; color: var(--t2); font-style: italic;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .detail-row .col-info .t3 {
+      font-size: 11px; color: var(--t3); margin-top: 3px;
+      letter-spacing: 0.04em;
     }
 
-    #unknown-screen h2 { font-size: 28px; font-weight: 700; }
-    #unknown-screen p  { font-size: 16px; color: var(--t2); }
+    .detail-row .col-num {
+      text-align: right;
+      font-size: 13px;
+      font-variant-numeric: tabular-nums;
+      color: var(--t1);
+      font-weight: 600;
+    }
+    .detail-row .col-num small {
+      display: block;
+      color: var(--t3);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
 
-    /* ── Responsive: mobile (< 640px) ── */
-    @media (max-width: 639px) {
-      /* Header: tighten padding, hide secondary info */
-      .header-inner  { padding: 0 16px; gap: 10px; height: 56px; }
-      .header-title  { font-size: 15px; }
-      .header-divider { display: none; }
-      .refresh-label  { display: none; }
+    .composite-cell {
+      text-align: right;
+    }
+    .composite-num {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--gold);
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+    }
+    .composite-bar-wrap {
+      margin-top: 6px;
+      height: 4px;
+      background: var(--s3);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .composite-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--orange), var(--gold));
+      border-radius: 2px;
+    }
+
+    /* ── Empty / loading / error ── */
+    .empty-card {
+      background: var(--s1);
+      border: 1px dashed var(--bdr);
+      border-radius: 14px;
+      padding: 36px 24px;
+      text-align: center;
+      color: var(--t3);
+      font-size: 13.5px;
+      line-height: 1.6;
+    }
+    .empty-card strong { color: var(--t2); display: block; margin-bottom: 4px; }
+
+    .loading-card {
+      background: var(--s1);
+      border: 1px solid var(--bdr);
+      border-radius: 14px;
+      padding: 36px 24px;
+      text-align: center;
+      color: var(--t3);
+      font-size: 13.5px;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 1199px) {
+      .all-regions-grid { grid-template-columns: 1fr; gap: 14px; }
+      .region-card-body { max-height: none; }
+    }
+
+    @media (max-width: 767px) {
+      .header-inner { padding: 0 16px; gap: 10px; height: 60px; }
+      .header-title { font-size: 14px; }
+      .header-eyebrow { font-size: 9px; }
+      .refresh-label { display: none; }
       .calc-timestamp { display: none; }
-      .live-dot-wrap  { font-size: 11px; }
+      .live-dot-wrap { font-size: 11px; }
 
-      /* Waiting screen */
-      #waiting-screen { padding: 28px 16px; min-height: calc(100vh - 56px); }
-      .waiting-icon   { font-size: 48px; }
-      .waiting-title  { font-size: 22px; }
-      .waiting-sub    { font-size: 15px; margin-bottom: 28px; }
+      .region-tabs { padding: 14px 16px 0; }
+      .region-tab { padding: 7px 12px; font-size: 12.5px; }
 
-      /* Countdown box: shrink numbers */
-      .countdown-box  { padding: 24px 18px; gap: 14px; border-radius: 12px; }
-      .countdown-num  { font-size: 40px; min-width: 52px; }
-      .countdown-sep  { font-size: 34px; }
-      .countdown-label { font-size: 10px; }
+      main { padding: 16px 16px 60px; }
 
-      /* Finalist header */
-      .finalist-header { padding: 20px 16px 10px; gap: 8px; flex-wrap: wrap; }
-      .finalist-header h2 { font-size: 20px; }
-      .finalist-count { font-size: 13px; }
-
-      /* Finalist list */
-      .finalist-list { padding: 0 16px 60px; }
-
-      /* Finalist rows: 2-col on mobile (rank + info), badges below */
-      .finalist-row {
-        grid-template-columns: 52px 1fr;
-        grid-template-rows: auto auto;
-        gap: 6px 12px;
-        padding: 16px 16px;
-        margin-bottom: 8px;
-        border-radius: 10px;
+      .detail-row {
+        grid-template-columns: 44px 1fr 90px;
+        grid-template-areas:
+          "rank info comp"
+          ". meta meta";
+        gap: 8px 12px;
+        padding: 12px 14px;
       }
-      .finalist-rank   { font-size: 28px; grid-column: 1; grid-row: 1; align-self: start; padding-top: 2px; }
-      .finalist-info   { grid-column: 2;  grid-row: 1; }
-      .finalist-team   { font-size: 17px; }
-      .finalist-project { font-size: 13px; }
-      .finalist-badges {
-        grid-column: 1 / -1;
-        grid-row: 2;
-        flex-direction: row;
-        align-items: center;
-        justify-content: flex-start;
-        gap: 6px;
-      }
+      .detail-row .col-rank { grid-area: rank; font-size: 17px; }
+      .detail-row .col-info { grid-area: info; }
+      .detail-row .col-info .t1 { font-size: 14px; }
+      .detail-row .col-info .t2 { font-size: 12px; }
+      .detail-row .col-num.v,
+      .detail-row .col-num.j,
+      .detail-row .col-num.p { display: none; }
+      .composite-cell { grid-area: comp; }
+      .composite-num { font-size: 17px; }
+      .detail-row.head { display: none; }
 
-      /* Group divider */
-      .group-divider { margin: 20px 0 10px; }
-      .group-divider-label { font-size: 11px; }
-
-      /* Unknown screen */
-      #unknown-screen { min-height: calc(100vh - 56px); }
-      #unknown-screen h2 { font-size: 22px; }
-      #unknown-screen p  { font-size: 14px; }
-    }
-
-    /* ── Responsive: tablet (640px – 1023px) ── */
-    @media (min-width: 640px) and (max-width: 1023px) {
-      .header-inner { padding: 0 24px; }
-      .finalist-header { padding: 24px 24px 14px; }
-      .finalist-list   { padding: 0 24px 80px; }
-      .finalist-team   { font-size: 20px; }
-      .finalist-rank   { font-size: 32px; }
+      .countdown-box { padding: 22px 16px; gap: 12px; }
+      .countdown-num { font-size: 38px; min-width: 50px; }
+      .countdown-sep { font-size: 32px; }
     }
   </style>
 </head>
@@ -408,254 +450,387 @@
   <div class="header-inner">
     <div class="logo-mark">✳</div>
     <div class="header-wordmark">Eazo</div>
-    <div class="header-title">Hackathon 2026</div>
-    <div class="header-divider"></div>
-    <div class="header-hub" id="header-hub"></div>
+    <div class="header-titleblock">
+      <div class="header-eyebrow">Hackathon 2026</div>
+      <div class="header-title">Award Rankings · Finalist Dashboard</div>
+    </div>
     <div class="header-sep"></div>
     <span class="refresh-label">Auto-refresh every 30s</span>
-    <div class="live-dot-wrap">
-      <div class="live-dot"></div>
-      LIVE
+    <div class="live-dot-wrap" id="liveStatus">
+      <div class="live-dot" id="liveDot"></div>
+      <span id="liveLabel">LIVE</span>
     </div>
-    <div class="calc-timestamp" id="calc-timestamp"></div>
+    <div class="calc-timestamp" id="calcTimestamp"></div>
   </div>
 </header>
 
-<!-- ── Unknown Hub ── -->
-<div id="unknown-screen" style="display:flex;">
-  <h2>Unknown Hub</h2>
-  <p>Please add <code>?hub=sf</code>, <code>?hub=ny</code>, or <code>?hub=sh</code> to the URL.</p>
+<!-- ── Region tabs ── -->
+<div class="region-tabs" id="regionTabs">
+  <button class="region-tab active" data-hub="all" onclick="setView('all', this)">🌐 All Regions</button>
+  <button class="region-tab"        data-hub="sf"  onclick="setView('sf',  this)">🇺🇸 SF · Bay Area + Global Online</button>
+  <button class="region-tab"        data-hub="ny"  onclick="setView('ny',  this)">🗽 NY · New York</button>
+  <button class="region-tab"        data-hub="sh"  onclick="setView('sh',  this)">🇨🇳 SH · Shanghai + Asia Online</button>
 </div>
 
-<!-- ── Waiting Screen ── -->
+<!-- ── Waiting (pre-deadline) screen ── -->
 <div id="waiting-screen">
-  <div class="waiting-icon">⏳</div>
-  <div class="waiting-title">Calculating Finalists…</div>
-  <div class="waiting-sub">Voting closes in</div>
+  <div class="waiting-icon">🏆</div>
+  <div class="waiting-title">Voting Still Open</div>
+  <div class="waiting-sub">Award rankings will appear here when voting closes.</div>
+  <div class="waiting-hub-pill" id="waitingHubPill"></div>
   <div class="countdown-box">
-    <div class="countdown-segment">
-      <div class="countdown-num" id="cd-h">00</div>
-      <div class="countdown-label">Hours</div>
-    </div>
+    <div class="countdown-segment"><div class="countdown-num" id="cd-h">00</div><div class="countdown-label">Hours</div></div>
     <div class="countdown-sep">:</div>
-    <div class="countdown-segment">
-      <div class="countdown-num" id="cd-m">00</div>
-      <div class="countdown-label">Minutes</div>
-    </div>
+    <div class="countdown-segment"><div class="countdown-num" id="cd-m">00</div><div class="countdown-label">Minutes</div></div>
     <div class="countdown-sep">:</div>
-    <div class="countdown-segment">
-      <div class="countdown-num" id="cd-s">00</div>
-      <div class="countdown-label">Seconds</div>
-    </div>
+    <div class="countdown-segment"><div class="countdown-num" id="cd-s">00</div><div class="countdown-label">Seconds</div></div>
   </div>
 </div>
 
-<!-- ── Finalist Screen ── -->
-<div id="finalist-screen">
-  <div class="finalist-header">
-    <h2>Finalist Announcement</h2>
-    <span class="finalist-count" id="finalist-count"></span>
-  </div>
-  <div class="finalist-list" id="finalist-list"></div>
-</div>
+<!-- ── Main content area ── -->
+<main id="mainContent"></main>
 
 <script>
 // ── Config ──────────────────────────────────────────────────────────────────
-const HUB_LABELS = {
-  sf: '🇺🇸 SF · Bay Area',
-  ny: '🗽 NY · New York',
-  sh: '🇨🇳 SH · Shanghai',
+const PRIZE_HUBS = ['sf', 'ny', 'sh'];
+
+const HUB_DISPLAY = {
+  sf: { flag: '🇺🇸', label: 'SF · Bay Area + Global Online', short: 'SF',  color: '#5898E8' },
+  ny: { flag: '🗽',  label: 'NY · New York',                  short: 'NY',  color: '#9080E8' },
+  sh: { flag: '🇨🇳', label: 'SH · Shanghai + Asia Online',    short: 'SH',  color: '#22C97A' },
 };
 
-// Voting deadlines (UTC)
 const DEADLINES = {
-  sf: new Date('2026-05-24T17:00:00Z'),
-  ny: new Date('2026-05-25T01:00:00Z'),
-  sh: new Date('2026-05-24T11:00:00Z'),
+  sf: new Date('2026-05-24T17:00:00Z'),  // SF + Global Online window (PT)
+  ny: new Date('2026-05-25T01:00:00Z'),  // NY (ET)
+  sh: new Date('2026-05-24T11:00:00Z'),  // SH + Asia Online window (CST)
 };
 
 const TRACK_LABELS = {
   superparent: 'SuperParent',
-  companion:   'Companion',
-  lifeos:      'LifeOS',
-  body:        'Body',
+  companion:   'AI Companion',
+  lifeos:      'Life OS',
+  body:        'Body Intel',
   wildcard:    'Wildcard',
 };
 
-const METHOD_LABELS = {
-  referral: 'Referral',
-  peer:     'Peer Vote',
-  online:   'Online',
-};
-
-// TODO: GET /api/${hub}/finalists/public  → { calculated: bool, finalists: Finalist[], calculatedAt: string }
-const MOCK_FINALISTS = {
-  sf: [
-    { id:'sf_t01', rank:1,  team:'Team Meridian',   project:'Atlas',       track:'lifeos',      method:'referral' },
-    { id:'sf_t02', rank:2,  team:'Team Wavelength', project:'SolaceAI',    track:'companion',   method:'referral' },
-    { id:'sf_t03', rank:3,  team:'Team Pulse',      project:'BodySync',    track:'body',        method:'peer' },
-    { id:'sf_t04', rank:4,  team:'Team Nested',     project:'FamilyFlow',  track:'superparent', method:'peer' },
-    { id:'sf_t05', rank:5,  team:'Team Epoch',      project:'DayZero',     track:'lifeos',      method:'referral' },
-    { id:'sf_t06', rank:6,  team:'Remote Minds',    project:'AutoPilot',   track:'lifeos',      method:'online' },
-    { id:'sf_t07', rank:7,  team:'FamCloud',        project:'KidCast',     track:'superparent', method:'online' },
-    { id:'sf_t08', rank:8,  team:'FeelFirst',       project:'MoodSync',    track:'companion',   method:'peer' },
-    { id:'sf_t09', rank:9,  team:'Team Kinetic',    project:'RecoverAI',   track:'body',        method:'referral' },
-    { id:'sf_t10', rank:10, team:'Team Drift',      project:'FocusBuddy',  track:'companion',   method:'peer' },
-  ],
-  ny: [
-    { id:'ny_t01', rank:1, team:'Team Fulton',    project:'FinCoach',    track:'lifeos',      method:'referral' },
-    { id:'ny_t02', rank:2, team:'Team Brooklyn',  project:'MindMap',     track:'companion',   method:'peer' },
-    { id:'ny_t03', rank:3, team:'Team Harlem',    project:'StreetSense', track:'wildcard',    method:'referral' },
-    { id:'ny_t04', rank:4, team:'Team Tribeca',   project:'DadBot',      track:'superparent', method:'peer' },
-    { id:'ny_t05', rank:5, team:'Team Chelsea',   project:'HabitNest',   track:'lifeos',      method:'referral' },
-  ],
-  sh: [
-    { id:'sh_t01', rank:1, team:'队伍 · 晨曦', project:'DawnMind',   track:'lifeos',      method:'referral' },
-    { id:'sh_t02', rank:2, team:'队伍 · 织梦', project:'DreamWeave', track:'companion',   method:'peer' },
-    { id:'sh_t03', rank:3, team:'家家互联',      project:'亲子云',      track:'superparent', method:'online' },
-    { id:'sh_t04', rank:4, team:'队伍 · 脉动', project:'PulseLife',  track:'body',        method:'referral' },
-    { id:'sh_t05', rank:5, team:'意向科技',      project:'思伴',        track:'companion',   method:'online' },
-  ],
+const SOURCE_HUB_LABELS = {
+  sf: 'SF Offline', go: 'Global Online',
+  sh: 'SH Offline', ao: 'Asia Online',
+  ny: 'NY Offline',
 };
 
 // ── State ───────────────────────────────────────────────────────────────────
-let currentHub = '';
+let currentView = 'all';       // 'all' | 'sf' | 'ny' | 'sh'
 let countdownInterval = null;
 let refreshInterval   = null;
+let lastData = null;            // most recent /api/award-ranking payload
 
 // ── Init ────────────────────────────────────────────────────────────────────
 (function init() {
   const params = new URLSearchParams(window.location.search);
-  currentHub = (params.get('hub') || '').toLowerCase();
+  const hubParam = (params.get('hub') || 'all').toLowerCase();
+  const initialView = ['all','sf','ny','sh'].includes(hubParam) ? hubParam : 'all';
 
-  if (!currentHub || !HUB_LABELS[currentHub]) {
-    show('unknown-screen');
+  // Sync tab UI
+  document.querySelectorAll('.region-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.hub === initialView);
+  });
+  currentView = initialView;
+
+  loadAndRender();
+
+  // Refresh every 30s
+  refreshInterval = setInterval(loadAndRender, 30000);
+})();
+
+function setView(hub, btn) {
+  currentView = hub;
+  document.querySelectorAll('.region-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+
+  // Update URL without reloading
+  const url = new URL(window.location.href);
+  url.searchParams.set('hub', hub);
+  history.replaceState({}, '', url);
+
+  render();
+}
+
+// ── Data loading ────────────────────────────────────────────────────────────
+async function loadAndRender() {
+  try {
+    const r = await fetch(`/api/award-ranking?hub=all`);
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    lastData = await r.json();
+  } catch (err) {
+    console.error('[finalist-dashboard] fetch error:', err);
+    lastData = { error: err.message };
+  }
+  render();
+}
+
+// ── Voting-status logic ────────────────────────────────────────────────────
+function regionVotingClosed(hub) {
+  return new Date() >= DEADLINES[hub];
+}
+function nearestUpcomingDeadline() {
+  const now = new Date();
+  const upcoming = PRIZE_HUBS
+    .map(h => ({ hub: h, t: DEADLINES[h] }))
+    .filter(d => d.t > now)
+    .sort((a, b) => a.t - b.t);
+  return upcoming[0] || null;
+}
+
+// ── Render dispatcher ──────────────────────────────────────────────────────
+function render() {
+  if (!lastData) return;
+
+  // Update timestamp + live-status pill
+  if (lastData.calculatedAt) {
+    const d = new Date(lastData.calculatedAt);
+    document.getElementById('calcTimestamp').textContent =
+      `Updated ${d.toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit', second:'2-digit' })}`;
+  }
+
+  // For 'all' view: show dashboard regardless of deadline state.
+  // For single-region view: if voting still open, show countdown.
+  const waiting = document.getElementById('waiting-screen');
+  const main    = document.getElementById('mainContent');
+
+  if (currentView !== 'all' && !regionVotingClosed(currentView)) {
+    // Single region, voting still open → show countdown
+    main.style.display = 'none';
+    waiting.style.display = 'flex';
+    document.getElementById('waitingHubPill').textContent = HUB_DISPLAY[currentView].label;
+    updateLiveStatus(false);
+    startCountdown(DEADLINES[currentView]);
     return;
   }
 
-  document.getElementById('header-hub').textContent = HUB_LABELS[currentHub];
-  document.title = `Eazo Hackathon 2026 — ${HUB_LABELS[currentHub]} Finalists`;
+  waiting.style.display = 'none';
+  main.style.display = 'block';
+  clearInterval(countdownInterval);
 
-  loadFinalists();
+  // Update live-status indicator
+  const allClosed = PRIZE_HUBS.every(regionVotingClosed);
+  updateLiveStatus(allClosed);
 
-  // Auto-refresh every 30s
-  refreshInterval = setInterval(loadFinalists, 30000);
-})();
+  if (lastData.error) {
+    main.innerHTML = `<div class="empty-card"><strong>Could not load rankings</strong>${escHtml(lastData.error)}<br><br>Auto-retry in 30s.</div>`;
+    return;
+  }
 
-// ── Load Finalists ──────────────────────────────────────────────────────────
-async function loadFinalists() {
-  // TODO: replace with real API call:
-  // const res = await fetch(`/api/${currentHub}/finalists/public`);
-  // const data = await res.json();
-  // const { calculated, finalists, calculatedAt } = data;
-
-  // Mock: treat data as "calculated" if past deadline
-  const deadline = DEADLINES[currentHub];
-  const now = new Date();
-  const calculated = now >= deadline;
-  const calculatedAt = calculated ? deadline.toISOString() : null;
-  const finalists = calculated ? (MOCK_FINALISTS[currentHub] || []) : [];
-
-  if (calculated) {
-    clearInterval(countdownInterval);
-    renderFinalists(finalists, calculatedAt);
+  if (currentView === 'all') {
+    renderAllRegions();
   } else {
-    show('waiting-screen');
-    startCountdown(deadline);
+    renderSingleRegion(currentView);
   }
 }
 
-// ── Render Finalists ─────────────────────────────────────────────────────────
-function renderFinalists(finalists, calculatedAt) {
-  show('finalist-screen');
-
-  if (calculatedAt) {
-    const d = new Date(calculatedAt);
-    document.getElementById('calc-timestamp').textContent =
-      `Calculated ${d.toLocaleString('en-US', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit', timeZoneName:'short' })}`;
-  }
-
-  document.getElementById('finalist-count').textContent =
-    `${finalists.length} team${finalists.length !== 1 ? 's' : ''}`;
-
-  const list = document.getElementById('finalist-list');
-  list.innerHTML = '';
-
-  // Separate offline and online
-  const offline = finalists.filter(t => t.method !== 'online');
-  const online  = finalists.filter(t => t.method === 'online');
-
-  offline.forEach(team => list.appendChild(buildRow(team)));
-
-  if (online.length > 0) {
-    const div = document.createElement('div');
-    div.className = 'group-divider';
-    div.innerHTML = `
-      <div class="group-divider-line"></div>
-      <div class="group-divider-label">${currentHub === 'sh' ? 'Asia Online' : 'Global Online'} Finalists</div>
-      <div class="group-divider-line"></div>
-    `;
-    list.appendChild(div);
-    online.forEach(team => list.appendChild(buildRow(team)));
+function updateLiveStatus(allClosed) {
+  const wrap  = document.getElementById('liveStatus');
+  const dot   = document.getElementById('liveDot');
+  const label = document.getElementById('liveLabel');
+  if (allClosed) {
+    wrap.classList.add('closed');
+    dot.classList.add('closed');
+    label.textContent = 'FINAL';
+  } else {
+    wrap.classList.remove('closed');
+    dot.classList.remove('closed');
+    label.textContent = 'LIVE';
   }
 }
 
-function buildRow(team) {
-  const row = document.createElement('div');
-  row.className = 'finalist-row';
+// ── All regions (3-column overview) ────────────────────────────────────────
+function renderAllRegions() {
+  const main = document.getElementById('mainContent');
+  const regions = lastData.regions || {};
 
-  row.innerHTML = `
-    <div class="finalist-rank ${team.rank <= 3 ? 'top3' : ''}">${team.rank}</div>
-    <div class="finalist-info">
-      <div class="finalist-team">${esc(team.team)}</div>
-      <div class="finalist-project">${esc(team.project)}</div>
-    </div>
-    <div class="finalist-badges">
-      <span class="badge badge-${team.track}">${TRACK_LABELS[team.track] || team.track}</span>
-      <span class="badge badge-${team.method}">${METHOD_LABELS[team.method] || team.method}</span>
+  main.innerHTML = `
+    <div class="all-regions-grid">
+      ${PRIZE_HUBS.map(hub => renderRegionCard(hub, regions[hub])).join('')}
     </div>
   `;
-  return row;
 }
 
-// ── Countdown ─────────────────────────────────────────────────────────────────
+function renderRegionCard(hub, regionData) {
+  const disp = HUB_DISPLAY[hub];
+  const closed = regionVotingClosed(hub);
+  const teams = (regionData?.teams || []).slice(0, 12); // top 12 per region in overview
+
+  if (!regionData || regionData.error) {
+    return `
+      <div class="region-card ${hub}">
+        <div class="region-card-head">
+          <div class="region-card-name">${disp.flag} ${disp.short}</div>
+          <div class="region-card-meta">${closed ? 'Voting closed' : 'Voting open'}</div>
+        </div>
+        <div class="region-card-body">
+          <div class="empty-card" style="margin: 14px; border: none; padding: 24px 12px;">
+            ${regionData?.error ? escHtml(regionData.error) : 'No data'}
+          </div>
+        </div>
+      </div>`;
+  }
+
+  if (!teams.length) {
+    return `
+      <div class="region-card ${hub}">
+        <div class="region-card-head">
+          <div class="region-card-name">${disp.flag} ${disp.short}</div>
+          <div class="region-card-meta">${closed ? 'Voting closed' : 'Voting open'}</div>
+        </div>
+        <div class="region-card-body">
+          <div class="empty-card" style="margin: 14px; border: none; padding: 24px 12px;">
+            <strong>No finalists yet</strong>
+            Run <code>calculate_finalists('${hub}')</code> in Supabase after peer voting closes to populate the bracket.
+          </div>
+        </div>
+      </div>`;
+  }
+
+  return `
+    <div class="region-card ${hub}">
+      <div class="region-card-head">
+        <div class="region-card-name">${disp.flag} ${disp.short}</div>
+        <div class="region-card-meta">${teams.length} finalist${teams.length !== 1 ? 's' : ''} · ${closed ? 'Voting closed' : 'Live'}</div>
+      </div>
+      <div class="region-card-body">
+        ${teams.map(t => `
+          <div class="award-row" onclick="setView('${hub}', document.querySelector('.region-tab[data-hub=\\'${hub}\\']'))">
+            <div class="award-rank rank-${t.awardRank <= 3 ? t.awardRank : 'n'}">${medal(t.awardRank)}</div>
+            <div class="award-info">
+              <div class="award-team">${escHtml(t.teamName)}<span class="award-source-hub">${SOURCE_HUB_LABELS[t.sourceHub] || ''}</span></div>
+              <div class="award-project">${escHtml(t.projectName || '—')}</div>
+            </div>
+            <div class="award-score-block">
+              <div class="award-composite">${(t.composite * 100).toFixed(1)}</div>
+              <div class="award-composite-label">Score</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// ── Single region (detail with V/J/P breakdown) ────────────────────────────
+function renderSingleRegion(hub) {
+  const main = document.getElementById('mainContent');
+  const disp = HUB_DISPLAY[hub];
+  const regionData = lastData.regions?.[hub];
+
+  if (!regionData || regionData.error) {
+    main.innerHTML = `
+      <div class="single-region-head">
+        <div class="single-region-title">${disp.flag} ${disp.label}</div>
+      </div>
+      <div class="empty-card">${regionData?.error ? escHtml(regionData.error) : 'No data for this region.'}</div>
+    `;
+    return;
+  }
+
+  const teams = regionData.teams || [];
+  if (!teams.length) {
+    main.innerHTML = `
+      <div class="single-region-head">
+        <div class="single-region-title">${disp.flag} ${disp.label}</div>
+      </div>
+      <div class="empty-card">
+        <strong>No finalists yet</strong>
+        Run <code>select calculate_finalists('${hub}');</code> in Supabase after peer voting closes
+        to populate the 30-team bracket. Then refresh.
+      </div>
+    `;
+    return;
+  }
+
+  // Note about composite normalization
+  const hasJudgeScores = teams.some(t => t.J > 0);
+  const judgeNote = hasJudgeScores ? '' : `
+    <div class="empty-card" style="margin-bottom: 16px; text-align: left;">
+      <strong>⚠️ No judge scores yet</strong>
+      Composite is currently driven by community + peer votes only. As judges submit scores during Demo, this dashboard updates live (every 30s) and the ranking will shift.
+    </div>
+  `;
+
+  main.innerHTML = `
+    <div class="single-region-head">
+      <div class="single-region-title">${disp.flag} ${disp.label}</div>
+      <span class="single-region-count">${teams.length} finalist${teams.length !== 1 ? 's' : ''} · Ranked by composite (V·50% + J·40% + P·10%)</span>
+    </div>
+    ${judgeNote}
+    <div class="detail-table">
+      <div class="detail-row head">
+        <span class="col-rank">Rank</span>
+        <span>Team / Project</span>
+        <span class="col-num">Community V</span>
+        <span class="col-num">Judges J</span>
+        <span class="col-num">Peer P</span>
+        <span class="col-num">Composite</span>
+      </div>
+      ${teams.map(t => `
+        <div class="detail-row">
+          <div class="col-rank rank-${t.awardRank <= 3 ? t.awardRank : 'n'}">${medal(t.awardRank)}</div>
+          <div class="col-info">
+            <div class="t1">${escHtml(t.teamName)}</div>
+            <div class="t2">${escHtml(t.projectName || '—')}</div>
+            <div class="t3">
+              ${TRACK_LABELS[t.track] || t.track}
+              · ${SOURCE_HUB_LABELS[t.sourceHub] || t.sourceHub}
+              · via ${t.qualificationMethod}
+            </div>
+          </div>
+          <div class="col-num v">${Number(t.V).toLocaleString()}<small>votes</small></div>
+          <div class="col-num j">${t.J.toFixed(1)}<small>/50 avg</small></div>
+          <div class="col-num p">${t.P}<small>peer votes</small></div>
+          <div class="composite-cell">
+            <div class="composite-num">${(t.composite * 100).toFixed(1)}</div>
+            <div class="composite-bar-wrap"><div class="composite-bar-fill" style="width:${Math.round(t.composite * 100)}%;"></div></div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+// ── Countdown ──────────────────────────────────────────────────────────────
 function startCountdown(deadline) {
   if (countdownInterval) clearInterval(countdownInterval);
   tick(deadline);
   countdownInterval = setInterval(() => tick(deadline), 1000);
 }
-
 function tick(deadline) {
   const diff = Math.max(0, deadline - new Date());
-  const totalSec = Math.floor(diff / 1000);
-  const h = Math.floor(totalSec / 3600);
-  const m = Math.floor((totalSec % 3600) / 60);
-  const s = totalSec % 60;
-
+  const total = Math.floor(diff / 1000);
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = total % 60;
   document.getElementById('cd-h').textContent = pad(h);
   document.getElementById('cd-m').textContent = pad(m);
   document.getElementById('cd-s').textContent = pad(s);
-
   if (diff === 0) {
     clearInterval(countdownInterval);
-    loadFinalists();
+    loadAndRender();
   }
 }
-
 function pad(n) { return String(n).padStart(2, '0'); }
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
-function show(id) {
-  ['unknown-screen', 'waiting-screen', 'finalist-screen'].forEach(sid => {
-    const el = document.getElementById(sid);
-    if (el) el.style.display = sid === id ? (id === 'waiting-screen' || id === 'unknown-screen' ? 'flex' : 'block') : 'none';
-  });
+// ── Helpers ────────────────────────────────────────────────────────────────
+function medal(rank) {
+  if (rank === 1) return '🥇';
+  if (rank === 2) return '🥈';
+  if (rank === 3) return '🥉';
+  return String(rank);
 }
-
-function esc(str) {
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
+function escHtml(s) {
+  if (s === null || s === undefined) return '';
+  const d = document.createElement('div');
+  d.textContent = String(s);
+  return d.innerHTML;
 }
 </script>
 </body>

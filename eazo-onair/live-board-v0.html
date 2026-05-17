@@ -581,13 +581,12 @@ html,body{width:100%;height:100%;overflow:hidden;
       </div>
 
       <!-- Hub filter -->
+      <!-- 3 prize-pool regions per prize-logic-v4:
+           SF = SF Bay Area offline + Global Online · NY · SH = Shanghai + Asia Online -->
       <div class="hub-filter">
-        <button class="hub-filter-tab active-sf" data-hub="sf" onclick="setHub('sf',this)">🇺🇸 SF · Bay Area</button>
+        <button class="hub-filter-tab active-sf" data-hub="sf" onclick="setHub('sf',this)">🇺🇸 SF · Bay Area + Global Online</button>
         <button class="hub-filter-tab"           data-hub="ny" onclick="setHub('ny',this)">🗽 NY · New York</button>
-        <button class="hub-filter-tab"           data-hub="sh" onclick="setHub('sh',this)">🇨🇳 SH · Shanghai</button>
-        <button class="hub-filter-tab"           data-hub="go" onclick="setHub('go',this)">🌐 Global Online</button>
-        <button class="hub-filter-tab"           data-hub="ao" onclick="setHub('ao',this)">🌏 Asia Online</button>
-        <!-- IP detection: GET /api/hackathon/detect-hub → setHub(result.hub) -->
+        <button class="hub-filter-tab"           data-hub="sh" onclick="setHub('sh',this)">🇨🇳 SH · Shanghai + Asia Online</button>
         <div class="hub-ip-note" id="hubIpNote">📍 IP: SF</div>
       </div>
 
@@ -689,13 +688,12 @@ const PAUSE_TOP_MS = 5500;
 const PAUSE_BOT_MS = 2500;
 const RESUME_DELAY = 3000;
 
-// Per-hub vote deadlines
+// 3 prize-pool regions per prize-logic-v4
+//   SF = SF offline + Global Online (PT)  ·  SH = SH offline + Asia Online (CST)  ·  NY (ET)
 const HUB_CONFIG = {
-  sf: { label:'SF · Bay Area',    eventLabel:'San Francisco · PT', tz:'PT',  deadline:new Date('2026-05-24T17:00:00Z'), start:new Date('2026-05-23T17:00:00Z') },
-  ny: { label:'NY · New York',    eventLabel:'New York · ET',      tz:'ET',  deadline:new Date('2026-05-25T01:00:00Z'), start:new Date('2026-05-23T14:00:00Z') },
-  sh: { label:'SH · Shanghai',    eventLabel:'Shanghai · CST',     tz:'CST', deadline:new Date('2026-05-24T11:00:00Z'), start:new Date('2026-05-23T02:00:00Z') },
-  go: { label:'Global Online',    eventLabel:'Global Online · PT', tz:'PT',  deadline:new Date('2026-05-24T17:00:00Z'), start:new Date('2026-05-23T17:00:00Z') },
-  ao: { label:'Asia Online',      eventLabel:'Asia Online · CST',  tz:'CST', deadline:new Date('2026-05-24T11:00:00Z'), start:new Date('2026-05-23T02:00:00Z') },
+  sf: { label:'SF · Bay Area + Global Online', eventLabel:'San Francisco · PT', tz:'PT',  deadline:new Date('2026-05-24T17:00:00Z'), start:new Date('2026-05-23T17:00:00Z') },
+  ny: { label:'NY · New York',                 eventLabel:'New York · ET',      tz:'ET',  deadline:new Date('2026-05-25T01:00:00Z'), start:new Date('2026-05-23T14:00:00Z') },
+  sh: { label:'SH · Shanghai + Asia Online',   eventLabel:'Shanghai · CST',     tz:'CST', deadline:new Date('2026-05-24T11:00:00Z'), start:new Date('2026-05-23T02:00:00Z') },
 };
 
 const TRACKS = {
@@ -853,13 +851,21 @@ const AO_INIT = [
 let activeHub   = 'sf';
 let activeTrack = 0;  // 0 = all tracks
 
-// Per-hub state
+// Merge online pools into their prize-pool regions before initializing state.
+// Region binding (per prize-logic-v4):
+//   SF region = SF offline + Global Online
+//   SH region = SH offline + Asia Online
+//   NY region = NY only
+const SF_REGION_INIT = [...SF_INIT, ...GO_INIT];
+const SH_REGION_INIT = [...SH_INIT, ...AO_INIT];
+const SF_REGION_POOL = [...HUB_POOL.sf, ...HUB_POOL.go];
+const SH_REGION_POOL = [...HUB_POOL.sh, ...HUB_POOL.ao];
+
+// Per-region state (3 boards, not 5)
 const hubStates = {
-  sf: initHubState('sf', SF_INIT, HUB_POOL.sf),
-  ny: initHubState('ny', NY_INIT, HUB_POOL.ny),
-  sh: initHubState('sh', SH_INIT, HUB_POOL.sh),
-  go: initHubState('go', GO_INIT, HUB_POOL.go),
-  ao: initHubState('ao', AO_INIT, HUB_POOL.ao),
+  sf: initHubState('sf', SF_REGION_INIT, SF_REGION_POOL),
+  ny: initHubState('ny', NY_INIT,        HUB_POOL.ny),
+  sh: initHubState('sh', SH_REGION_INIT, SH_REGION_POOL),
 };
 
 function initHubState(hub, initData, poolData) {
