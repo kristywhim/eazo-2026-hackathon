@@ -1,22 +1,34 @@
-// GET /api/projects?hub=sf[&userId=xxx]
-// Returns projects for a hub + how many votes the user has cast in that hub.
+// GET /api/projects?hub=sf | ?region=sf
+// Returns APPS (not teams — one team can submit multiple apps).
+// `region=sf` merges sf+go hubs; `region=sh` merges sh+ao; ny standalone.
 //
 // Response:
 // {
-//   projects: Project[],
-//   voteMap: { [teamId]: votesGiven },   // empty if no userId
-//   remainingVotes: number               // 10 - votes used; -1 if no userId
+//   apps: App[],                         // each app card; one team may have multiple entries
+//   voteMap: { [appId]: votesGiven },    // per-app vote tally for the auth'd user
+//   remainingVotes: number,              // 10 - votes used in this REGION (across all apps); -1 if no auth
+//   appliedHub or appliedRegion: string
 // }
 //
-// ⚠️  PENDING from Eazo team: team data source
-//   Option A: Eazo REST API  — GET https://api.eazo.com/hackathon/teams?hub=sf
-//   Option B: Google Sheet   — SHEET_ID + service account key
-//   Option C: Eazo pushes to our `teams` table via webhook
+// App shape:
+//   { id, eazo_app_id, team_id, team_name, name, description, app_url,
+//     cover_url, track, hub, icon_emoji, icon_bg, submitted_at, votes }
 
 const { getClient } = require('./_supabase');
 const { requireAuth, validHub } = require('./_auth');
 
 const MAX_VOTES = 10;
+
+const REGION_HUBS = {
+  sf: ['sf', 'go'],
+  sh: ['sh', 'ao'],
+  ny: ['ny'],
+};
+const VALID_REGIONS = Object.keys(REGION_HUBS);
+
+function regionFor(hub) {
+  return { sf:'sf', go:'sf', sh:'sh', ao:'sh', ny:'ny' }[hub];
+}
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -25,48 +37,52 @@ module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
 
-  const hub = req.query.hub;
-  const q   = (req.query.q || '').trim().toLowerCase(); // optional search query
-  if (!validHub(hub)) return res.status(400).json({ error: 'Invalid hub' });
+  const region = req.query.region;
+  const hub    = req.query.hub;
+
+  let hubsToQuery, scopeRegion;
+  if (region) {
+    if (!VALID_REGIONS.includes(region)) return res.status(400).json({ error: 'Invalid region (sf, ny, or sh)' });
+    hubsToQuery = REGION_HUBS[region];
+    scopeRegion = region;
+  } else {
+    if (!validHub(hub)) return res.status(400).json({ error: 'Invalid hub (or use ?region=...)' });
+    hubsToQuery = [hub];
+    scopeRegion = regionFor(hub);
+  }
 
   const supabase = getClient();
 
-  // ── Fetch teams for hub ──────────────────────────────────────────
-  const { data: allTeams, error } = await supabase
-    .from('teams')
-    .select('id, eazo_team_id, name, project_name, project_desc, hub, track, icon_emoji, icon_bg, thumb_url, submitted_at')
-    .eq('hub', hub)
+  // ── Fetch apps in scope, with team info joined ──────────────────
+  const { data: apps, error } = await supabase
+    .from('apps')
+    .select(`
+      id, eazo_app_id, name, description, app_url, cover_url,
+      track, hub, icon_emoji, icon_bg, submitted_at,
+      teams ( id, name, eazo_team_id )
+    `)
+    .in('hub', hubsToQuery)
     .order('submitted_at', { ascending: false });
 
-  // ── Apply search filter (team name OR project name) ──────────────
-  const teams = q
-    ? (allTeams || []).filter(t =>
-        t.name?.toLowerCase().includes(q) ||
-        t.project_name?.toLowerCase().includes(q)
-      )
-    : (allTeams || []);
-
   if (error) {
-    console.error('[projects] teams fetch error:', error);
+    console.error('[projects] apps fetch error:', error);
     return res.status(500).json({ error: error.message });
   }
 
-  // ── Fetch vote counts (all users, for public display) ────────────
-  const teamIds = teams.map(t => t.id);
+  // ── Per-app community vote totals (public — for sorting / display) ─
+  const appIds = (apps || []).map(a => a.id);
   let voteTotals = {};
-
-  if (teamIds.length) {
+  if (appIds.length) {
     const { data: totals } = await supabase
       .from('community_votes')
-      .select('team_id, votes_count')
-      .in('team_id', teamIds);
-
-    (totals || []).forEach(row => {
-      voteTotals[row.team_id] = (voteTotals[row.team_id] || 0) + row.votes_count;
+      .select('app_id, votes_count')
+      .in('app_id', appIds);
+    (totals || []).forEach(r => {
+      voteTotals[r.app_id] = (voteTotals[r.app_id] || 0) + (r.votes_count || 0);
     });
   }
 
-  // ── Fetch this user's vote map (if auth token provided) ──────────
+  // ── Per-user vote map + region budget ────────────────────────────
   let voteMap = {};
   let remainingVotes = -1;
 
@@ -75,26 +91,50 @@ module.exports = async function handler(req, res) {
     try {
       const { userId } = await requireAuth(req);
 
-      const { data: userVotes } = await supabase
-        .from('community_votes')
-        .select('team_id, votes_count')
+      // User's votes within this region (per-app tally)
+      if (appIds.length) {
+        const { data: userVotes } = await supabase
+          .from('community_votes')
+          .select('app_id, votes_count')
+          .eq('user_id', userId)
+          .in('app_id', appIds);
+        (userVotes || []).forEach(v => {
+          voteMap[v.app_id] = (voteMap[v.app_id] || 0) + (v.votes_count || 0);
+        });
+      }
+
+      // Region budget (10 per region) — sourced from user_region_budget
+      const { data: budget } = await supabase
+        .from('user_region_budget')
+        .select('votes_used')
         .eq('user_id', userId)
-        .eq('hub', hub);
-
-      (userVotes || []).forEach(v => { voteMap[v.team_id] = v.votes_count; });
-
-      const used = Object.values(voteMap).reduce((s, n) => s + n, 0);
-      remainingVotes = Math.max(0, MAX_VOTES - used);
-    } catch (_) {
-      // Auth failed — still return public data, just no personal vote map
-    }
+        .eq('region', scopeRegion)
+        .maybeSingle();
+      remainingVotes = Math.max(0, MAX_VOTES - (budget?.votes_used || 0));
+    } catch (_) { /* anon access */ }
   }
 
-  // ── Merge vote totals into projects ─────────────────────────────
-  const projects = teams.map(t => ({
-    ...t,
-    votes: voteTotals[t.id] || 0,
+  // ── Shape response ───────────────────────────────────────────────
+  const shaped = (apps || []).map(a => ({
+    id:           a.id,
+    eazo_app_id:  a.eazo_app_id,
+    team_id:      a.teams?.id,
+    team_name:    a.teams?.name,
+    eazo_team_id: a.teams?.eazo_team_id,
+    name:         a.name,
+    description:  a.description,
+    app_url:      a.app_url,
+    cover_url:    a.cover_url,
+    track:        a.track,
+    hub:          a.hub,
+    icon_emoji:   a.icon_emoji,
+    icon_bg:      a.icon_bg,
+    submitted_at: a.submitted_at,
+    votes:        voteTotals[a.id] || 0,
   }));
 
-  return res.json({ projects, voteMap, remainingVotes });
+  const result = { apps: shaped, voteMap, remainingVotes };
+  if (region) result.appliedRegion = region;
+  else        result.appliedHub    = hub;
+  return res.json(result);
 };

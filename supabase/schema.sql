@@ -28,30 +28,66 @@ create table if not exists teams (
 create index if not exists teams_hub_idx on teams(hub);
 
 -- ══════════════════════════════════════════════════════════════════
+-- 1b. APPS  (1:N with teams — a team may submit multiple apps to the
+--     hackathon; each app is the unit voted on / scored independently)
+--     Threshold logic (>500 / >200) is per app; finalists are per team.
+-- ══════════════════════════════════════════════════════════════════
+create table if not exists apps (
+  id              uuid primary key default gen_random_uuid(),
+  team_id         uuid not null references teams(id) on delete cascade,
+  eazo_app_id     text unique,                       -- creator_apps.app_id from Eazo (nullable)
+  name            text not null,
+  description     text,
+  app_url         text,
+  cover_url       text,
+  track           text check (track in ('superparent','companion','lifeos','body','wildcard')),
+  hub             text not null check (hub in ('sf','ny','sh','go','ao')),
+  icon_emoji      text default '🚀',
+  icon_bg         text default '#CCF0E3',
+  submitted_at    timestamptz default now(),
+  created_at      timestamptz default now()
+);
+create index if not exists apps_team_idx on apps(team_id);
+create index if not exists apps_hub_idx  on apps(hub);
+
+-- ══════════════════════════════════════════════════════════════════
 -- 2. COMMUNITY VOTES  (comm vote WebView — public voting)
---    Max 10 votes per user per hub; can stack on one team or spread
+--    Per-app vote tally; max 10 votes per user per PRIZE-POOL REGION
 -- ══════════════════════════════════════════════════════════════════
 create table if not exists community_votes (
   id           uuid primary key default gen_random_uuid(),
   user_id      text not null,                      -- from Eazo auth token
   team_id      uuid not null references teams(id) on delete cascade,
+  app_id       uuid references apps(id) on delete cascade,  -- per-app target (1:1-migrated rows backfilled)
   hub          text not null,
   votes_count  integer not null default 1 check (votes_count > 0 and votes_count <= 10),
   created_at   timestamptz default now(),
   updated_at   timestamptz default now(),
-  constraint uq_comm_vote unique (user_id, team_id)  -- one row per user/team; update votes_count to add more
+  constraint uq_comm_vote unique (user_id, team_id)
 );
 
 create index if not exists cv_team_hub_idx on community_votes(team_id, hub);
 create index if not exists cv_user_hub_idx on community_votes(user_id, hub);
+create index if not exists cv_app_idx     on community_votes(app_id);
 
--- Per-user, per-hub budget tracker (max 10 votes per hub)
+-- Legacy per-hub budget (kept for back-compat / historic data; no longer used by /api/vote)
 create table if not exists user_hub_budget (
   user_id    text not null,
   hub        text not null,
   votes_used integer not null default 0 check (votes_used >= 0 and votes_used <= 10),
   primary key (user_id, hub)
 );
+
+-- Per-user per-REGION budget tracker (10 votes per prize-pool region).
+-- This is the source of truth for /api/vote budget enforcement.
+create table if not exists user_region_budget (
+  user_id    text not null,
+  region     text not null check (region in ('sf','ny','sh')),
+  votes_used integer not null default 0 check (votes_used >= 0 and votes_used <= 10),
+  updated_at timestamptz default now(),
+  primary key (user_id, region)
+);
+create index if not exists urb_user_idx on user_region_budget(user_id);
 
 -- ══════════════════════════════════════════════════════════════════
 -- 3. PEER VOTES  (互评 — participants vote for other teams)
@@ -61,6 +97,7 @@ create table if not exists peer_votes (
   id             uuid primary key default gen_random_uuid(),
   voter_team_id  uuid not null references teams(id) on delete cascade,
   voted_team_id  uuid not null references teams(id) on delete cascade,
+  voted_app_id   uuid references apps(id) on delete cascade,  -- per-app target
   hub            text not null,
   created_at     timestamptz default now(),
   constraint uq_peer_vote  unique (voter_team_id, voted_team_id),
@@ -69,6 +106,7 @@ create table if not exists peer_votes (
 
 create index if not exists pv_voted_hub_idx on peer_votes(voted_team_id, hub);
 create index if not exists pv_voter_idx     on peer_votes(voter_team_id);
+create index if not exists pv_app_idx       on peer_votes(voted_app_id);
 
 -- ══════════════════════════════════════════════════════════════════
 -- 4. JUDGE SCORES
@@ -79,10 +117,11 @@ create table if not exists judge_scores (
   id            uuid primary key default gen_random_uuid(),
   judge_id      text not null,                     -- judge code (e.g. "JUDGE_SF_01")
   team_id       uuid not null references teams(id) on delete cascade,
+  app_id        uuid references apps(id) on delete cascade,  -- per-app score
   hub           text not null,
   completeness  numeric(4,1) check (completeness between 0 and 10),  -- 01 · Product Completeness
   innovation    numeric(4,1) check (innovation   between 0 and 10),  -- 02 · Innovation
-  technical     numeric(4,1) check (technical    between 0 and 10),  -- 03 · Technical Execution (Eazo Creator depth)
+  technical     numeric(4,1) check (technical    between 0 and 10),  -- 03 · Technical Execution
   design        numeric(4,1) check (design       between 0 and 10),  -- 04 · Design & Experience
   commercial    numeric(4,1) check (commercial   between 0 and 10),  -- 05 · Commercial Potential
   notes         text,
@@ -92,6 +131,7 @@ create table if not exists judge_scores (
 );
 
 create index if not exists js_hub_idx on judge_scores(hub);
+create index if not exists js_app_idx on judge_scores(app_id);
 
 -- ══════════════════════════════════════════════════════════════════
 -- 5. FINALISTS  (calculated once per hub after voting closes)
@@ -141,7 +181,80 @@ from teams t
 left join peer_votes pv on pv.voted_team_id = t.id
 group by t.id;
 
--- Judge score totals per team (average across all judges; max 50 pts per judge)
+-- ── App-level aggregates (used by leaderboard, special awards, calculate_finalists)
+create or replace view v_app_vote_totals as
+select
+  a.id        as app_id,
+  a.team_id,
+  a.name      as app_name,
+  a.hub,
+  a.track,
+  coalesce(sum(cv.votes_count), 0)::integer as votes
+from apps a
+left join community_votes cv on cv.app_id = a.id
+group by a.id;
+
+create or replace view v_app_peer_totals as
+select
+  a.id        as app_id,
+  a.team_id,
+  a.hub,
+  count(pv.id)::integer as peer_votes
+from apps a
+left join peer_votes pv on pv.voted_app_id = a.id
+group by a.id;
+
+create or replace view v_app_judge_totals as
+select
+  a.id        as app_id,
+  a.team_id,
+  a.hub,
+  round(avg(
+    coalesce(js.completeness,0) + coalesce(js.innovation,0) + coalesce(js.technical,0) +
+    coalesce(js.design,0)       + coalesce(js.commercial,0)
+  ), 2) as judge_total_avg,
+  count(distinct js.judge_id) as judge_count
+from apps a
+left join judge_scores js on js.app_id = a.id
+group by a.id;
+
+-- ── Team-level aggregates (MAX V/P across team's apps; AVG J across judged apps)
+create or replace view v_team_max_votes as
+select team_id, max(votes)::integer as team_max_votes
+from v_app_vote_totals group by team_id;
+
+create or replace view v_team_max_peer as
+select team_id, max(peer_votes)::integer as team_max_peer
+from v_app_peer_totals group by team_id;
+
+create or replace view v_team_judge_avg as
+select team_id, round(avg(judge_total_avg), 2) as team_judge_avg
+from v_app_judge_totals
+where judge_count > 0
+group by team_id;
+
+-- ── Special Award candidates: team has ANY app > 200 votes AND team NOT in finalists
+create or replace view v_special_award_candidates as
+select
+  t.id                  as team_id,
+  t.eazo_team_id,
+  t.name                as team_name,
+  t.hub,
+  t.track,
+  v.team_max_votes      as best_app_votes,
+  (
+    select avt.app_name
+    from v_app_vote_totals avt
+    where avt.team_id = t.id
+    order by avt.votes desc
+    limit 1
+  ) as top_app_name
+from teams t
+join v_team_max_votes v on v.team_id = t.id
+where v.team_max_votes > 200
+  and not exists (select 1 from finalists f where f.team_id = t.id);
+
+-- Judge score totals per team (legacy — kept for compat; new code uses v_team_judge_avg)
 create or replace view v_judge_score_totals as
 select
   team_id,
@@ -163,6 +276,11 @@ group by team_id, hub;
 -- 7. FINALIST CALCULATION FUNCTION
 --    Call: select calculate_finalists('sf');
 -- ══════════════════════════════════════════════════════════════════
+-- App-dimension ranking, team-dimension dedup (per migrations 005 + 006).
+-- A: top apps by community votes (>500) → unique teams in top N
+-- B: top apps by peer votes (offline only) → unique teams in top N;
+--    organizer-required >200 threshold = team's BEST app has >200 votes
+-- C/D: online apps ranked by 0.50*V_norm + 0.10*P_norm → unique teams
 create or replace function calculate_finalists(p_prize_hub text)
 returns table(
   team_id uuid, team_name text, project_name text,
@@ -174,7 +292,6 @@ declare
   v_referral_slots int;
   v_peer_slots     int;
 begin
-  -- NY gets 15 per bucket; SF and SH get 10
   if p_prize_hub = 'ny' then
     v_referral_slots := 15;
     v_peer_slots     := 15;
@@ -183,112 +300,118 @@ begin
     v_peer_slots     := 10;
   end if;
 
-  -- Delete previous calculation for this hub
   delete from finalists where prize_hub = p_prize_hub;
 
-  -- ── A: Referral top N (threshold >500) ─────────────────────────
+  -- ── A: rank apps by votes desc, dedup by team, > 500 threshold ─
   insert into finalists (team_id, prize_hub, source_hub, qualification_method, rank_in_method, calculated_at)
-  select
-    t.id,
-    p_prize_hub,
-    t.hub,
-    'referral',
-    row_number() over (order by t.referral_count desc, t.submitted_at asc)::int,
-    now()
-  from teams t
-  where
-    t.hub = any(
+  with apps_in_region as (
+    select av.team_id, t.hub, av.votes
+    from v_app_vote_totals av
+    join teams t on t.id = av.team_id
+    where t.hub = any(
       case p_prize_hub
         when 'sf' then array['sf','go']
         when 'sh' then array['sh','ao']
         when 'ny' then array['ny']
       end
     )
-    and t.referral_count > 500
-  order by t.referral_count desc, t.submitted_at asc
-  limit v_referral_slots
+    and av.votes > 500
+  ),
+  team_best as (
+    select team_id, hub, max(votes) as best_votes
+    from apps_in_region group by team_id, hub
+  ),
+  ranked as (
+    select team_id, hub, best_votes, row_number() over (order by best_votes desc) as rn
+    from team_best
+  )
+  select team_id, p_prize_hub, hub, 'referral', rn::int, now()
+  from ranked where rn <= v_referral_slots
   on conflict (team_id, prize_hub) do nothing;
 
-  -- ── B: Peer vote top N (offline hubs only) ─────────────────────
+  -- ── B: rank apps by peer_votes desc (offline), dedup by team; team_max_votes > 200 ─
   insert into finalists (team_id, prize_hub, source_hub, qualification_method, rank_in_method, calculated_at)
-  select
-    t.id,
-    p_prize_hub,
-    t.hub,
-    'peer',
-    row_number() over (order by coalesce(pv_count,0) desc, t.submitted_at asc)::int,
-    now()
-  from teams t
-  left join (
-    select voted_team_id, count(*) as pv_count
-    from peer_votes
-    group by voted_team_id
-  ) pv on pv.voted_team_id = t.id
-  where
-    t.hub = any(
+  with apps_offline as (
+    select ap.team_id, t.hub, ap.peer_votes
+    from v_app_peer_totals ap
+    join teams t on t.id = ap.team_id
+    join v_team_max_votes vmv on vmv.team_id = t.id
+    where t.hub = any(
       case p_prize_hub
-        when 'sf' then array['sf']  -- offline SF only for peer bucket
+        when 'sf' then array['sf']
         when 'sh' then array['sh']
         when 'ny' then array['ny']
       end
     )
-    and t.referral_count > 200           -- B-class threshold
-  order by coalesce(pv_count,0) desc, t.submitted_at asc
-  limit v_peer_slots
-  on conflict (team_id, prize_hub) do nothing;  -- skip if already in via referral (dedup)
+    and vmv.team_max_votes > 200
+  ),
+  team_best_peer as (
+    select team_id, hub, max(peer_votes) as best_peer
+    from apps_offline group by team_id, hub
+  ),
+  ranked as (
+    select team_id, hub, best_peer, row_number() over (order by best_peer desc) as rn
+    from team_best_peer
+  )
+  select team_id, p_prize_hub, hub, 'peer', rn::int, now()
+  from ranked where rn <= v_peer_slots
+  on conflict (team_id, prize_hub) do nothing;
 
-  -- ── C/D: Online top 10 (by community votes; no judge scores yet) ─
+  -- ── C/D: online apps — 0.50*V_norm + 0.10*P_norm, dedup by team, top 10
   if p_prize_hub in ('sf','sh') then
     insert into finalists (team_id, prize_hub, source_hub, qualification_method, rank_in_method, calculated_at)
-    select
-      t.id,
-      p_prize_hub,
-      t.hub,
-      'online',
-      row_number() over (order by coalesce(cv_sum,0) desc, t.submitted_at asc)::int,
-      now()
-    from teams t
-    left join (
-      select team_id, sum(votes_count) as cv_sum
-      from community_votes
-      group by team_id
-    ) cv on cv.team_id = t.id
-    where
-      t.hub = (case p_prize_hub when 'sf' then 'go' else 'ao' end)
-    order by coalesce(cv_sum,0) desc, t.submitted_at asc
-    limit 10
+    with online_apps as (
+      select av.team_id, av.votes::numeric as v, coalesce(ap.peer_votes,0)::numeric as p
+      from v_app_vote_totals av
+      left join v_app_peer_totals ap on ap.app_id = av.app_id
+      join teams t on t.id = av.team_id
+      where t.hub = (case p_prize_hub when 'sf' then 'go' else 'ao' end)
+    ),
+    ranges as (
+      select min(v) as v_min, max(v) as v_max, min(p) as p_min, max(p) as p_max
+      from online_apps
+    ),
+    scored as (
+      select o.team_id,
+        case when r.v_max = r.v_min then 0.5 else (o.v - r.v_min) / nullif(r.v_max - r.v_min, 0) end as v_norm,
+        case when r.p_max = r.p_min then 0.5 else (o.p - r.p_min) / nullif(r.p_max - r.p_min, 0) end as p_norm
+      from online_apps o cross join ranges r
+    ),
+    team_best as (
+      select team_id, max(0.50 * v_norm + 0.10 * p_norm) as composite
+      from scored group by team_id
+    ),
+    ranked as (
+      select team_id, composite, row_number() over (order by composite desc) as rn
+      from team_best
+    )
+    select team_id, p_prize_hub,
+           (case p_prize_hub when 'sf' then 'go' else 'ao' end),
+           'online', rn::int, now()
+    from ranked where rn <= 10
     on conflict (team_id, prize_hub) do nothing;
   end if;
 
-  -- ── Assign overall_rank (by qualification_method priority, then peer votes) ─
+  -- overall_rank: referral > peer > online, then rank_in_method
   with ranked as (
-    select
-      f.id,
-      row_number() over (
-        order by
-          case f.qualification_method when 'referral' then 1 when 'peer' then 2 else 3 end,
-          f.rank_in_method
-      ) as rn
-    from finalists f
-    where f.prize_hub = p_prize_hub
+    select f.id, row_number() over (
+      order by case f.qualification_method when 'referral' then 1 when 'peer' then 2 else 3 end,
+               f.rank_in_method
+    ) as rn
+    from finalists f where f.prize_hub = p_prize_hub
   )
-  update finalists f2
-  set overall_rank = r.rn
-  from ranked r
-  where f2.id = r.id;
+  update finalists f2 set overall_rank = r.rn
+  from ranked r where f2.id = r.id;
 
-  -- Return the result
   return query
-    select
-      f.team_id, t.name, t.project_name,
-      f.source_hub, f.qualification_method,
-      f.rank_in_method,
-      coalesce(cv.cv_sum, 0) as community_votes,
-      coalesce(pv.pv_count, 0) as peer_votes
+    select f.team_id, t.name, t.project_name,
+           f.source_hub, f.qualification_method, f.rank_in_method,
+           coalesce(vmv.team_max_votes, 0)::bigint as community_votes,
+           coalesce(vmp.team_max_peer,  0)::bigint as peer_votes
     from finalists f
     join teams t on t.id = f.team_id
-    left join (select team_id, sum(votes_count) as cv_sum from community_votes group by team_id) cv on cv.team_id = f.team_id
-    left join (select voted_team_id, count(*) as pv_count from peer_votes group by voted_team_id) pv on pv.voted_team_id = f.team_id
+    left join v_team_max_votes vmv on vmv.team_id = f.team_id
+    left join v_team_max_peer  vmp on vmp.team_id = f.team_id
     where f.prize_hub = p_prize_hub
     order by f.overall_rank;
 end;
@@ -298,12 +421,14 @@ $$;
 -- 8. ROW LEVEL SECURITY
 -- ══════════════════════════════════════════════════════════════════
 
-alter table teams           enable row level security;
-alter table community_votes enable row level security;
-alter table user_hub_budget enable row level security;
-alter table peer_votes      enable row level security;
-alter table judge_scores    enable row level security;
-alter table finalists       enable row level security;
+alter table teams              enable row level security;
+alter table apps               enable row level security;
+alter table community_votes    enable row level security;
+alter table user_hub_budget    enable row level security;
+alter table user_region_budget enable row level security;
+alter table peer_votes         enable row level security;
+alter table judge_scores       enable row level security;
+alter table finalists          enable row level security;
 
 -- Teams: readable by all (public leaderboard data)
 create policy "teams_read_all"    on teams for select using (true);
@@ -315,9 +440,15 @@ create policy "cv_read_own"   on community_votes for select using (auth.uid()::t
 create policy "cv_insert_own" on community_votes for insert with check (auth.uid()::text = user_id);
 create policy "cv_update_own" on community_votes for update using (auth.uid()::text = user_id);
 
--- Budget: users can read/write their own
-create policy "budget_read_own"   on user_hub_budget for select using (auth.uid()::text = user_id);
-create policy "budget_write_own"  on user_hub_budget for all    using (auth.uid()::text = user_id);
+-- Apps: readable by all (public — used by /vote /peer-vote /onair / leaderboard)
+create policy "apps_read_all"      on apps for select using (true);
+create policy "apps_write_service" on apps for all    using (true);  -- service role only in practice
+
+-- Budget: users can read/write their own (per-hub legacy + per-region current)
+create policy "budget_read_own"   on user_hub_budget    for select using (auth.uid()::text = user_id);
+create policy "budget_write_own"  on user_hub_budget    for all    using (auth.uid()::text = user_id);
+create policy "urb_read_own"      on user_region_budget for select using (auth.uid()::text = user_id);
+create policy "urb_write_own"     on user_region_budget for all    using (auth.uid()::text = user_id);
 
 -- Peer votes: teams can read/write their own votes
 create policy "pv_read_all"    on peer_votes for select using (true);

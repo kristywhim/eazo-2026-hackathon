@@ -503,7 +503,7 @@ const HUB_DISPLAY = {
 const DEADLINES = {
   sf: new Date('2026-05-24T17:00:00Z'),  // SF + Global Online window (PT)
   ny: new Date('2026-05-25T01:00:00Z'),  // NY (ET)
-  sh: new Date('2026-05-24T11:00:00Z'),  // SH + Asia Online window (CST)
+  sh: new Date('2026-05-24T11:30:00Z'),  // SH + Asia Online window (CST) — canonical per /api/deadlines
 };
 
 const TRACK_LABELS = {
@@ -538,6 +538,18 @@ let lastData = null;            // most recent /api/award-ranking payload
   });
   currentView = initialView;
 
+  // Async: pull canonical deadlines from /api/deadlines (inline fallback otherwise)
+  (async () => {
+    try {
+      const r = await fetch('/api/deadlines');
+      if (!r.ok) return;
+      const { voting = {} } = await r.json();
+      for (const h of Object.keys(voting)) {
+        if (DEADLINES[h]) DEADLINES[h] = new Date(voting[h]);
+      }
+    } catch (_) { /* keep inline */ }
+  })();
+
   loadAndRender();
 
   // Refresh every 30s
@@ -558,11 +570,19 @@ function setView(hub, btn) {
 }
 
 // ── Data loading ────────────────────────────────────────────────────────────
+let lastSpecialAwards = null;
+
 async function loadAndRender() {
   try {
-    const r = await fetch(`/api/award-ranking?hub=all`);
-    if (!r.ok) throw new Error(`HTTP ${r.status}`);
-    lastData = await r.json();
+    const [rankRes, specialRes] = await Promise.all([
+      fetch('/api/award-ranking?hub=all'),
+      fetch('/api/special-awards?region=all'),
+    ]);
+    if (!rankRes.ok) throw new Error(`HTTP ${rankRes.status}`);
+    lastData = await rankRes.json();
+    if (specialRes.ok) {
+      lastSpecialAwards = await specialRes.json();
+    }
   } catch (err) {
     console.error('[finalist-dashboard] fetch error:', err);
     lastData = { error: err.message };
@@ -652,6 +672,72 @@ function renderAllRegions() {
   main.innerHTML = `
     <div class="all-regions-grid">
       ${PRIZE_HUBS.map(hub => renderRegionCard(hub, regions[hub])).join('')}
+    </div>
+    ${renderSpecialAwardsSection()}
+  `;
+}
+
+// ── Special Award section (>200 votes, not in Demo finalists) ────────────
+function renderSpecialAwardsSection() {
+  if (!lastSpecialAwards || !lastSpecialAwards.regions) return '';
+  const regions = lastSpecialAwards.regions;
+  const totalTeams = PRIZE_HUBS.reduce((n, h) => n + ((regions[h]?.teams || []).length), 0);
+
+  return `
+    <div style="margin-top:32px;">
+      <div style="display:flex;align-items:baseline;gap:14px;margin-bottom:14px;padding:0 2px;">
+        <div style="font-size:18px;font-weight:800;color:var(--t1);">🎊 Special Award Candidates</div>
+        <div style="font-size:13px;color:var(--t2);">
+          Teams with any app &gt; 200 community votes that didn't make Demo · ${totalTeams} total
+        </div>
+      </div>
+      <div class="all-regions-grid">
+        ${PRIZE_HUBS.map(hub => renderSpecialAwardCard(hub, regions[hub])).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function renderSpecialAwardCard(hub, regionData) {
+  const disp = HUB_DISPLAY[hub];
+  const teams = (regionData?.teams || []).slice(0, 15);
+
+  if (!teams.length) {
+    return `
+      <div class="region-card ${hub}">
+        <div class="region-card-head">
+          <div class="region-card-name">${disp.flag} ${disp.short} · Special Award</div>
+          <div class="region-card-meta">0 candidates</div>
+        </div>
+        <div class="region-card-body">
+          <div class="empty-card" style="margin: 14px; border: none; padding: 24px 12px;">
+            No teams qualify yet. As community votes accumulate, teams with any app &gt; 200 votes (who don't make Demo) appear here.
+          </div>
+        </div>
+      </div>`;
+  }
+
+  return `
+    <div class="region-card ${hub}">
+      <div class="region-card-head">
+        <div class="region-card-name">${disp.flag} ${disp.short} · Special Award</div>
+        <div class="region-card-meta">${teams.length} candidate${teams.length !== 1 ? 's' : ''} · $1,000 each</div>
+      </div>
+      <div class="region-card-body">
+        ${teams.map(t => `
+          <div class="award-row">
+            <div class="award-rank" style="color: var(--gold);">🎊</div>
+            <div class="award-info">
+              <div class="award-team">${escHtml(t.teamName)}</div>
+              <div class="award-project">Top app: ${escHtml(t.topAppName || '—')}</div>
+            </div>
+            <div class="award-score-block">
+              <div class="award-composite" style="color: var(--t1);">${Number(t.bestAppVotes).toLocaleString()}</div>
+              <div class="award-composite-label">votes</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
     </div>
   `;
 }
