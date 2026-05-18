@@ -1,214 +1,208 @@
-# Eazo Hackathon 2026 · Engineering Handoff
+# Eazo 黑客松 2026 · 工程对接文档
 
-**To:** Eazo Product & Engineering Team
-**From:** Hackathon Operations
-**Re:** Voting & Scoring System — Integration Requirements
-**Last updated:** 2026-05-16
-
----
-
-## What We've Built
-
-A full voting + scoring system for the Global Hackathon. Runs as a separate web service that sits on top of Eazo's existing platform.
-
-| Page | URL | Who uses it |
-|------|-----|-------------|
-| Community Vote | `/vote` | All event attendees — WebView in Eazo app |
-| Peer Vote (互评) | `/peer-vote` | Participating teams only — WebView in Eazo app |
-| Live Leaderboard | `/onair` | Ops/host team — projected on screen |
-| Judge Scorer | `/judge?hub=sf&code=JUDGE_SF_01` | Judges — link sent via messaging app |
-| Finalist Announcement | `/finalist?hub=sf` | MC/host — projected on screen |
-
-The system has its own database (Supabase/Postgres). **We do not touch Eazo's database directly.** Everything flows through the integration points described below.
+**致**：Eazo 产品 & 工程团队
+**自**：黑客松运营
+**最近更新**：2026-05-17
 
 ---
 
-## ✅ Resolved Since Last Version
+## 一句话概览
 
-Thank you for sending `hackathon-api.md` (v1.2) and the judge guide. Items previously listed as "pending" are now resolved:
+我们为这次黑客松做了**一整套独立的投票 + 评分 + 颁奖系统**。代码、数据库（Supabase）、托管都在我们这边，跟 Eazo 的现有系统**完全解耦**——我们只通过 2 个对接点拿你们的数据（**用户身份** + **作品详情**），其余全部自己搞定。
 
-| Previously needed | Status | Notes |
+---
+
+## 5 个页面
+
+| 页面 | 链接 | 谁用 |
 |---|---|---|
-| Judge scoring rubric (was TBD) | ✅ Resolved | Using the 5-criterion rubric from the Judge Guide (Completeness / Innovation / Technical / Design / Commercial; 10 pts each, 50 total). Schema, API, UI, and migration SQL all updated. |
-| Team **roster** source | ✅ Resolved (interim) | `api/sync-teams.js` reads the Tally registration sheet (`1W7V…`) by column index for team_name / region / track / roster. The sheet **does not and will not** carry project details (title / URL / cover / description). |
-| Project **details** source | 🟡 Architectural alignment | Project details live in Eazo Creator (`creator_apps.*`), not in Tally. Eazo's portal endpoint `GET /api/v1/hackathon/apps` is the bridge — it joins sheet email → Eazo `users.email` → `creator_apps` and returns the merged record. We consume that endpoint when it goes live. Until then, the project_name / project_desc / appUrl fields stay empty (the detail-view "Open App" button shows "coming soon"). |
-| Hub / region structure | ✅ Resolved | Frontend pages (comm-vote, peer-vote, onair) display **3 prize-pool regions per prize-logic-v4**: SF = SF Bay Area + Global Online · NY = standalone · SH = Shanghai + Asia Online. Backend `teams.hub` keeps the 5-hub enum for now (sf/ny/sh/go/ao) so we still know who's offline vs online in finalist buckets. |
-| CN-only IP gating | ✅ Resolved | Dropped — all regions visible everywhere. `api/detect-hub.js` is now just a default-selection hint. |
-| Composite weighting | ✅ Resolved | 50% public vote / 40% judge / 10% peer, per the Judge Guide. |
-| Peer-vote rules | ✅ Resolved | 3 votes per person, no self-vote, auto-lock at deadline, vote-once (no edits). Already correctly implemented in `api/peer-vote.js`; frontend now matches with detail modal parity to comm-vote. |
-| Project detail view | ✅ Resolved | Tap any project card in comm-vote or peer-vote → full-screen detail modal showing project info, track, "Open App →" button (when team has shared a URL), and vote/select CTA. Designed for the Eazo mobile-app WebView context. |
+| 公众投票 | `/vote` | 所有观众，嵌入 Eazo App WebView |
+| 选手互评 | `/peer-vote` | 参赛队员，嵌入 Eazo App WebView |
+| 直播大屏 | `/onair` | 现场大屏投影 |
+| 评委打分 | `/judge?hub=sf&code=XXX` | 评委手机访问 |
+| Finalist 颁奖后台 | `/finalist` | 主持人 + 运营，颁奖时打开 |
 
 ---
 
-## What We Still Need From You
+## 已经完成的功能
 
-Only **two open items** remain. Both are short.
+### 🎤 公众投票（`/vote`）+ 选手互评（`/peer-vote`）
+
+- 按 **3 大赛区**展示标签：🇺🇸 SF（含 Global Online）· 🗽 NY · 🇨🇳 SH（含 Asia Online）
+- **以"作品（app）"为单位**显示卡片——一个队提交多个作品时分别展示
+- 点卡片打开详情弹窗：作品标题、描述、track 标签、票数、"打开作品"按钮（跳转到 Eazo Creator 上的作品 URL）
+- **公众投票**：每人每赛区 10 票，可以分给同一作品也可以分给多个
+- **互评投票**：每人 3 票，**不能投自己所在队伍任何作品**，截止时间自动锁定，且只能提交一次
+
+### 👨‍⚖️ 评委打分（`/judge`）
+
+- 严格按你们的「Judge Guide 2026」5 个维度评分：
+  - 01 产品完整度 · 02 创新性 · 03 技术深度（Eazo Creator 使用质量）· 04 设计体验 · 05 商业潜力
+  - 每项 0–10 分，**满分 50**
+- 评委用专属 code 登录（每个赛区一组 code，例如 `JUDGE_SF_01`）
+- 一个队伍如果有多个作品进 Demo，分别打分，最后取该队所有作品评分的**平均**作为这个队的 J 分
+
+### 📺 直播大屏（`/onair`）
+
+- 3 个赛区独立板面，可切换查看
+- 实时刷新作品票数排名，自动滚动
+- 前 3 名 podium 高亮（金 / 银 / 铜）
+- 右侧 sidebar 显示实时统计（队伍数、作品数、累积投票数）+ 最近 submission feed
+
+### 🏆 Finalist 颁奖后台（`/finalist`）
+
+**这是为了颁奖夜准备的**——投票截止那一刻，主持人打开就能看到**实时综合得分排名**，不需要任何人工统计。
+
+- **综合得分公式**（按 prize-logic-v4）：
+  > 综合分 = 用户投票 × 50% + 评委 × 40% + 互评 × 10%
+  > （各项在区内做 min-max 归一化避免量纲差异）
+- 3 个赛区**并排展示**，每区显示 Top 12 + 综合分 + 金银铜标识
+- 点任一赛区可进入详细视图：完整 30 强 + V/J/P 数值拆解 + 综合分进度条
+- **B 类特别奖板块**：单独区块显示符合条件的队伍——任意一个作品 > 200 公众票、但没进 Demo（每队 $1,000 奖金候选）
+- 每 30 秒自动刷新
+
+### ⏰ 时间集中管理
+
+所有提交截止和投票截止时间放在 **一个文件** `api/_deadlines.js` 里。前端页面加载时通过 `GET /api/deadlines` 接口拉，组委会改时间只需改一处全站同步。
+
+当前时间表（按你们 5/16 更新的版本）：
+
+| 赛区 | 作品提交截止 | 投票截止 |
+|---|---|---|
+| 🇨🇳 SH（含 Asia Online）| 5/24 07:00 CST | 5/24 19:30 CST |
+| 🇺🇸 SF（含 Global Online）| 5/23 21:00 PT | 5/24 10:00 AM PT |
+| 🗽 NY | 5/24 17:00 ET | 5/24 21:00 ET |
+
+### 🎨 品牌统一
+
+5 个页面 logo 设计、字体、色板都按你们 Figma 调一致：
+- DM Sans 字体、Eazo 橙 `#FF6B20`、奶白 `#F8ECD3`
+- Logo mark：浅色页面用橙底 + 奶白 6 瓣星；深色页面用奶白底 + 橙星（贴近 Figma 原版）
+- 全站 SVG 自定义的星形 mark，不依赖系统字体
 
 ---
 
-### 1. User Auth Token (for the WebViews)
+## 重要的数据模型
 
-**Status:** Still required. `hackathon-api.md` declares the read API public, but **our voting endpoints** need to know *who* is voting in order to enforce per-user vote budgets and prevent double voting. The browse API being public doesn't change that.
+**1 个队伍可以提交多个作品**（按主办方要求）。所有投票、评分都以"作品"为单位。但晋级时按"队伍"——一个队不管多少作品入围 Top 10，**只占 1 个 Demo 名额**，下一名的队伍递补。
 
-**How the WebView bridge works (our side):** We listen for a global variable injection:
+队伍维度的分数 = 该队所有作品里**最高的那个**（不是总和；避免"多提交几个作品就有优势"）。
+
+特别奖资格 = 队伍任意一个作品 > 200 公众票 **且**该队没进 Demo。
+
+---
+
+## 我们还需要 Eazo 团队提供的 2 个东西
+
+只剩这两件事。不给我们就上不了线。
+
+### 1. 用户登录 token（WebView 注入）
+
+**为什么必须**：公众投票要按用户控制 10 票 / 区的额度；互评要排除自己所在队伍；都需要知道"谁在投"。
+
+**我们这边怎么对接**：Eazo App 在 WebView 加载前注入用户身份。我们灵活适配以下任一方式：
 
 ```js
-// Option A: inject before load
-window.EAZO_TOKEN = "...";
-// Option B: call after load
-window.receiveAuthToken("...");
-// Option C: postMessage — we'll listen for {type:'eazo_token', token:'...'}
+// 方式 A：注入全局变量
+window.EAZO_TOKEN = "JWT 串";
+// 方式 B：注入函数调用
+window.receiveAuthToken("JWT 串");
+// 方式 C：postMessage
+parent.postMessage({type:'eazo_token', token:'JWT 串'}, '*');
 ```
 
-**What the token must contain** (after we decode/verify it):
-- `user_id` — unique, stable user identifier (vote-budget key)
-- `team_id` — the user's team identifier (for peer vote, to exclude their own team)
-- `region` — `new_york` / `asia` / `global` (so we auto-select the right tab; also reliably tells us their country without an IP lookup)
+**token 解码后我们需要的字段**：
+- `user_id` — 用户唯一标识
+- `team_id` — 用户所在队伍 ID（用于互评排除自己队）
+- `region` — 用户所在赛区（`new_york` / `asia` / `global`，自动选标签）
 
-**What we need from you:**
-1. **Token format** — JWT (RS256/HS256/ES256)? Or a different format?
-2. **Verification key** — public key or shared secret so we can validate it server-side
-3. **Payload field names** — actual field names for the three values above (is it `sub`, `userId`, `user_id`?)
-4. **Injection method** — which of A/B/C above does the Eazo app already do?
+**请告诉我们**：
+1. token 格式（JWT? 算法 RS256/HS256?）
+2. 验签密钥（公钥 / shared secret）
+3. payload 里实际字段名（是 `sub` 还是 `user_id`?）
+4. 注入方式（A/B/C 哪种）
 
-> **Simplest MVP path:** if you don't have a signed-token bridge yet, inject `window.EAZO_USER = { userId, teamId, region }` as a plain JS object before the WebView loads. No crypto needed — we add signature verification later.
-
----
-
-### 2. Portal Endpoint & Deployment Status (`GET /api/v1/hackathon/apps`)
-
-**This is the load-bearing piece.** It's how project info reaches our voting pages. Without it, the comm-vote and peer-vote detail pages can show team names + tracks but **cannot show the actual app or link to it.** The Tally sheet only has registration data; the project itself lives in Eazo Creator (`creator_apps`). Your portal does the email-based join and returns the merged record — we consume that one endpoint and we're good.
-
-**What we need from you:**
-1. **Portal base URL** — what's `$PORTAL` in your spec examples? (e.g. `https://api.eazo.com`)
-2. **Expected deployment date** — so we know when to swap our data source from "registration-only" to "registration + project."
-3. **Heads-up on the `sortBy=votes` user story** — note that "votes" in your spec maps to `creator_apps.like_num`, not hackathon community votes. **Our hackathon votes live in our Supabase**, not in your portal. We will **not** consume `sortBy=votes` from your endpoint — our own vote rankings stay authoritative. (Flagging this so the Eazo dev team doesn't build something we won't use.)
-4. **Confirm the no-match policy** — when a sheet row's `Eazo Creator registration email` doesn't match any Eazo user yet (e.g. team registered but hasn't installed the app or built anything), does your endpoint return the team with `creatorApp: null`, or omit them entirely? We need to know whether to show "registered, no app yet" rows or filter them out.
+> 💡 如果暂时没有正式 JWT 桥，最简单的方式：直接注入 `window.EAZO_USER = { userId, teamId, region }` 明文对象。我们先这样跑，等你们 JWT 上线再加验签。
 
 ---
 
-## What You Don't Need to Do
+### 2. 作品详情数据接口（`GET /api/v1/hackathon/apps`）
 
-Fully handled on our side:
+**为什么必须**：报名表（我们读的 Google Sheet）里**只有队伍名单**，没有作品标题 / URL / 描述 / 封面。作品本身在 Eazo Creator 里——必须通过你们的 portal 接口拿。
 
-- ✅ All vote storage, deduplication, and per-user budget enforcement
-- ✅ Peer vote rules (3 votes, no self-vote, once only)
-- ✅ Finalist calculation logic and demo-slot allocation
-- ✅ Judge scoring interface and 5-criterion rubric
-- ✅ Live leaderboard (OnAir)
-- ✅ All frontend pages
-- ✅ Database schema + migrations
-- ✅ Direct ingestion of the Tally → Google Sheet submission data
+你们之前共享的 `hackathon-api.md` 文档定义了这个接口（按邮箱 join 报名表 + creator_apps，返回作品详情）。
+
+**请告诉我们**：
+1. 接口的**部署 URL** —— 你们文档里写的 `$PORTAL` 实际是什么？
+2. **预计上线时间** —— 没有它的话，前端"打开作品"按钮一直显示 "coming soon"
+3. **一个边界问题**：报名了但还没在 Eazo Creator 建作品的队伍，接口会返回这些队伍吗（`creatorApp: null`）？还是直接过滤掉？
+
+> 💡 注意：你们 v1.2 文档里提到的 `sortBy=votes`（按 `creator_apps.like_num` 排序）这个用户故事我们**不用**——黑客松的投票数在我们自己的数据库里，不是 Eazo Creator 的 likes。
 
 ---
 
-## Deployment Configuration
+## 部署
 
-We deploy to **Vercel**. Required environment variables once you confirm the items above:
+- **代码**: `github.com/kristywhim/eazo-2026-hackathon`
+- **托管**: Vercel
+- **数据库**: Supabase（独立项目，跟你们的 Postgres 没关系）
+
+环境变量：
 
 ```bash
-# Resolved (in place)
-EAZO_SHEETS_API_KEY=AIzaSy...           # Google Sheets API key for the submission sheet
-EAZO_SHEET_ID=1muwuDscQpacD1Ifbzsl0jwBj16-_HQPHPXRB5Zl1HC4
-SUPABASE_URL=https://...                 # our Supabase
+# 已经在用
+SUPABASE_URL=https://...                 # 我们 Supabase
 SUPABASE_SERVICE_ROLE_KEY=...
+EAZO_SHEETS_API_KEY=AIzaSy...            # Google Sheets API key（读报名表）
+EAZO_SHEET_ID=1W7VBHzbeHyxGaIIg_UonmZgCVbZpoZ5x20PvlWvG8kE
+ADMIN_SECRET=HACKATHON_ADMIN_2026
 
-# Still pending (Item 1 + 2 above)
-EAZO_JWT_SECRET=...                      # token verification key
-EAZO_PORTAL_BASE=https://api.eazo.com    # optional — once portal is deployed, we'll swap from direct sheet to portal
+# 等 Item 1、Item 2 给我们后加
+EAZO_JWT_SECRET=...                      # token 验签 key
+EAZO_PORTAL_BASE=https://...             # portal 接口的 base URL
 ```
-
-> **API key handling reminder:** the Sheets API key you shared was passed in plaintext over chat. Please rotate it and apply restrictions (Sheets API only, HTTP referrer = our Vercel domain) per [Google's key best-practices doc](https://docs.cloud.google.com/docs/authentication/api-keys-best-practices). Send the new key via a secure channel (1Password share, Vercel env vars dashboard, etc.).
 
 ---
 
-## Timeline Sensitivity
+## 时间紧迫程度
 
-| Item | Needed by | Why |
-|------|-----------|-----|
-| Auth token spec (Item 1) | ASAP | Community vote and peer vote can't go live without it |
-| Portal endpoint URL (Item 2) | Optional — interim path works | Lets us pick up `creatorApp` enrichment when ready |
-| Restricted API key (rotation) | Before go-live | Current key is exposed in chat history |
-
----
-
-## Architecture at a Glance
-
-```
-Eazo Mobile App                       Tally form → our gsheet (1W7V…)
-─────────────────                     ─────────────────────────────────
-Team forms                            Registration submitted
-↓                                     ↓
-Team builds app on Eazo Creator       Team roster + region + track
-↓                                     ↓
-(creator_apps.*)                      (no project details — by design)
-        │                                            │
-        └──────────────┬─────────────────────────────┘
-                       ↓
-         Eazo portal joins by email
-         GET /api/v1/hackathon/apps
-                       ↓
-         Our Supabase ← → Our voting pages
-```
-
-The cross-check ("is this Eazo Creator app actually a hackathon project?") happens at **email-match time** in the portal. We don't reproduce that logic — we just consume the answer.
+| 待办事项 | 我们等到什么时候 | 为什么 |
+|---|---|---|
+| 用户登录 token（Item 1）| **越快越好** | 没它公众投票和互评都上不了线 |
+| Portal 接口部署 URL（Item 2）| 报名截止前 | 没它作品详情显示不出来，只显示队伍名 |
 
 ---
 
-## Data Model (after migrations 003-006)
+## 代码结构 · 文件指引
 
-A team can submit **multiple apps**. Voting / scoring is per-app; qualification thresholds are per-app; finalist slots are per-team (one Demo slot per team regardless of how many of their apps qualified).
-
-| Concept | Aggregation |
+| 用途 | 路径 |
 |---|---|
-| Team's community-vote score (V) | `MAX(votes)` across team's apps |
-| Team's peer-vote score (P) | `MAX(peer_votes)` across team's apps |
-| Team's judge score (J) | `AVG(total)` across team's judged apps |
-| Demo finalist | Team enters with their best-app score in each bucket |
-| Special Award (B-class $1000) | Any team where best app > 200 community votes AND not in Demo |
-| User vote budget | 10 votes per **PRIZE-POOL REGION** (sf+go share one, sh+ao share one, ny standalone) |
-
-## Code Pointers
-
-Codebase: `github.com/kristywhim/eazo-2026-hackathon`
-
-| Concern | File |
-|---|---|
-| Canonical deadlines (single source of truth) | `api/_deadlines.js` + public `GET /api/deadlines` |
-| Eazo portal naming bridge (stub) | `api/_eazo_portal_mapping.js` |
-| Sheets ingestion (interim) | `api/sync-teams.js` (creates 1 placeholder app per team) |
-| Seed mock teams (dry-run) | `POST /api/seed-mock-teams?secret=...` |
-| Seed mock apps (multi-app demo) | `POST /api/seed-mock-apps?secret=...` |
-| Auth token verification (Item 1, still pending) | `api/_auth.js` |
-| Community vote (per-app, per-region budget) | `api/vote.js` |
-| Peer vote (per-app, region-merged) | `api/peer-vote.js` |
-| Projects listing (3-region merged at backend) | `api/projects.js` (`?region=sf\|ny\|sh`) |
-| Leaderboard (app-level ranking) | `api/leaderboard.js` |
-| Judge rubric (per-app scoring, 5 criteria × 10 pts) | `api/judge-score.js`, `eazo-judgescorer/index.html` |
-| Award ranking (composite V·50% + J·40% + P·10%) | `api/award-ranking.js`, `eazo-finalist/index.html` |
-| Special Award candidates | `api/special-awards.js`, `eazo-finalist/index.html` |
-| Schema (current) | `supabase/schema.sql` |
-| Migrations (run in order) | `supabase/migrations/001..006` |
-| Reference materials | `_reference/hackathon-api.md`, `_reference/eazo_2026_judge_guide_en.md`, `_reference/prize-logic-v4.html`, `_reference/1778987515256.jpg` (deadlines) |
-
-## Migrations to Run in Supabase (in order)
-
-If you've already run `001`, run these next:
-
-1. `003_online_qualification_fix.sql` — corrects C/D online qualification (V·50% + P·10% standardized, not just V)
-2. `004_region_budget.sql` — adds `user_region_budget` (10 votes / prize-pool region)
-3. `005_apps_table.sql` — adds `apps` table + new views; migrates each existing team into 1 placeholder app
-4. `006_calculate_finalists_app_dimension.sql` — rewrites `calculate_finalists` to rank apps then dedup by team
-
-All are wrapped in `BEGIN/COMMIT`, so any failure rolls back cleanly.
+| 数据库 schema | `supabase/schema.sql` |
+| 历次迁移（按顺序跑）| `supabase/migrations/001..006_*.sql` |
+| 集中的截止时间配置 | `api/_deadlines.js` + 公开接口 `api/deadlines.js` |
+| 报名表同步 | `api/sync-teams.js`（读 Tally 报名 sheet）|
+| 公众投票 API | `api/vote.js`、`api/projects.js`、`api/leaderboard.js` |
+| 互评 API | `api/peer-vote.js` |
+| 评委打分 API | `api/judge-score.js` |
+| Finalist + 综合得分 API | `api/finalists.js`、`api/award-ranking.js` |
+| 特别奖 API | `api/special-awards.js` |
+| 用户身份验证（**Item 1 待办**）| `api/_auth.js` |
+| Eazo portal 命名翻译表 | `api/_eazo_portal_mapping.js` |
+| 5 个前端页面 | `eazo-comm-votepage/`、`eazo-peer-votepage/`、`eazo-onair/`、`eazo-judgescorer/`、`eazo-finalist/` |
+| Eazo 提供的参考文档 | `_reference/hackathon-api.md`、`_reference/eazo_2026_judge_guide_en.md`、`_reference/prize-logic-v4.html`、`_reference/1778987515256.jpg` |
 
 ---
 
-## Still On Our Side To Do (post-handoff)
+## 历史变更要点（给翻历史的人看）
 
-So you can see what's coming from our side without waiting on Eazo:
+- **2026-05-17**：apps 数据模型重构（1 队 N 作品）；区域投票额度（10 票 / 区，不再 10 票 / hub）；C/D 类线上晋级公式按 prize-logic 修复；B 类特别奖完整实现；品牌 logo 全站统一
+- **2026-05-16**：评委 5 维度评分系统上线；公众 + 互评 + onair 三大页面合并为 3 个赛区；项目详情弹窗；Finalist 颁奖后台重做（综合得分实时排名）
+- **2026-05-15**：截止时间集中到 `api/_deadlines.js`，前端通过 API 拉
+- **2026-05-13**：响应式布局、品牌色统一
+- **2026-05-12**：搜索框、自动补全
 
-- Finalist admin dashboard: rebuild as a 3-region view with A/B/C-D buckets per `prize-logic-v4`.
-- OnAir leaderboard: collapse 5 boards → 3 regions.
-- `calculate_finalists` Postgres function: drop the `referral_count > 200` constraint from the peer-vote bucket (peer top-N is the rule per prize-logic; the >200 threshold belongs to the *Special Award* B-class, which is a separate track).
-- Wire the remaining frontends (comm-vote, peer-vote, onair, finalist) to live API endpoints after the regions and finalist work settle.
+---
+
+## 有问题？
+
+代码全在 `github.com/kristywhim/eazo-2026-hackathon`。任何问题、想要的接口调整、bug 反馈，直接联系运营或在 repo 开 issue。
