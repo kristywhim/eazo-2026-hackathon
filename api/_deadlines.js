@@ -20,7 +20,7 @@
 const SUBMISSION_DEADLINES = {
   sf: '2026-05-24T04:00:00Z',  // 5/23 21:00 PT
   go: '2026-05-24T04:00:00Z',  // ↑ same window
-  ny: '2026-05-24T21:00:00Z',  // 5/24 17:00 ET  (was T00:00 on 5/25 — wrong by 3h)
+  ny: '2026-05-24T21:30:00Z',  // 5/24 17:30 ET  (was T00:00 on 5/25 — wrong by 3h)
   sh: '2026-05-23T23:00:00Z',  // 5/24 07:00 CST
   ao: '2026-05-23T23:00:00Z',  // ↑ same window
 };
@@ -28,7 +28,7 @@ const SUBMISSION_DEADLINES = {
 const VOTING_DEADLINES = {
   sf: '2026-05-24T17:00:00Z',  // 5/24 10:00 AM PT
   go: '2026-05-24T17:00:00Z',  // ↑ same window
-  ny: '2026-05-25T01:00:00Z',  // 5/24 21:00 ET
+  ny: '2026-05-25T00:00:00Z',  // 5/24 20:00 ET
   sh: '2026-05-24T11:30:00Z',  // 5/24 19:30 CST  (was T11:00 — off by 30 min)
   ao: '2026-05-24T11:30:00Z',  // ↑ same window
 };
