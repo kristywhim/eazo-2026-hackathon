@@ -3,3 +3,10 @@
 node_modules/
 .DS_Store
 .vercel/
+
+# Claude Code local state (per-machine, never push)
+.claude/settings.local.json
+.claude/worktrees/
+
+# Local convenience scripts
+deploy-to-boss.sh
